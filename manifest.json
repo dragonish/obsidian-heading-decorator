@@ -1,0 +1,11 @@
+{
+  "id": "heading-decorator",
+  "name": "Heading Decorator",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Implements the decoration of the heading.",
+  "author": "dragonish",
+  "authorUrl": "https://github.com/dragonish",
+  "fundingUrl": "https://ko-fi.com/monogamy",
+  "isDesktopOnly": false
+}
