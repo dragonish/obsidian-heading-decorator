@@ -67,9 +67,9 @@ export class HeadingViewPlugin implements PluginValue {
     if (
       update.docChanged ||
       update.viewportChanged ||
-      update.transactions.some((tr) => {
-        tr.effects.some((e) => e.is(updateEditorMode));
-      })
+      update.transactions.some((tr) =>
+        tr.effects.some((e) => e.is(updateEditorMode))
+      )
     ) {
       this.updateDecorations(
         update.view,
