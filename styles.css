@@ -48,92 +48,114 @@
 /* reading end */
 
 /* preview start */
-.preview-custom-heading-decorator.before-heading-decorator:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   content: attr(data-heading-decorator);
   opacity: 20%;
 }
 
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 10%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 20%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 30%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 40%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 50%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 60%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 70%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 80%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 90%;
 }
-.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::before,
-.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
+.is-live-preview
+  .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
     .cm-active .preview-custom-heading-decorator
   )::after {
   opacity: 100%;
