@@ -1,50 +1,256 @@
-/* content start */
-.custom-heading-decorator.before-heading-decorator::before,
-.custom-heading-decorator.after-heading-decorator::after {
+/* reading start */
+.reading-custom-heading-decorator.before-heading-decorator::before,
+.reading-custom-heading-decorator.after-heading-decorator::after {
   content: attr(data-heading-decorator);
   opacity: 20%;
 }
-/* content end */
 
-/* opacity start */
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]::after {
   opacity: 10%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]::after {
   opacity: 20%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]::after {
   opacity: 30%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]::after {
   opacity: 40%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]::after {
   opacity: 50%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]::after {
   opacity: 60%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]::after {
   opacity: 70%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]::after {
   opacity: 80%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]::after {
   opacity: 90%;
 }
-.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]::before,
-.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]::after {
+.reading-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]::before,
+.reading-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]::after {
   opacity: 100%;
 }
-/* opacity end */
+/* reading end */
+
+/* preview start */
+.preview-custom-heading-decorator.before-heading-decorator:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  content: attr(data-heading-decorator);
+  opacity: 20%;
+}
+
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 10%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 20%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 30%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 40%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 50%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 60%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 70%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 80%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 90%;
+}
+.preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::before,
+.preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active .preview-custom-heading-decorator
+  )::after {
+  opacity: 100%;
+}
+/* preview end */
+
+/* source start */
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  content: attr(data-heading-decorator);
+  opacity: 20%;
+}
+
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 10%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 20%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 30%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 40%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 50%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 60%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 70%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 80%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 90%;
+}
+.cm-formatting-header
+  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::before,
+:not(.cm-formatting-header)
+  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active .source-custom-heading-decorator
+  )::after {
+  opacity: 100%;
+}
+/* source end */

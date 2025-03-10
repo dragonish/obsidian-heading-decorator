@@ -5,14 +5,17 @@ import {
   MarkdownView,
   PluginSettingTab,
   Setting,
+  Editor,
   debounce,
 } from "obsidian";
+import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
   HeadingPluginSettings,
   HeadingTuple,
   OpacityOptions,
   PostionOptions,
   OrderedCounterStyleType,
+  HeadingPluginData,
 } from "./common/data";
 import {
   headingsSelector,
@@ -21,6 +24,16 @@ import {
 } from "./common/data";
 import { Counter } from "./common/counter";
 import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
+import {
+  HeadingViewPlugin,
+  headingDecorationsField,
+  editorModeField,
+  updateEditorMode,
+} from "./components/view";
+
+interface ObsidianEditor extends Editor {
+  cm: EditorView;
+}
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
   enabledInReading: true,
@@ -43,6 +56,14 @@ export default class HeadingPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
 
+    // Register editor extension
+    this.registerEditorExtension([
+      headingDecorationsField,
+      editorModeField,
+      this.craeteHeadingViewPlugin(this.getPluginData.bind(this)),
+    ]);
+
+    // Register markdown post processor
     this.registerMarkdownPostProcessor((element, context) => {
       const {
         enabledInReading,
@@ -52,7 +73,6 @@ export default class HeadingPlugin extends Plugin {
         orderedDelimiter,
         orderedTrailingDelimiter,
         orderedStyleType,
-        orderedCustomIdents,
         orderedSpecifiedString,
       } = this.settings;
 
@@ -82,7 +102,7 @@ export default class HeadingPlugin extends Plugin {
           delimiter: orderedDelimiter,
           trailingDelimiter: orderedTrailingDelimiter,
           styleType: orderedStyleType,
-          customIdents: orderedCustomIdents.split(/\s+/g).filter((v) => v),
+          customIdents: this.getOrderedCustomIdents(),
           specifiedString: orderedSpecifiedString,
         });
         let headingIndex = 0;
@@ -142,6 +162,17 @@ export default class HeadingPlugin extends Plugin {
       }
     });
 
+    // Listen for editor mode changes
+    this.registerEvent(
+      this.app.workspace.on(
+        "active-leaf-change",
+        this.handleModeChange.bind(this)
+      )
+    );
+    this.registerEvent(
+      this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
+    );
+
     this.addSettingTab(new HeadingSettingTab(this.app, this));
   }
 
@@ -155,6 +186,18 @@ export default class HeadingPlugin extends Plugin {
     this.debouncedSaveSettings();
   }
 
+  private craeteHeadingViewPlugin(
+    getPluginData: () => Promise<HeadingPluginData>
+  ) {
+    return ViewPlugin.fromClass(
+      class extends HeadingViewPlugin {
+        constructor(view: EditorView) {
+          super(view, getPluginData);
+        }
+      }
+    );
+  }
+
   private getUnorderedLevelHeadings() {
     const arr = this.settings.unorderedLevelHeadings
       .split(/\s+/g)
@@ -163,6 +206,27 @@ export default class HeadingPlugin extends Plugin {
       return arr.slice(0, 6) as HeadingTuple;
     }
     return defaultHeadingTuple;
+  }
+
+  private getOrderedCustomIdents() {
+    return this.settings.orderedCustomIdents.split(/\s+/g).filter((v) => v);
+  }
+
+  private handleModeChange() {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (view) {
+      //? "source" for editing view (Live Preview & Source mode),
+      //? "preview" for reading view.
+      const isLivePreview = view.getMode() === "source";
+
+      //* Get CodeMirror editor instance
+      const cmEditor = (view.editor as ObsidianEditor).cm;
+      if (cmEditor) {
+        cmEditor.dispatch({
+          effects: updateEditorMode.of(isLivePreview),
+        });
+      }
+    }
   }
 
   private debouncedSaveSettings = debounce(
@@ -183,6 +247,23 @@ export default class HeadingPlugin extends Plugin {
         view.previewMode.rerender(true);
       }
     }
+  }
+
+  async getPluginData(): Promise<HeadingPluginData> {
+    const data: HeadingPluginData = {
+      ...this.settings,
+      orderedCustomIdents: this.getOrderedCustomIdents(),
+      unorderedLevelHeadings: this.getUnorderedLevelHeadings(),
+      headingsCache: [],
+    };
+
+    const file = this.getActiveFile();
+    if (file) {
+      data.headingsCache =
+        this.app.metadataCache.getFileCache(file)?.headings || [];
+    }
+
+    return data;
   }
 
   private getActiveFile(sourcePath?: string) {

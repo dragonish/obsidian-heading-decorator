@@ -1,13 +1,40 @@
-import type { LevelTuple, DecoratorOptions, PostionOptions } from "./data";
+import type {
+  LevelTuple,
+  BaseDecoratorOptions,
+  DecoratorOptions,
+  PostionOptions,
+} from "./data";
+import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 
 export class Counter {
   private levels: LevelTuple = [0, 0, 0, 0, 0, 0];
   private decoratorOptions: DecoratorOptions;
 
-  constructor(decoratorOptions?: DecoratorOptions) {
+  constructor(decoratorOptions?: BaseDecoratorOptions) {
     if (decoratorOptions) {
-      this.decoratorOptions = decoratorOptions;
+      if (decoratorOptions.ordered) {
+        const {
+          styleType,
+          delimiter,
+          trailingDelimiter,
+          customIdents,
+          specifiedString,
+        } = decoratorOptions;
+        this.decoratorOptions = {
+          ordered: true,
+          styleType: styleType || "decimal",
+          delimiter,
+          trailingDelimiter,
+          customIdents,
+          specifiedString,
+        };
+      } else {
+        this.decoratorOptions = {
+          ordered: false,
+          levelHeadings: decoratorOptions.levelHeadings || defaultHeadingTuple,
+        };
+      }
     } else {
       this.decoratorOptions = { ordered: true, styleType: "decimal" }; // Default to ordered if no options are provided
     }

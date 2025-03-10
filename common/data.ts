@@ -1,3 +1,4 @@
+import type { HeadingCache } from "obsidian";
 import type * as Presets from "@jsamr/counter-style/presets";
 
 type TupleOf<T, N extends number> = N extends N
@@ -24,7 +25,7 @@ export type OrderedCounterStyleType =
   | "customIdent"
   | "string";
 
-interface BaseDecoratorOptions {
+export interface BaseDecoratorOptions {
   ordered: boolean;
   styleType?: OrderedCounterStyleType;
   delimiter?: string;
@@ -34,12 +35,16 @@ interface BaseDecoratorOptions {
   levelHeadings?: HeadingTuple;
 }
 
-interface OrderedDecoratorOptions extends BaseDecoratorOptions {
+interface OrderedDecoratorOptions {
   ordered: true;
   styleType: OrderedCounterStyleType;
+  delimiter?: string;
+  trailingDelimiter?: boolean;
+  customIdents?: string[];
+  specifiedString?: string;
 }
 
-interface UnorderedDecoratorOptions extends BaseDecoratorOptions {
+interface UnorderedDecoratorOptions {
   ordered: false;
   levelHeadings: HeadingTuple;
 }
@@ -66,7 +71,22 @@ export interface HeadingPluginSettings {
   unorderedLevelHeadings: string;
 }
 
-export const headingDecoratorClassName = "custom-heading-decorator";
+export interface HeadingPluginData
+  extends Omit<
+    HeadingPluginSettings,
+    "enabledInReading" | "orderedCustomIdents" | "unorderedLevelHeadings"
+  > {
+  orderedCustomIdents: string[];
+  unorderedLevelHeadings: HeadingTuple;
+  headingsCache: HeadingCache[];
+}
+
+export const readingHeadingDecoratorClassName =
+  "reading-custom-heading-decorator";
+export const previewHeadingDecoratorClassName =
+  "preview-custom-heading-decorator";
+export const sourceHeadingDecoratorClassName =
+  "source-custom-heading-decorator";
 export const beforeDecoratorClassName = "before-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";
 export const headingsSelector =

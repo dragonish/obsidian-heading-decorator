@@ -1,6 +1,6 @@
 import type { OpacityOptions, PostionOptions } from "./data";
 import {
-  headingDecoratorClassName,
+  readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
   afterDecoratorClassName,
 } from "./data";
@@ -64,7 +64,7 @@ export function decorateHTMLElement(
   element.dataset.headingDecorator = content;
   element.dataset.decoratorOpacity = `${opacity}%`;
   element.classList.add(
-    headingDecoratorClassName,
+    readingHeadingDecoratorClassName,
     getPositionClassName(position)
   );
 }
