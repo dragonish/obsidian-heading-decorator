@@ -334,7 +334,9 @@ class HeadingSettingTab extends PluginSettingTab {
     //* ordered
     new Setting(containerEl)
       .setName("Ordered")
-      .setDesc("Decorate the heading as ordered list.")
+      .setDesc(
+        "Toggle this setting to enable the decoration of headings as an ordered or unordered list."
+      )
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.ordered)
@@ -347,7 +349,9 @@ class HeadingSettingTab extends PluginSettingTab {
     //* opacity
     new Setting(containerEl)
       .setName("Opacity")
-      .setDesc("Set the opacity of the heading decorator.")
+      .setDesc(
+        "Set the opacity of the heading decorator. The value is the form of percentage."
+      )
       .addSlider((slider) =>
         slider
           .setLimits(10, 100, 10)
@@ -382,8 +386,8 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedStyleType
     new Setting(containerEl)
-      .setName("Ordered style type")
-      .setDesc("Set the style type for ordered headings.")
+      .setName("Style type")
+      .setDesc("Set the style type for ordered list.")
       .addDropdown((dropdown) =>
         dropdown
           .addOptions(orderedStyleTypeOptions)
@@ -397,8 +401,8 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedDelimiter
     new Setting(containerEl)
-      .setName("Ordered delimiter")
-      .setDesc("Set the delimiter for ordered headings.")
+      .setName("Delimiter")
+      .setDesc("Set the delimiter for ordered list.")
       .addText((text) =>
         text
           .setValue(this.plugin.settings.orderedDelimiter)
@@ -410,8 +414,8 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedTrailingDelimiter
     new Setting(containerEl)
-      .setName("Ordered trailing delimiter")
-      .setDesc("Set whether to add a trailing delimiter for ordered headings.")
+      .setName("Trailing delimiter")
+      .setDesc("Set whether to add a trailing delimiter for ordered list.")
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.orderedTrailingDelimiter)
@@ -423,9 +427,9 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedCustomIdents
     new Setting(containerEl)
-      .setName("Ordered custom list styles")
+      .setName("Custom list styles")
       .setDesc(
-        'For the "Custom list styles" option. Set custom list styles for ordered headings. Use spaces to separate entries.'
+        'For the "Custom list styles" option. Set custom list styles for ordered list. Use spaces to separate entries.'
       )
       .addText((text) =>
         text
@@ -438,9 +442,9 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedSpecifiedString
     new Setting(containerEl)
-      .setName("Ordered specified string")
+      .setName("Specified string")
       .setDesc(
-        'For the "Specified string" option. Set a specified string for ordered headings.'
+        'For the "Specified string" option. Set a specified string for ordered list.'
       )
       .addText((text) =>
         text
@@ -455,9 +459,9 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* unorderedLevelHeadings
     new Setting(containerEl)
-      .setName("Unordered level headings")
+      .setName("Level headings")
       .setDesc(
-        "set level headings for unordered headings. 6 entries separated by spaces."
+        "Set the names for each level. The value is 6 entries separated by spaces."
       )
       .addText((text) =>
         text
