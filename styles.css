@@ -1,0 +1,50 @@
+/* content start */
+.custom-heading-decorator.before-heading-decorator::before,
+.custom-heading-decorator.after-heading-decorator::after {
+  content: attr(data-heading-decorator);
+  opacity: 20%;
+}
+/* content end */
+
+/* opacity start */
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]::after {
+  opacity: 10%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]::after {
+  opacity: 20%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]::after {
+  opacity: 30%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]::after {
+  opacity: 40%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]::after {
+  opacity: 50%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]::after {
+  opacity: 60%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]::after {
+  opacity: 70%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]::after {
+  opacity: 80%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]::after {
+  opacity: 90%;
+}
+.custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]::before,
+.custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]::after {
+  opacity: 100%;
+}
+/* opacity end */
