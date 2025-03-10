@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { Counter } from "../../common/counter";
+import { Counter, TopLevelQuerier } from "../../common/counter";
 
 describe("common/counter", function () {
   it("Counter.handler", function () {
@@ -70,16 +70,26 @@ describe("common/counter", function () {
   });
 
   it("Counter.decorator with default", function () {
-    const counter = new Counter();
-    expect(counter.decorator(-1)).to.be.empty;
-    expect(counter.decorator(0)).to.empty;
-    expect(counter.decorator(1)).to.equal("1");
-    expect(counter.decorator(2)).to.equal("1.1");
-    expect(counter.decorator(3)).to.equal("1.1.1");
-    expect(counter.decorator(4)).to.equal("1.1.1.1");
-    expect(counter.decorator(5)).to.equal("1.1.1.1.1");
-    expect(counter.decorator(6)).to.equal("1.1.1.1.1.1");
-    expect(counter.decorator(7)).to.empty;
+    const counter1 = new Counter();
+    expect(counter1.decorator(-1)).to.be.empty;
+    expect(counter1.decorator(0)).to.empty;
+    expect(counter1.decorator(1)).to.equal("1");
+    expect(counter1.decorator(2)).to.equal("1.1");
+    expect(counter1.decorator(3)).to.equal("1.1.1");
+    expect(counter1.decorator(4)).to.equal("1.1.1.1");
+    expect(counter1.decorator(5)).to.equal("1.1.1.1.1");
+    expect(counter1.decorator(6)).to.equal("1.1.1.1.1.1");
+    expect(counter1.decorator(7)).to.empty;
+
+    const counter2 = new Counter();
+    expect(counter2.decorator(3)).to.equal("1.1.1");
+    expect(counter2.decorator(4)).to.equal("1.1.1.1");
+    expect(counter2.decorator(5)).to.equal("1.1.1.1.1");
+    expect(counter2.decorator(6)).to.equal("1.1.1.1.1.1");
+    expect(counter2.decorator(7)).to.empty;
+    expect(counter2.decorator(1)).to.equal("2");
+    expect(counter2.decorator(2)).to.equal("2.1");
+    expect(counter2.decorator(6)).to.equal("2.1.1.1.1.1");
   });
 
   it("Counter.decorator with unordered", function () {
@@ -339,5 +349,122 @@ describe("common/counter", function () {
     expect(counter.decorator(1)).to.equal("1");
     expect(counter.decorator(1, "before")).to.equal("2 ");
     expect(counter.decorator(2, "after")).to.equal(" 2.1");
+  });
+
+  it("Counter.decorator with ignoreTopLevel", function () {
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      ignoreTopLevel: 1,
+    });
+    expect(counter1.decorator(1)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("1");
+    expect(counter1.decorator(3)).to.equal("1.1");
+    expect(counter1.decorator(4)).to.equal("1.1.1");
+    expect(counter1.decorator(5)).to.equal("1.1.1.1");
+    expect(counter1.decorator(6)).to.equal("1.1.1.1.1");
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("2");
+    expect(counter1.decorator(3)).to.equal("2.1");
+    expect(counter1.decorator(4)).to.equal("2.1.1");
+    expect(counter1.decorator(5)).to.equal("2.1.1.1");
+    expect(counter1.decorator(6)).to.equal("2.1.1.1.1");
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("3");
+    expect(counter1.decorator(6)).to.equal("3.1.1.1.1");
+
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      ignoreTopLevel: 2,
+    });
+    expect(counter2.decorator(1)).to.be.empty;
+    expect(counter2.decorator(2)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("1");
+    expect(counter2.decorator(4)).to.equal("1.1");
+    expect(counter2.decorator(5)).to.equal("1.1.1");
+    expect(counter2.decorator(6)).to.equal("1.1.1.1");
+    expect(counter2.decorator(7)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("2");
+    expect(counter2.decorator(6)).to.equal("2.1.1.1");
+
+    const counter3 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      ignoreTopLevel: 2,
+    });
+    expect(counter3.decorator(3)).to.equal("1");
+    expect(counter3.decorator(4)).to.equal("1.1");
+    expect(counter3.decorator(5)).to.equal("1.1.1");
+    expect(counter3.decorator(6)).to.equal("1.1.1.1");
+    expect(counter3.decorator(3)).to.equal("2");
+    expect(counter3.decorator(6)).to.equal("2.1.1.1");
+
+    const counter4 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      trailingDelimiter: true,
+      ignoreTopLevel: 2,
+    });
+    expect(counter4.decorator(1)).to.be.empty;
+    expect(counter4.decorator(2)).to.be.empty;
+    expect(counter4.decorator(3)).to.equal("1.");
+    expect(counter4.decorator(4)).to.equal("1.1.");
+    expect(counter4.decorator(5)).to.equal("1.1.1.");
+    expect(counter4.decorator(6)).to.equal("1.1.1.1.");
+    expect(counter4.decorator(3)).to.equal("2.");
+    expect(counter4.decorator(4)).to.equal("2.1.");
+    expect(counter4.decorator(5)).to.equal("2.1.1.");
+    expect(counter4.decorator(6)).to.equal("2.1.1.1.");
+    expect(counter4.decorator(3)).to.equal("3.");
+    expect(counter4.decorator(6)).to.equal("3.1.1.1.");
+  });
+
+  it("TopLevelQuerier.query", function () {
+    const querier1 = new TopLevelQuerier();
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(5);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(4);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(3);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(2);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(1);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(0);
+
+    const querier2 = new TopLevelQuerier();
+    querier2.handler(6);
+    expect(querier2.query()).to.equal(6);
+
+    querier2.handler(2);
+    expect(querier2.query()).to.equal(1);
   });
 });

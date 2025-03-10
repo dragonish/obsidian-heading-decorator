@@ -8,7 +8,7 @@ import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 
 export class Counter {
-  private levels: LevelTuple = [0, 0, 0, 0, 0, 0];
+  protected levels: LevelTuple = [0, 0, 0, 0, 0, 0];
   private decoratorOptions: DecoratorOptions;
 
   constructor(decoratorOptions?: BaseDecoratorOptions) {
@@ -20,6 +20,7 @@ export class Counter {
           trailingDelimiter,
           customIdents,
           specifiedString,
+          ignoreTopLevel,
         } = decoratorOptions;
         this.decoratorOptions = {
           ordered: true,
@@ -28,6 +29,7 @@ export class Counter {
           trailingDelimiter,
           customIdents,
           specifiedString,
+          ignoreTopLevel,
         };
       } else {
         this.decoratorOptions = {
@@ -64,7 +66,6 @@ export class Counter {
     }
 
     if (this.decoratorOptions.ordered) {
-      const levels = this.handler(level);
       let results: string[] = [];
       const {
         styleType,
@@ -72,7 +73,9 @@ export class Counter {
         trailingDelimiter = false,
         specifiedString = "#",
         customIdents = [],
+        ignoreTopLevel = 0,
       } = this.decoratorOptions;
+      const levels = this.handler(level).slice(ignoreTopLevel);
 
       switch (styleType) {
         case "customIdent":
@@ -91,7 +94,8 @@ export class Counter {
           );
       }
 
-      result = results.join(delimiter) + (trailingDelimiter ? delimiter : "");
+      result = results.join(delimiter);
+      result += result.length > 0 && trailingDelimiter ? delimiter : "";
     } else {
       result = this.decoratorOptions.levelHeadings[level - 1];
     }
@@ -102,5 +106,23 @@ export class Counter {
       return ` ${result}`;
     }
     return result;
+  }
+}
+
+export class TopLevelQuerier extends Counter {
+  constructor() {
+    super();
+  }
+
+  query(): number {
+    let res = 0;
+    for (let i = 0; i < this.levels.length; i++) {
+      if (this.levels[i] <= 1) {
+        res = i + 1;
+      } else {
+        break;
+      }
+    }
+    return res;
   }
 }

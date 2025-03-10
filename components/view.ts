@@ -13,7 +13,7 @@ import {
   sourceHeadingDecoratorClassName,
 } from "../common/data";
 import { getPositionClassName } from "../common/dom";
-import { Counter } from "../common/counter";
+import { Counter, TopLevelQuerier } from "../common/counter";
 
 /** A StateEffect for updating decorations */
 const updateHeadingDecorations = StateEffect.define<DecorationSet>();
@@ -82,6 +82,34 @@ export class HeadingViewPlugin implements PluginValue {
     // Cleanup if needed
   }
 
+  private getLevelFromLineText(lineText: string): number {
+    let level = -1;
+    if (lineText.startsWith("###### ")) {
+      level = 6;
+    } else if (lineText.startsWith("##### ")) {
+      level = 5;
+    } else if (lineText.startsWith("#### ")) {
+      level = 4;
+    } else if (lineText.startsWith("### ")) {
+      level = 3;
+    } else if (lineText.startsWith("## ")) {
+      level = 2;
+    } else if (lineText.startsWith("# ")) {
+      level = 1;
+    }
+    return level;
+  }
+
+  private getLevelFromNextLineText(nextLineText: string): number {
+    let level = -1;
+    if (nextLineText.match(/^=+\s*$/)) {
+      level = 1;
+    } else if (nextLineText.match(/^-+\s*$/)) {
+      level = 2;
+    }
+    return level;
+  }
+
   private async updateDecorations(view: EditorView, isLivePreviwMode: boolean) {
     const pluginData = await this.getPluginData();
 
@@ -101,8 +129,35 @@ export class HeadingViewPlugin implements PluginValue {
         orderedTrailingDelimiter,
         orderedCustomIdents,
         orderedSpecifiedString,
+        orderedIgnoreSingle,
         unorderedLevelHeadings,
       } = pluginData;
+
+      let ignoreTopLevel = 0;
+      if (ordered && orderedIgnoreSingle) {
+        const queier = new TopLevelQuerier();
+        for (const heading of pluginData.headingsCache) {
+          const lineIndex = heading.position.start.line + 1;
+          if (lineIndex > doc.lines) {
+            continue;
+          }
+          const line = doc.line(lineIndex);
+          const lineText = line.text;
+
+          let level = this.getLevelFromLineText(lineText);
+          if (level === -1) {
+            const nextLineIndex = lineIndex + 1;
+            if (nextLineIndex < doc.lines) {
+              const nextLine = doc.line(nextLineIndex);
+              const nextLineText = nextLine.text;
+              level = this.getLevelFromNextLineText(nextLineText);
+            }
+          }
+
+          queier.handler(level);
+        }
+        ignoreTopLevel = queier.query();
+      }
 
       const counter = new Counter({
         ordered,
@@ -111,6 +166,7 @@ export class HeadingViewPlugin implements PluginValue {
         trailingDelimiter: orderedTrailingDelimiter,
         customIdents: orderedCustomIdents,
         specifiedString: orderedSpecifiedString,
+        ignoreTopLevel,
         levelHeadings: unorderedLevelHeadings,
       });
 
@@ -124,29 +180,13 @@ export class HeadingViewPlugin implements PluginValue {
         const line = doc.line(lineIndex);
         const lineText = line.text;
 
-        let level = -1;
-        if (lineText.startsWith("###### ")) {
-          level = 6;
-        } else if (lineText.startsWith("##### ")) {
-          level = 5;
-        } else if (lineText.startsWith("#### ")) {
-          level = 4;
-        } else if (lineText.startsWith("### ")) {
-          level = 3;
-        } else if (lineText.startsWith("## ")) {
-          level = 2;
-        } else if (lineText.startsWith("# ")) {
-          level = 1;
-        } else {
+        let level = this.getLevelFromLineText(lineText);
+        if (level === -1) {
           const nextLineIndex = lineIndex + 1;
           if (nextLineIndex < doc.lines) {
             const nextLine = doc.line(nextLineIndex);
             const nextLineText = nextLine.text;
-            if (nextLineText.match(/^=+\s*$/)) {
-              level = 1;
-            } else if (nextLineText.match(/^-+\s*$/)) {
-              level = 2;
-            }
+            level = this.getLevelFromNextLineText(nextLineText);
           }
         }
 

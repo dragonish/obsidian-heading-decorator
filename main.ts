@@ -22,7 +22,7 @@ import {
   defaultHeadingTuple,
   orderedStyleTypeOptions,
 } from "./common/data";
-import { Counter } from "./common/counter";
+import { Counter, TopLevelQuerier } from "./common/counter";
 import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
 import {
   HeadingViewPlugin,
@@ -47,6 +47,7 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
   orderedStyleType: "decimal",
   orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
   orderedSpecifiedString: "#",
+  orderedIgnoreSingle: false,
   unorderedLevelHeadings: defaultHeadingTuple.join(" "),
 };
 
@@ -74,6 +75,7 @@ export default class HeadingPlugin extends Plugin {
         orderedTrailingDelimiter,
         orderedStyleType,
         orderedSpecifiedString,
+        orderedIgnoreSingle,
       } = this.settings;
 
       if (!enabledInReading) {
@@ -97,6 +99,15 @@ export default class HeadingPlugin extends Plugin {
           return;
         }
 
+        let ignoreTopLevel = 0;
+        if (orderedIgnoreSingle) {
+          const queier = new TopLevelQuerier();
+          for (const h of headings) {
+            queier.handler(h.level);
+          }
+          ignoreTopLevel = queier.query();
+        }
+
         const counter = new Counter({
           ordered: true,
           delimiter: orderedDelimiter,
@@ -104,6 +115,7 @@ export default class HeadingPlugin extends Plugin {
           styleType: orderedStyleType,
           customIdents: this.getOrderedCustomIdents(),
           specifiedString: orderedSpecifiedString,
+          ignoreTopLevel,
         });
         let headingIndex = 0;
 
@@ -161,6 +173,23 @@ export default class HeadingPlugin extends Plugin {
         });
       }
     });
+
+    // Listen for metadata changes
+    this.registerEvent(
+      this.app.metadataCache.on(
+        "changed",
+        debounce(
+          (file) => {
+            //! Delay trigger rerender
+            if (file && file.path === this.getActiveFile()?.path) {
+              this.rerenderPreviewMarkdown(file);
+            }
+          },
+          250,
+          true
+        )
+      )
+    );
 
     // Listen for editor mode changes
     this.registerEvent(
@@ -451,6 +480,21 @@ class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.orderedSpecifiedString)
           .onChange(async (value) => {
             this.plugin.settings.orderedSpecifiedString = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    //* orderedIgnoreSingle
+    new Setting(containerEl)
+      .setName("Ignore the single heading at the top-level")
+      .setDesc(
+        "If the top-level has only a single heading, exclude it when building an ordered list."
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.orderedIgnoreSingle)
+          .onChange(async (value) => {
+            this.plugin.settings.orderedIgnoreSingle = value;
             await this.plugin.saveSettings();
           })
       );

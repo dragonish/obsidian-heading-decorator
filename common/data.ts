@@ -32,6 +32,7 @@ export interface BaseDecoratorOptions {
   trailingDelimiter?: boolean;
   customIdents?: string[];
   specifiedString?: string;
+  ignoreTopLevel?: number;
   levelHeadings?: HeadingTuple;
 }
 
@@ -42,6 +43,7 @@ interface OrderedDecoratorOptions {
   trailingDelimiter?: boolean;
   customIdents?: string[];
   specifiedString?: string;
+  ignoreTopLevel?: number;
 }
 
 interface UnorderedDecoratorOptions {
@@ -67,6 +69,7 @@ export interface HeadingPluginSettings {
   orderedTrailingDelimiter: boolean;
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
+  orderedIgnoreSingle: boolean;
 
   unorderedLevelHeadings: string;
 }
