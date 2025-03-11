@@ -18,11 +18,11 @@ This plugin supports optional decoration for reading view, editing view (*Live P
 
 ### Enabled
 
-Controls the scope of the decorator.
+The plugin supports configure heading decorator for each editor mode. You can control the effect range:
 
-- **Enabled in Reading**: Decorate the heading under the *Reading* view.
-- **Enabled in Live Preview**: Decorate the heading under the *Live Preview*.
-- **Enabled in Source mode**: Decorate the heading under the *Source mode*.
+- **Enabled in reading view**: Decorate the heading under the *Reading* view.
+- **Enabled in live preview**: Decorate the heading under the *Live Preview*.
+- **Enabled in source mode**: Decorate the heading under the *Source mode*.
 
 ### Effect
 
