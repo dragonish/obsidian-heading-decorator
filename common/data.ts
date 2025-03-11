@@ -55,11 +55,7 @@ export type DecoratorOptions =
   | OrderedDecoratorOptions
   | UnorderedDecoratorOptions;
 
-export interface HeadingPluginSettings {
-  enabledInReading: boolean;
-  enabledInPreview: boolean;
-  enabledInSource: boolean;
-
+interface HeadingDecoratorSettings {
   ordered: boolean;
   opacity: OpacityOptions;
   position: PostionOptions;
@@ -74,13 +70,19 @@ export interface HeadingPluginSettings {
   unorderedLevelHeadings: string;
 }
 
+export type PluginDecoratorSettingsType =
+  | "readingSettings"
+  | "previewSettings"
+  | "sourceSettings";
+
+export type HeadingPluginSettings = {
+  enabledInReading: boolean;
+  enabledInPreview: boolean;
+  enabledInSource: boolean;
+} & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
+
 export interface HeadingPluginData
-  extends Omit<
-    HeadingPluginSettings,
-    "enabledInReading" | "orderedCustomIdents" | "unorderedLevelHeadings"
-  > {
-  orderedCustomIdents: string[];
-  unorderedLevelHeadings: HeadingTuple;
+  extends Omit<HeadingPluginSettings, "enabledInReading" | "readingSettings"> {
   headingsCache: HeadingCache[];
 }
 
@@ -152,3 +154,47 @@ export const orderedStyleTypeOptions: Record<OrderedCounterStyleType, string> =
     customIdent: "Custom list styles",
     string: "Specified string",
   };
+
+/**
+ * Default settings for heading decorator.
+ *
+ * @returns default settings for heading decorator.
+ */
+export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
+  return {
+    opacity: 20,
+    position: "before",
+    ordered: true,
+    orderedDelimiter: ".",
+    orderedTrailingDelimiter: false,
+    orderedStyleType: "decimal",
+    orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
+    orderedSpecifiedString: "#",
+    orderedIgnoreSingle: false,
+    unorderedLevelHeadings: defaultHeadingTuple.join(" "),
+  };
+}
+
+/**
+ * Get unordered level headings from settings.
+ *
+ * @param value - The value to split and filter.
+ * @returns An array of strings representing the unordered level headings.
+ */
+export function getUnorderedLevelHeadings(value: string): HeadingTuple {
+  const arr = value.split(/\s+/g).filter((v) => v);
+  if (arr.length > 6) {
+    return arr.slice(0, 6) as HeadingTuple;
+  }
+  return [...defaultHeadingTuple];
+}
+
+/**
+ * Get ordered custom idents from settings.
+ *
+ * @param value - The value to split and filter.
+ * @returns An array of strings representing the ordered custom idents.
+ */
+export function getOrderedCustomIdents(value: string) {
+  return value.split(/\s+/g).filter((v) => v);
+}

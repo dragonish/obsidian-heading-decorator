@@ -11,16 +11,18 @@ import {
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
   HeadingPluginSettings,
-  HeadingTuple,
   OpacityOptions,
   PostionOptions,
   OrderedCounterStyleType,
   HeadingPluginData,
+  PluginDecoratorSettingsType,
 } from "./common/data";
 import {
   headingsSelector,
-  defaultHeadingTuple,
   orderedStyleTypeOptions,
+  defaultHeadingDecoratorSettings,
+  getUnorderedLevelHeadings,
+  getOrderedCustomIdents,
 } from "./common/data";
 import { Counter, TopLevelQuerier } from "./common/counter";
 import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
@@ -37,18 +39,11 @@ interface ObsidianEditor extends Editor {
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
   enabledInReading: true,
+  readingSettings: defaultHeadingDecoratorSettings(),
   enabledInPreview: true,
+  previewSettings: defaultHeadingDecoratorSettings(),
   enabledInSource: false,
-  opacity: 20,
-  position: "before",
-  ordered: true,
-  orderedDelimiter: ".",
-  orderedTrailingDelimiter: false,
-  orderedStyleType: "decimal",
-  orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
-  orderedSpecifiedString: "#",
-  orderedIgnoreSingle: false,
-  unorderedLevelHeadings: defaultHeadingTuple.join(" "),
+  sourceSettings: defaultHeadingDecoratorSettings(),
 };
 
 export default class HeadingPlugin extends Plugin {
@@ -68,14 +63,18 @@ export default class HeadingPlugin extends Plugin {
     this.registerMarkdownPostProcessor((element, context) => {
       const {
         enabledInReading,
-        opacity,
-        position,
-        ordered,
-        orderedDelimiter,
-        orderedTrailingDelimiter,
-        orderedStyleType,
-        orderedSpecifiedString,
-        orderedIgnoreSingle,
+        readingSettings: {
+          opacity,
+          position,
+          ordered,
+          orderedDelimiter,
+          orderedTrailingDelimiter,
+          orderedStyleType,
+          orderedSpecifiedString,
+          orderedCustomIdents,
+          orderedIgnoreSingle,
+          unorderedLevelHeadings,
+        },
       } = this.settings;
 
       if (!enabledInReading) {
@@ -113,7 +112,7 @@ export default class HeadingPlugin extends Plugin {
           delimiter: orderedDelimiter,
           trailingDelimiter: orderedTrailingDelimiter,
           styleType: orderedStyleType,
-          customIdents: this.getOrderedCustomIdents(),
+          customIdents: getOrderedCustomIdents(orderedCustomIdents),
           specifiedString: orderedSpecifiedString,
           ignoreTopLevel,
         });
@@ -158,7 +157,7 @@ export default class HeadingPlugin extends Plugin {
 
         const counter = new Counter({
           ordered: false,
-          levelHeadings: this.getUnorderedLevelHeadings(),
+          levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
         });
 
         headingElements.forEach((headingElement) => {
@@ -227,20 +226,6 @@ export default class HeadingPlugin extends Plugin {
     );
   }
 
-  private getUnorderedLevelHeadings() {
-    const arr = this.settings.unorderedLevelHeadings
-      .split(/\s+/g)
-      .filter((v) => v);
-    if (arr.length > 6) {
-      return arr.slice(0, 6) as HeadingTuple;
-    }
-    return defaultHeadingTuple;
-  }
-
-  private getOrderedCustomIdents() {
-    return this.settings.orderedCustomIdents.split(/\s+/g).filter((v) => v);
-  }
-
   private handleModeChange() {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
@@ -260,7 +245,6 @@ export default class HeadingPlugin extends Plugin {
 
   private debouncedSaveSettings = debounce(
     this.rerenderPreviewMarkdown.bind(this),
-
     1000,
     true
   );
@@ -281,8 +265,6 @@ export default class HeadingPlugin extends Plugin {
   async getPluginData(): Promise<HeadingPluginData> {
     const data: HeadingPluginData = {
       ...this.settings,
-      orderedCustomIdents: this.getOrderedCustomIdents(),
-      unorderedLevelHeadings: this.getUnorderedLevelHeadings(),
       headingsCache: [],
     };
 
@@ -317,11 +299,9 @@ class HeadingSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    new Setting(containerEl).setName("Enabled").setHeading();
-
     //* enabledInReading
     new Setting(containerEl)
-      .setName("Enabled in Reading")
+      .setName("Enabled in reading view")
       .setDesc("Decorate the heading under the reading view.")
       .addToggle((toggle) =>
         toggle
@@ -332,9 +312,17 @@ class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("Manage reading view heading decorator")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("readingSettings");
+        });
+      });
+
     //* enabledInPreview
     new Setting(containerEl)
-      .setName("Enabled in Live Preview")
+      .setName("Enabled in live preview")
       .setDesc("Decorate the heading under the live preview.")
       .addToggle((toggle) =>
         toggle
@@ -345,9 +333,17 @@ class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("Manage live preview heading decorator")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("previewSettings");
+        });
+      });
+
     //* enabledInSource
     new Setting(containerEl)
-      .setName("Enabled in Source mode")
+      .setName("Enabled in source mode")
       .setDesc("Decorate the heading under the source mode.")
       .addToggle((toggle) =>
         toggle
@@ -357,6 +353,55 @@ class HeadingSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    new Setting(containerEl)
+      .setName("Manage source mode heading decorator")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("sourceSettings");
+        });
+      });
+  }
+
+  private isOpacityValue(value: number): value is OpacityOptions {
+    if (value >= 10 && value <= 100 && value % 10 === 0) {
+      return true;
+    }
+    return false;
+  }
+
+  private isPositionValue(value: string): value is PostionOptions {
+    return value === "before" || value === "after";
+  }
+
+  private manageHeadingDecoratorSettings(
+    settingsType: PluginDecoratorSettingsType
+  ) {
+    const { containerEl } = this;
+
+    containerEl.empty();
+
+    let tabName = "";
+    switch (settingsType) {
+      case "readingSettings":
+        tabName = "Manage reading view heading decorator";
+        break;
+      case "previewSettings":
+        tabName = "Manage live preview heading decorator";
+        break;
+      case "sourceSettings":
+        tabName = "Manage source mode heading decorator";
+        break;
+    }
+
+    new Setting(containerEl)
+      .setName(tabName)
+      .setHeading()
+      .addButton((button) => {
+        button.setButtonText("Back").onClick(() => {
+          this.display();
+        });
+      });
 
     new Setting(containerEl).setName("Effect").setHeading();
 
@@ -368,9 +413,9 @@ class HeadingSettingTab extends PluginSettingTab {
       )
       .addToggle((toggle) =>
         toggle
-          .setValue(this.plugin.settings.ordered)
+          .setValue(this.plugin.settings[settingsType].ordered)
           .onChange(async (value) => {
-            this.plugin.settings.ordered = value;
+            this.plugin.settings[settingsType].ordered = value;
             await this.plugin.saveSettings();
           })
       );
@@ -384,9 +429,11 @@ class HeadingSettingTab extends PluginSettingTab {
       .addSlider((slider) =>
         slider
           .setLimits(10, 100, 10)
-          .setValue(this.plugin.settings.opacity)
+          .setValue(this.plugin.settings[settingsType].opacity)
           .onChange(async (value) => {
-            this.plugin.settings.opacity = this.isOpacityValue(value)
+            this.plugin.settings[settingsType].opacity = this.isOpacityValue(
+              value
+            )
               ? value
               : 20;
             await this.plugin.saveSettings();
@@ -402,9 +449,11 @@ class HeadingSettingTab extends PluginSettingTab {
         dropdown
           .addOption("before", "Before the heading")
           .addOption("after", "After the heading")
-          .setValue(this.plugin.settings.position)
+          .setValue(this.plugin.settings[settingsType].position)
           .onChange(async (value) => {
-            this.plugin.settings.position = this.isPositionValue(value)
+            this.plugin.settings[settingsType].position = this.isPositionValue(
+              value
+            )
               ? value
               : "before";
             await this.plugin.saveSettings();
@@ -420,9 +469,9 @@ class HeadingSettingTab extends PluginSettingTab {
       .addDropdown((dropdown) =>
         dropdown
           .addOptions(orderedStyleTypeOptions)
-          .setValue(this.plugin.settings.orderedStyleType)
+          .setValue(this.plugin.settings[settingsType].orderedStyleType)
           .onChange(async (value) => {
-            this.plugin.settings.orderedStyleType =
+            this.plugin.settings[settingsType].orderedStyleType =
               value as OrderedCounterStyleType;
             await this.plugin.saveSettings();
           })
@@ -434,9 +483,9 @@ class HeadingSettingTab extends PluginSettingTab {
       .setDesc("Set the delimiter for ordered list.")
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.orderedDelimiter)
+          .setValue(this.plugin.settings[settingsType].orderedDelimiter)
           .onChange(async (value) => {
-            this.plugin.settings.orderedDelimiter = value;
+            this.plugin.settings[settingsType].orderedDelimiter = value;
             await this.plugin.saveSettings();
           })
       );
@@ -447,9 +496,9 @@ class HeadingSettingTab extends PluginSettingTab {
       .setDesc("Set whether to add a trailing delimiter for ordered list.")
       .addToggle((toggle) =>
         toggle
-          .setValue(this.plugin.settings.orderedTrailingDelimiter)
+          .setValue(this.plugin.settings[settingsType].orderedTrailingDelimiter)
           .onChange(async (value) => {
-            this.plugin.settings.orderedTrailingDelimiter = value;
+            this.plugin.settings[settingsType].orderedTrailingDelimiter = value;
             await this.plugin.saveSettings();
           })
       );
@@ -462,9 +511,9 @@ class HeadingSettingTab extends PluginSettingTab {
       )
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.orderedCustomIdents)
+          .setValue(this.plugin.settings[settingsType].orderedCustomIdents)
           .onChange(async (value) => {
-            this.plugin.settings.orderedCustomIdents = value;
+            this.plugin.settings[settingsType].orderedCustomIdents = value;
             await this.plugin.saveSettings();
           })
       );
@@ -477,9 +526,9 @@ class HeadingSettingTab extends PluginSettingTab {
       )
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.orderedSpecifiedString)
+          .setValue(this.plugin.settings[settingsType].orderedSpecifiedString)
           .onChange(async (value) => {
-            this.plugin.settings.orderedSpecifiedString = value;
+            this.plugin.settings[settingsType].orderedSpecifiedString = value;
             await this.plugin.saveSettings();
           })
       );
@@ -492,9 +541,9 @@ class HeadingSettingTab extends PluginSettingTab {
       )
       .addToggle((toggle) =>
         toggle
-          .setValue(this.plugin.settings.orderedIgnoreSingle)
+          .setValue(this.plugin.settings[settingsType].orderedIgnoreSingle)
           .onChange(async (value) => {
-            this.plugin.settings.orderedIgnoreSingle = value;
+            this.plugin.settings[settingsType].orderedIgnoreSingle = value;
             await this.plugin.saveSettings();
           })
       );
@@ -509,22 +558,11 @@ class HeadingSettingTab extends PluginSettingTab {
       )
       .addText((text) =>
         text
-          .setValue(this.plugin.settings.unorderedLevelHeadings)
+          .setValue(this.plugin.settings[settingsType].unorderedLevelHeadings)
           .onChange(async (value) => {
-            this.plugin.settings.unorderedLevelHeadings = value;
+            this.plugin.settings[settingsType].unorderedLevelHeadings = value;
             await this.plugin.saveSettings();
           })
       );
-  }
-
-  private isOpacityValue(value: number): value is OpacityOptions {
-    if (value >= 10 && value <= 100 && value % 10 === 0) {
-      return true;
-    }
-    return false;
-  }
-
-  private isPositionValue(value: string): value is PostionOptions {
-    return value === "before" || value === "after";
   }
 }

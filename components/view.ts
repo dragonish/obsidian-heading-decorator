@@ -11,6 +11,8 @@ import type { HeadingPluginData } from "../common/data";
 import {
   previewHeadingDecoratorClassName,
   sourceHeadingDecoratorClassName,
+  getUnorderedLevelHeadings,
+  getOrderedCustomIdents,
 } from "../common/data";
 import { getPositionClassName } from "../common/dom";
 import { Counter, TopLevelQuerier } from "../common/counter";
@@ -131,7 +133,9 @@ export class HeadingViewPlugin implements PluginValue {
         orderedSpecifiedString,
         orderedIgnoreSingle,
         unorderedLevelHeadings,
-      } = pluginData;
+      } = isLivePreviwMode
+        ? pluginData.previewSettings
+        : pluginData.sourceSettings;
 
       let ignoreTopLevel = 0;
       if (ordered && orderedIgnoreSingle) {
@@ -164,10 +168,10 @@ export class HeadingViewPlugin implements PluginValue {
         styleType: orderedStyleType,
         delimiter: orderedDelimiter,
         trailingDelimiter: orderedTrailingDelimiter,
-        customIdents: orderedCustomIdents,
+        customIdents: getOrderedCustomIdents(orderedCustomIdents),
         specifiedString: orderedSpecifiedString,
         ignoreTopLevel,
-        levelHeadings: unorderedLevelHeadings,
+        levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
       });
 
       for (const heading of pluginData.headingsCache) {
