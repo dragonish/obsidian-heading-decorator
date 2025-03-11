@@ -34,7 +34,9 @@ export class Counter {
       } else {
         this.decoratorOptions = {
           ordered: false,
-          levelHeadings: decoratorOptions.levelHeadings || defaultHeadingTuple,
+          levelHeadings: decoratorOptions.levelHeadings || [
+            ...defaultHeadingTuple,
+          ],
         };
       }
     } else {
