@@ -49,251 +49,207 @@
 
 /* preview start */
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
-  .preview-custom-heading-decorator.after-heading-decorator:not(
-    .cm-active .preview-custom-heading-decorator
+  .preview-custom-heading-decorator.after-heading-decorator:not(.cm-active):not(
+    :has(.cm-header.cm-formatting)
   )::after {
   content: attr(data-heading-decorator);
   opacity: 20%;
 }
 
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 10%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 20%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 30%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 40%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 50%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 60%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 70%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 80%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 90%;
 }
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::before,
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::before,
 .is-live-preview
-  .cm-line:not(:has(.cm-header.cm-formatting))
   .preview-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
-    .cm-active .preview-custom-heading-decorator
-  )::after {
+    .cm-active
+  ):not(:has(.cm-header.cm-formatting))::after {
   opacity: 100%;
 }
 /* preview end */
 
 /* source start */
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator:not(
+    .cm-active
   )::after {
   content: attr(data-heading-decorator);
   opacity: 20%;
 }
 
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]:not(
+    .cm-active
   )::after {
   opacity: 10%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]:not(
+    .cm-active
   )::after {
   opacity: 20%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]:not(
+    .cm-active
   )::after {
   opacity: 30%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]:not(
+    .cm-active
   )::after {
   opacity: 40%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]:not(
+    .cm-active
   )::after {
   opacity: 50%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]:not(
+    .cm-active
   )::after {
   opacity: 60%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]:not(
+    .cm-active
   )::after {
   opacity: 70%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]:not(
+    .cm-active
   )::after {
   opacity: 80%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]:not(
+    .cm-active
   )::after {
   opacity: 90%;
 }
-.cm-formatting-header
-  > .source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active
   )::before,
-:not(.cm-formatting-header)
-  > .source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
-    .cm-active .source-custom-heading-decorator
+.source-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]:not(
+    .cm-active
   )::after {
   opacity: 100%;
 }
