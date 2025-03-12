@@ -15,7 +15,7 @@ import {
   getOrderedCustomIdents,
 } from "../common/data";
 import { getPositionClassName } from "../common/dom";
-import { Counter, TopLevelQuerier } from "../common/counter";
+import { Counter, Querier } from "../common/counter";
 
 /** A StateEffect for updating decorations */
 const updateHeadingDecorations = StateEffect.define<DecorationSet>();
@@ -132,6 +132,7 @@ export class HeadingViewPlugin implements PluginValue {
         orderedCustomIdents,
         orderedSpecifiedString,
         orderedIgnoreSingle,
+        orderedAllowZeroLevel,
         unorderedLevelHeadings,
       } = isLivePreviwMode
         ? pluginData.previewSettings
@@ -139,7 +140,7 @@ export class HeadingViewPlugin implements PluginValue {
 
       let ignoreTopLevel = 0;
       if (ordered && orderedIgnoreSingle) {
-        const queier = new TopLevelQuerier();
+        const queier = new Querier(orderedAllowZeroLevel);
         for (const heading of pluginData.headingsCache) {
           const lineIndex = heading.position.start.line + 1;
           if (lineIndex > doc.lines) {
@@ -171,6 +172,7 @@ export class HeadingViewPlugin implements PluginValue {
         customIdents: getOrderedCustomIdents(orderedCustomIdents),
         specifiedString: orderedSpecifiedString,
         ignoreTopLevel,
+        allowZeroLevel: orderedAllowZeroLevel,
         levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
       });
 

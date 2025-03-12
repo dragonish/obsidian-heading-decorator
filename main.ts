@@ -24,7 +24,7 @@ import {
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
 } from "./common/data";
-import { Counter, TopLevelQuerier } from "./common/counter";
+import { Counter, Querier } from "./common/counter";
 import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
 import {
   HeadingViewPlugin,
@@ -73,6 +73,7 @@ export default class HeadingPlugin extends Plugin {
           orderedSpecifiedString,
           orderedCustomIdents,
           orderedIgnoreSingle,
+          orderedAllowZeroLevel,
           unorderedLevelHeadings,
         },
       } = this.settings;
@@ -100,7 +101,7 @@ export default class HeadingPlugin extends Plugin {
 
         let ignoreTopLevel = 0;
         if (orderedIgnoreSingle) {
-          const queier = new TopLevelQuerier();
+          const queier = new Querier(orderedAllowZeroLevel);
           for (const h of headings) {
             queier.handler(h.level);
           }
@@ -115,6 +116,7 @@ export default class HeadingPlugin extends Plugin {
           customIdents: getOrderedCustomIdents(orderedCustomIdents),
           specifiedString: orderedSpecifiedString,
           ignoreTopLevel,
+          allowZeroLevel: orderedAllowZeroLevel,
         });
         let headingIndex = 0;
 
@@ -544,6 +546,23 @@ class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings[settingsType].orderedIgnoreSingle)
           .onChange(async (value) => {
             this.plugin.settings[settingsType].orderedIgnoreSingle = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    //* orderedAllowZeroLevel
+    new Setting(containerEl)
+      .setName("Allow zero level")
+      .setDesc(
+        "If the next heading is more than one level higher, the omitted level is zero instead of one."
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].orderedAllowZeroLevel ?? false
+          )
+          .onChange(async (value) => {
+            this.plugin.settings[settingsType].orderedAllowZeroLevel = value;
             await this.plugin.saveSettings();
           })
       );

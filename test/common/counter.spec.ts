@@ -1,72 +1,342 @@
 import "mocha";
 import { expect } from "chai";
-import { Counter, TopLevelQuerier } from "../../common/counter";
+import { Counter, Querier } from "../../common/counter";
 
 describe("common/counter", function () {
-  it("Counter.handler", function () {
-    const counter1 = new Counter();
+  it("Querier.handler", function () {
+    const querier1 = new Querier();
 
-    expect(counter1.handler(-1)).to.be.empty;
-    expect(counter1.handler(0)).to.be.empty;
-    expect(counter1.handler(7)).to.be.empty;
+    expect(querier1.handler(-1)).to.be.empty;
+    expect(querier1.handler(0)).to.be.empty;
+    expect(querier1.handler(7)).to.be.empty;
 
-    expect(counter1.handler(1)).to.deep.equal([1]);
-    expect(counter1.handler(2)).to.deep.equal([1, 1]);
-    expect(counter1.handler(3)).to.deep.equal([1, 1, 1]);
-    expect(counter1.handler(4)).to.deep.equal([1, 1, 1, 1]);
-    expect(counter1.handler(5)).to.deep.equal([1, 1, 1, 1, 1]);
-    expect(counter1.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
+    expect(querier1.handler(1)).to.deep.equal([1]);
+    expect(querier1.handler(2)).to.deep.equal([1, 1]);
+    expect(querier1.handler(3)).to.deep.equal([1, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([1, 1, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([1, 1, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
 
-    expect(counter1.handler(1)).to.deep.equal([2]);
-    expect(counter1.handler(2)).to.deep.equal([2, 1]);
-    expect(counter1.handler(3)).to.deep.equal([2, 1, 1]);
-    expect(counter1.handler(4)).to.deep.equal([2, 1, 1, 1]);
-    expect(counter1.handler(5)).to.deep.equal([2, 1, 1, 1, 1]);
-    expect(counter1.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
+    expect(querier1.handler(1)).to.deep.equal([2]);
+    expect(querier1.handler(2)).to.deep.equal([2, 1]);
+    expect(querier1.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 1, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 1, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
 
-    expect(counter1.handler(2)).to.deep.equal([2, 2]);
-    expect(counter1.handler(3)).to.deep.equal([2, 2, 1]);
-    expect(counter1.handler(4)).to.deep.equal([2, 2, 1, 1]);
-    expect(counter1.handler(5)).to.deep.equal([2, 2, 1, 1, 1]);
-    expect(counter1.handler(6)).to.deep.equal([2, 2, 1, 1, 1, 1]);
+    expect(querier1.handler(2)).to.deep.equal([2, 2]);
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 1, 1, 1, 1]);
 
-    expect(counter1.handler(3)).to.deep.equal([2, 2, 2]);
-    expect(counter1.handler(4)).to.deep.equal([2, 2, 2, 1]);
-    expect(counter1.handler(5)).to.deep.equal([2, 2, 2, 1, 1]);
-    expect(counter1.handler(6)).to.deep.equal([2, 2, 2, 1, 1, 1]);
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 2]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 1, 1, 1]);
 
-    expect(counter1.handler(4)).to.deep.equal([2, 2, 2, 2]);
-    expect(counter1.handler(5)).to.deep.equal([2, 2, 2, 2, 1]);
-    expect(counter1.handler(6)).to.deep.equal([2, 2, 2, 2, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 2]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 2, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 1, 1]);
 
-    expect(counter1.handler(5)).to.deep.equal([2, 2, 2, 2, 2]);
-    expect(counter1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 2, 2]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 1]);
 
-    expect(counter1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 2]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 2]);
 
-    const counter2 = new Counter();
+    const querier2 = new Querier();
 
-    expect(counter2.handler(2)).to.deep.equal([1, 1]);
-    expect(counter2.handler(3)).to.deep.equal([1, 1, 1]);
-    expect(counter2.handler(4)).to.deep.equal([1, 1, 1, 1]);
-    expect(counter2.handler(5)).to.deep.equal([1, 1, 1, 1, 1]);
-    expect(counter2.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
+    expect(querier2.handler(2)).to.deep.equal([1, 1]);
+    expect(querier2.handler(3)).to.deep.equal([1, 1, 1]);
+    expect(querier2.handler(4)).to.deep.equal([1, 1, 1, 1]);
+    expect(querier2.handler(5)).to.deep.equal([1, 1, 1, 1, 1]);
+    expect(querier2.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
 
-    expect(counter2.handler(2)).to.deep.equal([1, 2]);
-    expect(counter2.handler(3)).to.deep.equal([1, 2, 1]);
-    expect(counter2.handler(4)).to.deep.equal([1, 2, 1, 1]);
-    expect(counter2.handler(5)).to.deep.equal([1, 2, 1, 1, 1]);
-    expect(counter2.handler(6)).to.deep.equal([1, 2, 1, 1, 1, 1]);
+    expect(querier2.handler(2)).to.deep.equal([1, 2]);
+    expect(querier2.handler(3)).to.deep.equal([1, 2, 1]);
+    expect(querier2.handler(4)).to.deep.equal([1, 2, 1, 1]);
+    expect(querier2.handler(5)).to.deep.equal([1, 2, 1, 1, 1]);
+    expect(querier2.handler(6)).to.deep.equal([1, 2, 1, 1, 1, 1]);
 
-    expect(counter2.handler(4)).to.deep.equal([1, 2, 1, 2]);
-    expect(counter2.handler(5)).to.deep.equal([1, 2, 1, 2, 1]);
-    expect(counter2.handler(6)).to.deep.equal([1, 2, 1, 2, 1, 1]);
+    expect(querier2.handler(4)).to.deep.equal([1, 2, 1, 2]);
+    expect(querier2.handler(5)).to.deep.equal([1, 2, 1, 2, 1]);
+    expect(querier2.handler(6)).to.deep.equal([1, 2, 1, 2, 1, 1]);
 
-    const counter3 = new Counter();
+    const querier3 = new Querier();
 
-    expect(counter3.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
-    expect(counter3.handler(1)).to.deep.equal([2]);
-    expect(counter3.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
+    expect(querier3.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
+    expect(querier3.handler(2)).to.deep.equal([1, 2]);
+    expect(querier3.handler(1)).to.deep.equal([2]);
+    expect(querier3.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
+
+    const querier4 = new Querier();
+
+    expect(querier4.handler(1)).to.deep.equal([1]);
+    expect(querier4.handler(3)).to.deep.equal([1, 1, 1]);
+    expect(querier4.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
+    expect(querier4.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 2]);
+
+    expect(querier4.handler(1)).to.deep.equal([2]);
+    expect(querier4.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier4.handler(3)).to.deep.equal([2, 1, 2]);
+    expect(querier4.handler(6)).to.deep.equal([2, 1, 2, 1, 1, 1]);
+
+    expect(querier4.handler(2)).to.deep.equal([2, 2]);
+    expect(querier4.handler(3)).to.deep.equal([2, 2, 1]);
+    expect(querier4.handler(4)).to.deep.equal([2, 2, 1, 1]);
+    expect(querier4.handler(5)).to.deep.equal([2, 2, 1, 1, 1]);
+    expect(querier4.handler(6)).to.deep.equal([2, 2, 1, 1, 1, 1]);
+  });
+
+  it("Querier.handler with allowZeroLevel", function () {
+    const querier1 = new Querier(true);
+
+    expect(querier1.handler(-1)).to.be.empty;
+    expect(querier1.handler(0)).to.be.empty;
+    expect(querier1.handler(7)).to.be.empty;
+
+    expect(querier1.handler(1)).to.deep.equal([1]);
+    expect(querier1.handler(2)).to.deep.equal([1, 1]);
+    expect(querier1.handler(3)).to.deep.equal([1, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([1, 1, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([1, 1, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([1, 1, 1, 1, 1, 1]);
+
+    expect(querier1.handler(1)).to.deep.equal([2]);
+    expect(querier1.handler(2)).to.deep.equal([2, 1]);
+    expect(querier1.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 1, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 1, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
+
+    expect(querier1.handler(2)).to.deep.equal([2, 2]);
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 1, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 1, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 1, 1, 1, 1]);
+
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 2]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 1]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 1, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 1, 1, 1]);
+
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 2]);
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 2, 1]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 1, 1]);
+
+    expect(querier1.handler(5)).to.deep.equal([2, 2, 2, 2, 2]);
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 1]);
+
+    expect(querier1.handler(6)).to.deep.equal([2, 2, 2, 2, 2, 2]);
+
+    const querier2 = new Querier(true);
+
+    expect(querier2.handler(2)).to.deep.equal([0, 1]);
+    expect(querier2.handler(3)).to.deep.equal([0, 1, 1]);
+    expect(querier2.handler(4)).to.deep.equal([0, 1, 1, 1]);
+    expect(querier2.handler(5)).to.deep.equal([0, 1, 1, 1, 1]);
+    expect(querier2.handler(6)).to.deep.equal([0, 1, 1, 1, 1, 1]);
+
+    expect(querier2.handler(2)).to.deep.equal([0, 2]);
+    expect(querier2.handler(3)).to.deep.equal([0, 2, 1]);
+    expect(querier2.handler(4)).to.deep.equal([0, 2, 1, 1]);
+    expect(querier2.handler(5)).to.deep.equal([0, 2, 1, 1, 1]);
+    expect(querier2.handler(6)).to.deep.equal([0, 2, 1, 1, 1, 1]);
+
+    expect(querier2.handler(4)).to.deep.equal([0, 2, 1, 2]);
+    expect(querier2.handler(5)).to.deep.equal([0, 2, 1, 2, 1]);
+    expect(querier2.handler(6)).to.deep.equal([0, 2, 1, 2, 1, 1]);
+
+    const querier3 = new Querier(true);
+
+    expect(querier3.handler(6)).to.deep.equal([0, 0, 0, 0, 0, 1]);
+    expect(querier3.handler(2)).to.deep.equal([0, 1]);
+    expect(querier3.handler(1)).to.deep.equal([1]);
+    expect(querier3.handler(6)).to.deep.equal([1, 0, 0, 0, 0, 1]);
+
+    const querier4 = new Querier(true);
+
+    expect(querier4.handler(1)).to.deep.equal([1]);
+    expect(querier4.handler(3)).to.deep.equal([1, 0, 1]);
+    expect(querier4.handler(6)).to.deep.equal([1, 0, 1, 0, 0, 1]);
+    expect(querier4.handler(6)).to.deep.equal([1, 0, 1, 0, 0, 2]);
+
+    expect(querier4.handler(1)).to.deep.equal([2]);
+    expect(querier4.handler(3)).to.deep.equal([2, 0, 1]);
+    expect(querier4.handler(3)).to.deep.equal([2, 0, 2]);
+    expect(querier4.handler(6)).to.deep.equal([2, 0, 2, 0, 0, 1]);
+
+    expect(querier4.handler(2)).to.deep.equal([2, 1]);
+    expect(querier4.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier4.handler(4)).to.deep.equal([2, 1, 1, 1]);
+    expect(querier4.handler(5)).to.deep.equal([2, 1, 1, 1, 1]);
+    expect(querier4.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
+  });
+
+  it("Querier.query", function () {
+    const querier1 = new Querier();
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(5);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(4);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(3);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(2);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(1);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(0);
+
+    const querier2 = new Querier();
+
+    querier2.handler(6);
+    expect(querier2.query()).to.equal(6);
+
+    querier2.handler(2);
+    expect(querier2.query()).to.equal(1);
+
+    querier2.handler(1);
+    expect(querier2.query()).to.equal(0);
+
+    const querier3 = new Querier();
+
+    querier3.handler(6);
+    expect(querier3.query()).to.equal(6);
+
+    querier3.handler(3);
+    expect(querier3.query()).to.equal(2);
+
+    querier3.handler(4);
+    expect(querier3.query()).to.equal(2);
+
+    const querier4 = new Querier();
+
+    querier4.handler(3);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(4);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(5);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(6);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(4);
+    expect(querier4.query()).to.equal(3);
+
+    querier4.handler(3);
+    expect(querier4.query()).to.equal(2);
+  });
+
+  it("Querier.query with allowZeroLevel", function () {
+    const querier1 = new Querier(true);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query()).to.equal(5);
+
+    querier1.handler(5);
+    expect(querier1.query()).to.equal(4);
+
+    querier1.handler(4);
+    expect(querier1.query()).to.equal(3);
+
+    querier1.handler(3);
+    expect(querier1.query()).to.equal(2);
+
+    querier1.handler(2);
+    expect(querier1.query()).to.equal(1);
+
+    querier1.handler(1);
+    expect(querier1.query()).to.equal(0);
+
+    const querier2 = new Querier(true);
+
+    querier2.handler(6);
+    expect(querier2.query()).to.equal(6);
+
+    querier2.handler(2);
+    expect(querier2.query()).to.equal(1);
+
+    querier2.handler(1);
+    expect(querier2.query()).to.equal(0);
+
+    const querier3 = new Querier(true);
+
+    querier3.handler(6);
+    expect(querier3.query()).to.equal(6);
+
+    querier3.handler(3);
+    expect(querier3.query()).to.equal(2);
+
+    querier3.handler(4);
+    expect(querier3.query()).to.equal(2);
+
+    const querier4 = new Querier(true);
+
+    querier4.handler(3);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(4);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(5);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(6);
+    expect(querier4.query()).to.equal(6);
+
+    querier4.handler(4);
+    expect(querier4.query()).to.equal(3);
+
+    querier4.handler(3);
+    expect(querier4.query()).to.equal(2);
   });
 
   it("Counter.decorator with default", function () {
@@ -409,51 +679,116 @@ describe("common/counter", function () {
     expect(counter4.decorator(6)).to.equal("3.1.1.1.");
   });
 
-  it("TopLevelQuerier.query", function () {
-    const querier1 = new TopLevelQuerier();
-    expect(querier1.query()).to.equal(6);
+  it("Counter.decorator with allowZeroLevel", function () {
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+    });
 
-    querier1.handler(1);
-    expect(querier1.query()).to.equal(6);
+    expect(counter1.decorator(3)).to.equal("0.0.1");
+    expect(counter1.decorator(4)).to.equal("0.0.1.1");
+    expect(counter1.decorator(5)).to.equal("0.0.1.1.1");
+    expect(counter1.decorator(6)).to.equal("0.0.1.1.1.1");
 
-    querier1.handler(2);
-    expect(querier1.query()).to.equal(6);
+    expect(counter1.decorator(3)).to.equal("0.0.2");
+    expect(counter1.decorator(4)).to.equal("0.0.2.1");
+    expect(counter1.decorator(5)).to.equal("0.0.2.1.1");
+    expect(counter1.decorator(6)).to.equal("0.0.2.1.1.1");
 
-    querier1.handler(3);
-    expect(querier1.query()).to.equal(6);
+    expect(counter1.decorator(2)).to.equal("0.1");
+    expect(counter1.decorator(5)).to.equal("0.1.0.0.1");
+    expect(counter1.decorator(6)).to.equal("0.1.0.0.1.1");
 
-    querier1.handler(4);
-    expect(querier1.query()).to.equal(6);
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "lowerAlpha",
+      allowZeroLevel: true,
+    });
 
-    querier1.handler(5);
-    expect(querier1.query()).to.equal(6);
+    expect(counter2.decorator(3)).to.equal("0.0.a");
+    expect(counter2.decorator(4)).to.equal("0.0.a.a");
 
-    querier1.handler(6);
-    expect(querier1.query()).to.equal(6);
+    const counter3 = new Counter({
+      ordered: true,
+      styleType: "cjkDecimal",
+      allowZeroLevel: true,
+    });
 
-    querier1.handler(6);
-    expect(querier1.query()).to.equal(5);
+    expect(counter3.decorator(3)).to.equal("〇.〇.一");
+    expect(counter3.decorator(4)).to.equal("〇.〇.一.一");
+  });
 
-    querier1.handler(5);
-    expect(querier1.query()).to.equal(4);
+  it("Counter.decorator with allowZeroLevel and ignoreTopLevel", function () {
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+      ignoreTopLevel: 1,
+    });
+    expect(counter1.decorator(1)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("1");
+    expect(counter1.decorator(3)).to.equal("1.1");
+    expect(counter1.decorator(4)).to.equal("1.1.1");
+    expect(counter1.decorator(5)).to.equal("1.1.1.1");
+    expect(counter1.decorator(6)).to.equal("1.1.1.1.1");
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("2");
+    expect(counter1.decorator(3)).to.equal("2.1");
+    expect(counter1.decorator(4)).to.equal("2.1.1");
+    expect(counter1.decorator(5)).to.equal("2.1.1.1");
+    expect(counter1.decorator(6)).to.equal("2.1.1.1.1");
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("3");
+    expect(counter1.decorator(6)).to.equal("3.0.0.0.1");
 
-    querier1.handler(4);
-    expect(querier1.query()).to.equal(3);
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+    });
+    expect(counter2.decorator(1)).to.be.empty;
+    expect(counter2.decorator(2)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("1");
+    expect(counter2.decorator(4)).to.equal("1.1");
+    expect(counter2.decorator(5)).to.equal("1.1.1");
+    expect(counter2.decorator(6)).to.equal("1.1.1.1");
+    expect(counter2.decorator(7)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("2");
+    expect(counter2.decorator(6)).to.equal("2.0.0.1");
 
-    querier1.handler(3);
-    expect(querier1.query()).to.equal(2);
+    const counter3 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+    });
+    expect(counter3.decorator(3)).to.equal("1");
+    expect(counter3.decorator(4)).to.equal("1.1");
+    expect(counter3.decorator(5)).to.equal("1.1.1");
+    expect(counter3.decorator(6)).to.equal("1.1.1.1");
+    expect(counter3.decorator(3)).to.equal("2");
+    expect(counter3.decorator(6)).to.equal("2.0.0.1");
 
-    querier1.handler(2);
-    expect(querier1.query()).to.equal(1);
-
-    querier1.handler(1);
-    expect(querier1.query()).to.equal(0);
-
-    const querier2 = new TopLevelQuerier();
-    querier2.handler(6);
-    expect(querier2.query()).to.equal(6);
-
-    querier2.handler(2);
-    expect(querier2.query()).to.equal(1);
+    const counter4 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      trailingDelimiter: true,
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+    });
+    expect(counter4.decorator(1)).to.be.empty;
+    expect(counter4.decorator(2)).to.be.empty;
+    expect(counter4.decorator(3)).to.equal("1.");
+    expect(counter4.decorator(4)).to.equal("1.1.");
+    expect(counter4.decorator(5)).to.equal("1.1.1.");
+    expect(counter4.decorator(6)).to.equal("1.1.1.1.");
+    expect(counter4.decorator(3)).to.equal("2.");
+    expect(counter4.decorator(4)).to.equal("2.1.");
+    expect(counter4.decorator(5)).to.equal("2.1.1.");
+    expect(counter4.decorator(6)).to.equal("2.1.1.1.");
+    expect(counter4.decorator(3)).to.equal("3.");
+    expect(counter4.decorator(6)).to.equal("3.0.0.1.");
   });
 });

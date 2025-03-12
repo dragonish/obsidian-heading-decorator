@@ -6,11 +6,65 @@ import type {
 import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 
-export class Counter {
-  protected levels: LevelTuple = [0, 0, 0, 0, 0, 0];
+export class Querier {
+  private allowZeroLevel?: boolean;
+  private levels: LevelTuple = [0, 0, 0, 0, 0, 0];
+  private baseLevels?: LevelTuple;
+
+  constructor(allowZeroLevel?: boolean) {
+    this.allowZeroLevel = allowZeroLevel;
+  }
+
+  handler(level: number): number[] {
+    if (level < 1 || level > 6) {
+      return [];
+    }
+
+    for (let i = 1; i <= 6; i++) {
+      if (i < level && !this.allowZeroLevel && this.levels[i - 1] === 0) {
+        this.levels[i - 1] = 1;
+      } else if (i > level) {
+        this.levels[i - 1] = 0;
+      }
+    }
+    this.levels[level - 1]++;
+
+    if (this.baseLevels == undefined) {
+      this.baseLevels = [...this.levels];
+      for (let i = 1; i <= 6; i++) {
+        if (i > level) {
+          this.baseLevels[i - 1] = 1;
+        }
+      }
+    }
+
+    return this.levels.slice(0, level);
+  }
+
+  query(): number {
+    let res = 0;
+
+    const baseLevels: LevelTuple =
+      this.baseLevels ??
+      (this.allowZeroLevel ? [0, 0, 0, 0, 0, 1] : [1, 1, 1, 1, 1, 1]);
+    for (let i = 0; i < 6; i++) {
+      if (this.levels[i] < baseLevels[i] + 1) {
+        res = i + 1;
+      } else {
+        break;
+      }
+    }
+
+    return res;
+  }
+}
+
+export class Counter extends Querier {
   private decoratorOptions: DecoratorOptions;
 
   constructor(decoratorOptions?: BaseDecoratorOptions) {
+    super(decoratorOptions?.allowZeroLevel);
+
     if (decoratorOptions) {
       if (decoratorOptions.ordered) {
         const {
@@ -41,23 +95,6 @@ export class Counter {
     } else {
       this.decoratorOptions = { ordered: true, styleType: "decimal" }; // Default to ordered if no options are provided
     }
-  }
-
-  handler(level: number): number[] {
-    if (level < 1 || level > 6) {
-      return [];
-    }
-
-    for (let i = 1; i <= 6; i++) {
-      if (i < level && this.levels[i - 1] === 0) {
-        this.levels[i - 1] = 1;
-      } else if (i > level) {
-        this.levels[i - 1] = 0;
-      }
-    }
-    this.levels[level - 1]++;
-
-    return this.levels.slice(0, level);
   }
 
   decorator(level: number): string {
@@ -102,23 +139,5 @@ export class Counter {
     }
 
     return result;
-  }
-}
-
-export class TopLevelQuerier extends Counter {
-  constructor() {
-    super();
-  }
-
-  query(): number {
-    let res = 0;
-    for (let i = 0; i < this.levels.length; i++) {
-      if (this.levels[i] <= 1) {
-        res = i + 1;
-      } else {
-        break;
-      }
-    }
-    return res;
   }
 }

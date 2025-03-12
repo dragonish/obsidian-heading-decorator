@@ -34,6 +34,7 @@ export interface BaseDecoratorOptions {
   specifiedString?: string;
   ignoreTopLevel?: number;
   levelHeadings?: HeadingTuple;
+  allowZeroLevel?: boolean;
 }
 
 interface OrderedDecoratorOptions {
@@ -66,6 +67,7 @@ interface HeadingDecoratorSettings {
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
   orderedIgnoreSingle: boolean;
+  orderedAllowZeroLevel?: boolean;
 
   unorderedLevelHeadings: string;
 }
@@ -171,6 +173,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
     orderedSpecifiedString: "#",
     orderedIgnoreSingle: false,
+    orderedAllowZeroLevel: false,
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };
 }
