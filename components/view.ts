@@ -198,7 +198,7 @@ export class HeadingViewPlugin implements PluginValue {
           continue;
         }
 
-        const content = counter.decorator(level, position);
+        const content = counter.decorator(level);
 
         const headingClassName = isLivePreviwMode
           ? previewHeadingDecoratorClassName

@@ -340,17 +340,6 @@ describe("common/counter", function () {
     expect(counter.decorator(2)).to.equal("1.1.");
   });
 
-  it("Counter.decorator with position parameter", function () {
-    const counter = new Counter({
-      ordered: true,
-      styleType: "decimal",
-    });
-
-    expect(counter.decorator(1)).to.equal("1");
-    expect(counter.decorator(1, "before")).to.equal("2 ");
-    expect(counter.decorator(2, "after")).to.equal(" 2.1");
-  });
-
   it("Counter.decorator with ignoreTopLevel", function () {
     const counter1 = new Counter({
       ordered: true,

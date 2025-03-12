@@ -131,7 +131,7 @@ export default class HeadingPlugin extends Plugin {
             const level = headings[i].level;
 
             if (lineIndex === lineStart) {
-              const decortorContent = counter.decorator(level, position);
+              const decortorContent = counter.decorator(level);
               decorateHTMLElement(
                 headingElement,
                 decortorContent,
@@ -162,7 +162,7 @@ export default class HeadingPlugin extends Plugin {
 
         headingElements.forEach((headingElement) => {
           const level = queryHeadingLevelByElement(headingElement);
-          const decortorContent = counter.decorator(level, position);
+          const decortorContent = counter.decorator(level);
           decorateHTMLElement(
             headingElement,
             decortorContent,

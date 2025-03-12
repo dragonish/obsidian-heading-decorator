@@ -2,7 +2,6 @@ import type {
   LevelTuple,
   BaseDecoratorOptions,
   DecoratorOptions,
-  PostionOptions,
 } from "./data";
 import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
@@ -61,7 +60,7 @@ export class Counter {
     return this.levels.slice(0, level);
   }
 
-  decorator(level: number, postion?: PostionOptions): string {
+  decorator(level: number): string {
     let result = "";
     if (level < 1 || level > 6) {
       return result;
@@ -102,11 +101,6 @@ export class Counter {
       result = this.decoratorOptions.levelHeadings[level - 1];
     }
 
-    if (postion === "before") {
-      return `${result} `;
-    } else if (postion === "after") {
-      return ` ${result}`;
-    }
     return result;
   }
 }
