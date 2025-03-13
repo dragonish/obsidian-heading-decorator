@@ -38,29 +38,34 @@ Similar to the effect displayed in the [Preview](#preview).
 
 You can control the counter style type and delimiter. There are two special types of counter styles:
 
-- **Custom list styles**: Set custom list styles for ordered list. Using spaces to separate entries. For example, using `Ⓐ Ⓑ Ⓒ`:
+- **Custom list styles**: Set custom list styles for ordered list. Using spaces to separate entries. 
+- **Specified string**: Set a specified string for ordered list.
 
-![Custom List Styles](images/custom-list-styles.jpg)
+For example:
 
-- **Specified string**: Set a specified string for ordered list. For example, using `#` with empty delimiter in reading view:
+| Decimal numbers | Custom List Styles (using `Ⓐ Ⓑ Ⓒ`) | Specified String (using `#` with empty delimiter) |
+| :-------------: | :----------------------------------: | :-----------------------------------------------: |
+| ![Decimal numbers](images/decimal.jpg) | ![Custom list styles](images/custom-list-styles.jpg) | ![Specified string](images/specified-string.jpg) |
 
-![Specified String](images/specified-string.jpg)
+In addition, for the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an ordered list. For example:
 
-In addition, for the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an unordered list. For example:
-
-![Ignore the single heading at the top-level](images/ignore-single-heading.jpg)
+| Default | Ignore the single heading at the top-level |
+| :-----: | :----------------------------------------: |
+| ![Default](images/default.jpg) | ![Ignore the single heading at the top-level](images/ignore-single-heading.jpg) |
 
 For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
 
 | Default | Allow zero level |
 | :-----: | :--------------: |
-| ![omitted](images/omitted.jpg) | ![zero level](images/zero.jpg)   |
+| ![Default](images/omitted.jpg) | ![Allow zero level](images/zero.jpg) |
 
 ### Unordered
 
-Directly decorate the heading according to the level. For example, using `H1 H2 H3 H4 H5 H6`:
+Directly decorate the heading according to the level. For example:
 
-![Unordered](images/unordered.jpg)
+| Ordered (Decimal numbers) | Unordered (using `H1 H2 H3 H4 H5 H6`) |
+| :-----: | :--------------: |
+| ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
 ## Credits
 
