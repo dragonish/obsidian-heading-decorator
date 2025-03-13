@@ -8,11 +8,17 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implements the decoration of the heading.
 
-This plugin supports optional decoration for reading view, editing view (*Live Preview*) and source mode. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
+This plugin supports optional decoration for reading view and editing view (*Live Preview* and *Source mode*). This plugin does not modify any note content, only decorates the heading section based on the existing note content.
 
 ## Preview
 
+In *Live Preview*:
+
 ![Preview](images/preview.jpg)
+
+The interaction between the decorator and the collapse button:
+
+![Collapse Button Interaction](images/collapse-button-interaction.gif)
 
 ## Settings
 
