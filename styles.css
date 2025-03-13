@@ -17,15 +17,19 @@
   > .reading-custom-heading-decorator.before-heading-decorator[dir="auto"]::before,
 .is-collapsed
   > .reading-custom-heading-decorator.before-heading-decorator[dir="ltr"]::before,
-.reading-custom-heading-decorator.before-heading-decorator:hover::before,
-.reading-custom-heading-decorator.before-heading-decorator[dir="auto"]:hover::before,
-.reading-custom-heading-decorator.before-heading-decorator[dir="ltr"]:hover::before {
+.markdown-preview-view.allow-fold-headings
+  .reading-custom-heading-decorator.before-heading-decorator:hover::before,
+.markdown-preview-view.allow-fold-headings
+  .reading-custom-heading-decorator.before-heading-decorator[dir="auto"]:hover::before,
+.markdown-preview-view.allow-fold-headings
+  .reading-custom-heading-decorator.before-heading-decorator[dir="ltr"]:hover::before {
   translate: -12px;
 }
 
 .is-collapsed
   > .reading-custom-heading-decorator.before-heading-decorator[dir="rtl"]::before,
-.reading-custom-heading-decorator.before-heading-decorator[dir="rtl"]:hover::before {
+.markdown-preview-view.allow-fold-headings
+  .reading-custom-heading-decorator.before-heading-decorator[dir="rtl"]:hover::before {
   translate: 12px;
 }
 
@@ -110,17 +114,17 @@
     .cm-active
   ):not(:has(.cm-header.cm-formatting)):has(> .is-collapsed)::before,
 .is-live-preview
-  .preview-custom-heading-decorator.before-heading-decorator:not(
-    .cm-active
-  ):not(:has(.cm-header.cm-formatting)):hover::before,
+  .preview-custom-heading-decorator.before-heading-decorator:has(
+    .cm-fold-indicator
+  ):not(.cm-active):not(:has(.cm-header.cm-formatting)):hover::before,
 .is-live-preview
-  .preview-custom-heading-decorator.before-heading-decorator[dir="auto"]:not(
-    .cm-active
-  ):not(:has(.cm-header.cm-formatting)):hover::before,
+  .preview-custom-heading-decorator.before-heading-decorator[dir="auto"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):not(:has(.cm-header.cm-formatting)):hover::before,
 .is-live-preview
-  .preview-custom-heading-decorator.before-heading-decorator[dir="ltr"]:not(
-    .cm-active
-  ):not(:has(.cm-header.cm-formatting)):hover::before {
+  .preview-custom-heading-decorator.before-heading-decorator[dir="ltr"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):not(:has(.cm-header.cm-formatting)):hover::before {
   translate: -12px;
 }
 
@@ -129,9 +133,9 @@
     .cm-active
   ):not(:has(.cm-header.cm-formatting)):has(> .is-collapsed)::before,
 .is-live-preview
-  .preview-custom-heading-decorator.before-heading-decorator[dir="rtl"]:not(
-    .cm-active
-  ):not(:has(.cm-header.cm-formatting)):hover::before {
+  .preview-custom-heading-decorator.before-heading-decorator[dir="rtl"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):not(:has(.cm-header.cm-formatting)):hover::before {
   translate: 12px;
 }
 
@@ -272,24 +276,24 @@
 .source-custom-heading-decorator.before-heading-decorator[dir="ltr"]:not(
     .cm-active
   ):has(> .is-collapsed)::before,
-.source-custom-heading-decorator.before-heading-decorator:not(
-    .cm-active
-  ):hover::before,
-.source-custom-heading-decorator.before-heading-decorator[dir="auto"]:not(
-    .cm-active
-  ):hover::before,
-.source-custom-heading-decorator.before-heading-decorator[dir="ltr"]:not(
-    .cm-active
-  ):hover::before {
+.source-custom-heading-decorator.before-heading-decorator:has(
+    .cm-fold-indicator
+  ):not(.cm-active):hover::before,
+.source-custom-heading-decorator.before-heading-decorator[dir="auto"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):hover::before,
+.source-custom-heading-decorator.before-heading-decorator[dir="ltr"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):hover::before {
   translate: -12px;
 }
 
 .source-custom-heading-decorator.before-heading-decorator[dir="rtl"]:not(
     .cm-active
   ):has(> .is-collapsed)::before,
-.source-custom-heading-decorator.before-heading-decorator[dir="rtl"]:not(
-    .cm-active
-  ):hover::before {
+.source-custom-heading-decorator.before-heading-decorator[dir="rtl"]:has(
+    .cm-fold-indicator
+  ):not(.cm-active):hover::before {
   translate: 12px;
 }
 
