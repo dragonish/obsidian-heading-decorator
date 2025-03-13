@@ -1,4 +1,3 @@
-import type { HeadingCache } from "obsidian";
 import type * as Presets from "@jsamr/counter-style/presets";
 
 type TupleOf<T, N extends number> = N extends N
@@ -83,10 +82,10 @@ export type HeadingPluginSettings = {
   enabledInSource: boolean;
 } & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
 
-export interface HeadingPluginData
-  extends Omit<HeadingPluginSettings, "enabledInReading" | "readingSettings"> {
-  headingsCache: HeadingCache[];
-}
+export type HeadingPluginData = Omit<
+  HeadingPluginSettings,
+  "enabledInReading" | "readingSettings"
+>;
 
 export const readingHeadingDecoratorClassName =
   "reading-custom-heading-decorator";

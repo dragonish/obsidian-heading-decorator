@@ -16,6 +16,7 @@ import {
 } from "../common/data";
 import { getPositionClassName } from "../common/dom";
 import { Counter, Querier } from "../common/counter";
+import { Heading } from "../common/heading";
 
 /** A StateEffect for updating decorations */
 const updateHeadingDecorations = StateEffect.define<DecorationSet>();
@@ -84,34 +85,6 @@ export class HeadingViewPlugin implements PluginValue {
     // Cleanup if needed
   }
 
-  private getLevelFromLineText(lineText: string): number {
-    let level = -1;
-    if (lineText.startsWith("###### ")) {
-      level = 6;
-    } else if (lineText.startsWith("##### ")) {
-      level = 5;
-    } else if (lineText.startsWith("#### ")) {
-      level = 4;
-    } else if (lineText.startsWith("### ")) {
-      level = 3;
-    } else if (lineText.startsWith("## ")) {
-      level = 2;
-    } else if (lineText.startsWith("# ")) {
-      level = 1;
-    }
-    return level;
-  }
-
-  private getLevelFromNextLineText(nextLineText: string): number {
-    let level = -1;
-    if (nextLineText.match(/^=+\s*$/)) {
-      level = 1;
-    } else if (nextLineText.match(/^-+\s*$/)) {
-      level = 2;
-    }
-    return level;
-  }
-
   private async updateDecorations(view: EditorView, isLivePreviwMode: boolean) {
     const pluginData = await this.getPluginData();
 
@@ -119,6 +92,8 @@ export class HeadingViewPlugin implements PluginValue {
       (isLivePreviwMode && pluginData.enabledInPreview) ||
       (!isLivePreviwMode && pluginData.enabledInSource)
     ) {
+      //? Cache has latency, the level and position of the heading
+      //? object is not real-time and need self-calculation.
       const builder = new RangeSetBuilder<Decoration>();
       const doc = view.state.doc;
 
@@ -141,26 +116,21 @@ export class HeadingViewPlugin implements PluginValue {
       let ignoreTopLevel = 0;
       if (ordered && orderedIgnoreSingle) {
         const queier = new Querier(orderedAllowZeroLevel);
-        for (const heading of pluginData.headingsCache) {
-          const lineIndex = heading.position.start.line + 1;
-          if (lineIndex > doc.lines) {
-            continue;
-          }
+        const heading = new Heading();
+        for (let lineIndex = 1; lineIndex < doc.lines; lineIndex++) {
           const line = doc.line(lineIndex);
           const lineText = line.text;
-
-          let level = this.getLevelFromLineText(lineText);
+          const nextLineIndex = lineIndex + 1;
+          const nextLineText =
+            nextLineIndex < doc.lines ? doc.line(nextLineIndex).text : "";
+          const level = heading.handler(lineIndex, lineText, nextLineText);
           if (level === -1) {
-            const nextLineIndex = lineIndex + 1;
-            if (nextLineIndex < doc.lines) {
-              const nextLine = doc.line(nextLineIndex);
-              const nextLineText = nextLine.text;
-              level = this.getLevelFromNextLineText(nextLineText);
-            }
+            continue;
           }
 
           queier.handler(level);
         }
+
         ignoreTopLevel = queier.query();
       }
 
@@ -176,26 +146,14 @@ export class HeadingViewPlugin implements PluginValue {
         levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
       });
 
-      for (const heading of pluginData.headingsCache) {
-        //? Cache has latency, the level and position of the heading
-        //? object is not real-time and need self-calculation.
-        const lineIndex = heading.position.start.line + 1;
-        if (lineIndex > doc.lines) {
-          continue;
-        }
+      const heading = new Heading();
+      for (let lineIndex = 1; lineIndex < doc.lines; lineIndex++) {
         const line = doc.line(lineIndex);
         const lineText = line.text;
-
-        let level = this.getLevelFromLineText(lineText);
-        if (level === -1) {
-          const nextLineIndex = lineIndex + 1;
-          if (nextLineIndex < doc.lines) {
-            const nextLine = doc.line(nextLineIndex);
-            const nextLineText = nextLine.text;
-            level = this.getLevelFromNextLineText(nextLineText);
-          }
-        }
-
+        const nextLineIndex = lineIndex + 1;
+        const nextLineText =
+          nextLineIndex < doc.lines ? doc.line(nextLineIndex).text : "";
+        const level = heading.handler(lineIndex, lineText, nextLineText);
         if (level === -1) {
           continue;
         }

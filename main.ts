@@ -265,18 +265,9 @@ export default class HeadingPlugin extends Plugin {
   }
 
   async getPluginData(): Promise<HeadingPluginData> {
-    const data: HeadingPluginData = {
+    return {
       ...this.settings,
-      headingsCache: [],
     };
-
-    const file = this.getActiveFile();
-    if (file) {
-      data.headingsCache =
-        this.app.metadataCache.getFileCache(file)?.headings || [];
-    }
-
-    return data;
   }
 
   private getActiveFile(sourcePath?: string) {
