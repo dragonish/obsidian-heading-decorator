@@ -46,9 +46,15 @@ You can control the counter style type and delimiter. There are two special type
 
 ![Specified String](images/specified-string.jpg)
 
-In addition, for the *Ignore the single heading at the top-level* setting item, if the top-level has only a single heading, exclude it when building an unordered list. For example:
+In addition, for the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an unordered list. For example:
 
 ![Ignore the single heading at the top-level](images/ignore-single-heading.jpg)
+
+For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
+
+| Default | Allow zero level |
+| :-----: | :--------------: |
+| ![omitted](images/omitted.jpg) | ![zero level](images/zero.jpg)   |
 
 ### Unordered
 
