@@ -49,5 +49,26 @@ describe("common/heading", function () {
     expect(heading2.handler(16, "### This is a heading 3")).to.equal(-1);
     expect(heading2.handler(17, "$$")).to.equal(-1);
     expect(heading2.handler(18, "#### This is a heading 4")).to.equal(4);
+
+    const heading3 = new Heading();
+    expect(heading3.handler(1, "", "---")).to.equal(-1);
+    expect(heading3.handler(2, "---")).to.equal(-1);
+    expect(heading3.handler(3, " ", "==")).to.equal(-1);
+    expect(heading3.handler(4, "==")).to.equal(-1);
+    expect(heading3.handler(5, "This is a heading 1", "==")).to.equal(1);
+    expect(heading3.handler(6, "==", "==")).to.equal(-1);
+    expect(heading3.handler(7, "==")).to.equal(-1);
+    expect(heading3.handler(8, "")).to.equal(-1);
+    expect(heading3.handler(9, "==", "==")).to.equal(1);
+    expect(heading3.handler(10, "==", "==")).to.equal(-1);
+    expect(heading3.handler(11, "==", "==")).to.equal(1);
+    expect(heading3.handler(12, "==")).to.equal(-1);
+    expect(heading3.handler(13, "")).to.equal(-1);
+    expect(heading3.handler(14, "This is a heading 1", "==")).to.equal(1);
+    expect(heading3.handler(15, "==", "==")).to.equal(-1);
+    expect(heading3.handler(16, "==", "==")).to.equal(1);
+    expect(heading3.handler(17, "==", "==")).to.equal(-1);
+    expect(heading3.handler(18, "==", "")).to.equal(-1);
+    expect(heading3.handler(19, "")).to.equal(-1);
   });
 });

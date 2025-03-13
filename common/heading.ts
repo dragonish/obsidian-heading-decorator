@@ -7,14 +7,21 @@ interface CodeBlocks {
 export class Heading {
   private state: SpecialState;
   private codeBlocks: CodeBlocks;
+  private nextLineNum: number;
   private readonly METADATA_BORDER = "---";
 
   constructor() {
     this.state = "";
     this.codeBlocks = { graveCount: 0 };
+    this.nextLineNum = 1;
   }
 
   handler(lineStart: number, lineText: string, nextLineText?: string): number {
+    if (lineStart < this.nextLineNum) {
+      return -1;
+    }
+    this.nextLineNum = lineStart + 1;
+
     if (lineStart === 1 && lineText === this.METADATA_BORDER) {
       this.state = "metadata";
       return -1;
@@ -35,8 +42,11 @@ export class Heading {
       }
 
       let level = this.getLevelFromLineText(lineText);
-      if (level === -1 && nextLineText) {
+      if (level === -1 && lineText.trim() && nextLineText?.trim()) {
         level = this.getLevelFromNextLineText(nextLineText);
+        if (level > 0) {
+          this.nextLineNum++;
+        }
       }
       return level;
     } else {
