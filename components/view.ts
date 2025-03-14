@@ -117,12 +117,12 @@ export class HeadingViewPlugin implements PluginValue {
       if (ordered && orderedIgnoreSingle) {
         const queier = new Querier(orderedAllowZeroLevel);
         const heading = new Heading();
-        for (let lineIndex = 1; lineIndex < doc.lines; lineIndex++) {
+        for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
           const line = doc.line(lineIndex);
           const lineText = line.text;
           const nextLineIndex = lineIndex + 1;
           const nextLineText =
-            nextLineIndex < doc.lines ? doc.line(nextLineIndex).text : "";
+            nextLineIndex <= doc.lines ? doc.line(nextLineIndex).text : "";
           const level = heading.handler(lineIndex, lineText, nextLineText);
           if (level === -1) {
             continue;
@@ -147,12 +147,12 @@ export class HeadingViewPlugin implements PluginValue {
       });
 
       const heading = new Heading();
-      for (let lineIndex = 1; lineIndex < doc.lines; lineIndex++) {
+      for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
         const line = doc.line(lineIndex);
         const lineText = line.text;
         const nextLineIndex = lineIndex + 1;
         const nextLineText =
-          nextLineIndex < doc.lines ? doc.line(nextLineIndex).text : "";
+          nextLineIndex <= doc.lines ? doc.line(nextLineIndex).text : "";
         const level = heading.handler(lineIndex, lineText, nextLineText);
         if (level === -1) {
           continue;
