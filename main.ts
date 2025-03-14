@@ -25,6 +25,7 @@ import {
   getOrderedCustomIdents,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
+import { Heading } from "./common/heading";
 import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
 import {
   HeadingViewPlugin,
@@ -60,7 +61,7 @@ export default class HeadingPlugin extends Plugin {
     ]);
 
     // Register markdown post processor
-    this.registerMarkdownPostProcessor((element, context) => {
+    this.registerMarkdownPostProcessor(async (element, context) => {
       const {
         enabledInReading,
         readingSettings: {
@@ -88,9 +89,9 @@ export default class HeadingPlugin extends Plugin {
           return;
         }
 
-        const headings =
-          this.app.metadataCache.getFileCache(file)?.headings || [];
-        if (headings.length === 0) {
+        const sourceContent = await this.app.vault.cachedRead(file);
+        const sourceArr = sourceContent.split("\n");
+        if (sourceArr.length === 0) {
           return;
         }
 
@@ -102,9 +103,22 @@ export default class HeadingPlugin extends Plugin {
         let ignoreTopLevel = 0;
         if (orderedIgnoreSingle) {
           const queier = new Querier(orderedAllowZeroLevel);
-          for (const h of headings) {
-            queier.handler(h.level);
+          const heading = new Heading();
+          for (let lineIndex = 1; lineIndex <= sourceArr.length; lineIndex++) {
+            const lineText = sourceArr[lineIndex - 1];
+            const nextLineIndex = lineIndex + 1;
+            const nextLineText =
+              nextLineIndex <= sourceArr.length
+                ? sourceArr[nextLineIndex - 1]
+                : "";
+            const level = heading.handler(lineIndex, lineText, nextLineText);
+            if (level === -1) {
+              continue;
+            }
+
+            queier.handler(level);
           }
+
           ignoreTopLevel = queier.query();
         }
 
@@ -118,7 +132,8 @@ export default class HeadingPlugin extends Plugin {
           ignoreTopLevel,
           allowZeroLevel: orderedAllowZeroLevel,
         });
-        let headingIndex = 0;
+        const heading = new Heading();
+        let headingIndex = 1;
 
         headingElements.forEach((headingElement) => {
           const sectionInfo = context.getSectionInfo(headingElement);
@@ -126,12 +141,23 @@ export default class HeadingPlugin extends Plugin {
             return;
           }
 
-          const { lineStart } = sectionInfo;
+          const lineStart = sectionInfo.lineStart + 1;
+          if (lineStart > sourceArr.length) {
+            return;
+          }
 
-          for (let i = headingIndex; i < headings.length; i++) {
-            const lineIndex = headings[i].position.start.line;
-            const level = headings[i].level;
-
+          for (
+            let lineIndex = headingIndex;
+            lineIndex <= lineStart;
+            lineIndex++
+          ) {
+            const lineText = sourceArr[lineIndex - 1];
+            const nextLineIndex = lineIndex + 1;
+            const nextLineText =
+              nextLineIndex <= sourceArr.length
+                ? sourceArr[nextLineIndex - 1]
+                : "";
+            const level = heading.handler(lineIndex, lineText, nextLineText);
             if (lineIndex === lineStart) {
               const decortorContent = counter.decorator(level);
               decorateHTMLElement(
@@ -141,11 +167,7 @@ export default class HeadingPlugin extends Plugin {
                 position
               );
 
-              headingIndex = i + 1;
-              break;
-            } else if (lineIndex > lineStart) {
-              headingIndex = i;
-              break;
+              headingIndex = lineIndex + 1;
             } else {
               counter.handler(level);
             }
