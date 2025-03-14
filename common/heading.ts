@@ -41,6 +41,14 @@ export class Heading {
         return -1;
       }
 
+      if (lineText.trim() === "-" || lineText.match(/^\s*-{3,}\s*$/)) {
+        return -1;
+      }
+
+      if (/^(?:>|[ ]{4,}|\t)/.test(lineText)) {
+        return -1;
+      }
+
       let level = this.getLevelFromLineText(lineText);
       if (level === -1 && lineText.trim() && nextLineText?.trim()) {
         level = this.getLevelFromNextLineText(nextLineText);
@@ -88,7 +96,7 @@ export class Heading {
     let level = -1;
     if (nextLineText.match(/^=+\s*$/)) {
       level = 1;
-    } else if (nextLineText.match(/^-+\s*$/)) {
+    } else if (nextLineText.match(/^(?:-|-{2,}\s*)$/)) {
       level = 2;
     }
     return level;
