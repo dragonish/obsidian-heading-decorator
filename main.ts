@@ -159,13 +159,20 @@ export default class HeadingPlugin extends Plugin {
                 : "";
             const level = heading.handler(lineIndex, lineText, nextLineText);
             if (lineIndex === lineStart) {
-              const decortorContent = counter.decorator(level);
-              decorateHTMLElement(
-                headingElement,
-                decortorContent,
-                opacity,
-                position
-              );
+              //? 1. When using the page preview feature to only reference fragments, the
+              //? relative position of rows is incorrect.
+              //? 2. In the split editing scenario, there may be a delay in the information
+              //? on the reading tab.
+              const elementLevel = queryHeadingLevelByElement(headingElement);
+              if (elementLevel === level) {
+                const decortorContent = counter.decorator(level);
+                decorateHTMLElement(
+                  headingElement,
+                  decortorContent,
+                  opacity,
+                  position
+                );
+              }
 
               headingIndex = lineIndex + 1;
             } else {
