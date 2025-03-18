@@ -62,8 +62,16 @@ export default class HeadingPlugin extends Plugin {
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor(async (element, context) => {
+      if (!this.settings.enabledInReading) {
+        return;
+      }
+
+      const headingElements = element.findAll(headingsSelector);
+      if (headingElements.length === 0) {
+        return;
+      }
+
       const {
-        enabledInReading,
         readingSettings: {
           opacity,
           position,
@@ -79,10 +87,6 @@ export default class HeadingPlugin extends Plugin {
         },
       } = this.settings;
 
-      if (!enabledInReading) {
-        return;
-      }
-
       if (ordered) {
         const file = this.getActiveFile(context.sourcePath);
         if (!file) {
@@ -92,11 +96,6 @@ export default class HeadingPlugin extends Plugin {
         const sourceContent = await this.app.vault.cachedRead(file);
         const sourceArr = sourceContent.split("\n");
         if (sourceArr.length === 0) {
-          return;
-        }
-
-        const headingElements = element.findAll(headingsSelector);
-        if (headingElements.length === 0) {
           return;
         }
 
@@ -181,11 +180,6 @@ export default class HeadingPlugin extends Plugin {
           }
         });
       } else {
-        const headingElements = element.findAll(headingsSelector);
-        if (headingElements.length === 0) {
-          return;
-        }
-
         const counter = new Counter({
           ordered: false,
           levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
