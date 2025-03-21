@@ -36,7 +36,7 @@ Control the display effect of the decorator.
 
 - **Ordered**: Toggle this setting to enable the decoration of headings as an [ordered](#ordered) or [unordered](#unordered) list.
 - **Opacity**: Set the opacity of the heading decorator. The value is the form of percentage.
-- **Position**: Set the position of the heading decorator.
+- **Position**: Set the position of the heading decorator. You can configure the content to appear before or after the heading.
 
 ### Ordered
 
