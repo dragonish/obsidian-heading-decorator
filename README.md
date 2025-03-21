@@ -1,12 +1,10 @@
 # Heading Decorator
 
-> Obsidian Plugin
-
 ## Introduction
 
 This is a plugin for [Obsidian](https://obsidian.md).
 
-Implements the decoration of the heading.
+Implement displaying specific content around headings based on their levels.
 
 This plugin supports optional decoration for reading view and editing view (*Live Preview* and *Source mode*). This plugin does not modify any note content, only decorates the heading section based on the existing note content.
 
