@@ -82,6 +82,7 @@ export default class HeadingPlugin extends Plugin {
           orderedSpecifiedString,
           orderedCustomIdents,
           orderedIgnoreSingle,
+          orderedBasedOnExisting,
           orderedAllowZeroLevel,
           unorderedLevelHeadings,
         },
@@ -100,7 +101,7 @@ export default class HeadingPlugin extends Plugin {
         }
 
         let ignoreTopLevel = 0;
-        if (orderedIgnoreSingle) {
+        if (orderedIgnoreSingle || orderedBasedOnExisting) {
           const queier = new Querier(orderedAllowZeroLevel);
           const heading = new Heading();
           for (let lineIndex = 1; lineIndex <= sourceArr.length; lineIndex++) {
@@ -116,9 +117,12 @@ export default class HeadingPlugin extends Plugin {
             }
 
             queier.handler(level);
-          }
 
-          ignoreTopLevel = queier.query();
+            ignoreTopLevel = queier.query(orderedIgnoreSingle);
+            if (ignoreTopLevel === 0) {
+              break;
+            }
+          }
         }
 
         const counter = new Counter({
@@ -545,6 +549,23 @@ class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings[settingsType].orderedSpecifiedString)
           .onChange(async (value) => {
             this.plugin.settings[settingsType].orderedSpecifiedString = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    //* orderedBasedOnExisting
+    new Setting(containerEl)
+      .setName("Based on the existing highest level")
+      .setDesc(
+        "Use the highest level of headings in the note as the base for ordered list."
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].orderedBasedOnExisting ?? false
+          )
+          .onChange(async (value) => {
+            this.plugin.settings[settingsType].orderedBasedOnExisting = value;
             await this.plugin.saveSettings();
           })
       );

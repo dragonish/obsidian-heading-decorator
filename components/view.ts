@@ -107,6 +107,7 @@ export class HeadingViewPlugin implements PluginValue {
         orderedCustomIdents,
         orderedSpecifiedString,
         orderedIgnoreSingle,
+        orderedBasedOnExisting,
         orderedAllowZeroLevel,
         unorderedLevelHeadings,
       } = isLivePreviwMode
@@ -114,7 +115,7 @@ export class HeadingViewPlugin implements PluginValue {
         : pluginData.sourceSettings;
 
       let ignoreTopLevel = 0;
-      if (ordered && orderedIgnoreSingle) {
+      if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
         const queier = new Querier(orderedAllowZeroLevel);
         const heading = new Heading();
         for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
@@ -129,9 +130,12 @@ export class HeadingViewPlugin implements PluginValue {
           }
 
           queier.handler(level);
-        }
 
-        ignoreTopLevel = queier.query();
+          ignoreTopLevel = queier.query(orderedIgnoreSingle);
+          if (ignoreTopLevel === 0) {
+            break;
+          }
+        }
       }
 
       const counter = new Counter({

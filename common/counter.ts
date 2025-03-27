@@ -10,9 +10,11 @@ export class Querier {
   private allowZeroLevel?: boolean;
   private levels: LevelTuple = [0, 0, 0, 0, 0, 0];
   private baseLevels?: LevelTuple;
+  private highestLevel: number;
 
   constructor(allowZeroLevel?: boolean) {
     this.allowZeroLevel = allowZeroLevel;
+    this.highestLevel = 6;
   }
 
   handler(level: number): number[] {
@@ -38,20 +40,26 @@ export class Querier {
       }
     }
 
+    if (level < this.highestLevel) {
+      this.highestLevel = level;
+    }
+
     return this.levels.slice(0, level);
   }
 
-  query(): number {
-    let res = 0;
+  query(ignoreSingle = false): number {
+    let res = this.highestLevel - 1;
 
-    const baseLevels: LevelTuple =
-      this.baseLevels ??
-      (this.allowZeroLevel ? [0, 0, 0, 0, 0, 1] : [1, 1, 1, 1, 1, 1]);
-    for (let i = 0; i < 6; i++) {
-      if (this.levels[i] < baseLevels[i] + 1) {
-        res = i + 1;
-      } else {
-        break;
+    if (ignoreSingle) {
+      const baseLevels: LevelTuple =
+        this.baseLevels ??
+        (this.allowZeroLevel ? [0, 0, 0, 0, 0, 1] : [1, 1, 1, 1, 1, 1]);
+      for (let i = 0; i < 6; i++) {
+        if (this.levels[i] < baseLevels[i] + 1) {
+          res = i + 1;
+        } else {
+          break;
+        }
       }
     }
 

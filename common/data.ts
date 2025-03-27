@@ -66,6 +66,7 @@ interface HeadingDecoratorSettings {
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
   orderedIgnoreSingle: boolean;
+  orderedBasedOnExisting?: boolean;
   orderedAllowZeroLevel?: boolean;
 
   unorderedLevelHeadings: string;
