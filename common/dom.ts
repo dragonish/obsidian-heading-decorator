@@ -61,10 +61,12 @@ export function decorateHTMLElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  element.dataset.headingDecorator = content;
-  element.dataset.decoratorOpacity = `${opacity}%`;
-  element.classList.add(
-    readingHeadingDecoratorClassName,
-    getPositionClassName(position)
-  );
+  if (content) {
+    element.dataset.headingDecorator = content;
+    element.dataset.decoratorOpacity = `${opacity}%`;
+    element.classList.add(
+      readingHeadingDecoratorClassName,
+      getPositionClassName(position)
+    );
+  }
 }

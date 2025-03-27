@@ -164,17 +164,19 @@ export class HeadingViewPlugin implements PluginValue {
 
         const content = counter.decorator(level);
 
-        const headingClassName = isLivePreviwMode
-          ? previewHeadingDecoratorClassName
-          : sourceHeadingDecoratorClassName;
-        const deco = Decoration.line({
-          attributes: {
-            class: `${headingClassName} ${getPositionClassName(position)}`,
-            "data-heading-decorator": content,
-            "data-decorator-opacity": `${opacity}%`,
-          },
-        });
-        builder.add(line.from, line.from, deco);
+        if (content) {
+          const headingClassName = isLivePreviwMode
+            ? previewHeadingDecoratorClassName
+            : sourceHeadingDecoratorClassName;
+          const deco = Decoration.line({
+            attributes: {
+              class: `${headingClassName} ${getPositionClassName(position)}`,
+              "data-heading-decorator": content,
+              "data-decorator-opacity": `${opacity}%`,
+            },
+          });
+          builder.add(line.from, line.from, deco);
+        }
       }
 
       const newDecorations = builder.finish();
