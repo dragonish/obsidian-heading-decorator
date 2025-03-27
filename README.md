@@ -51,11 +51,23 @@ For example:
 | :-------------: | :----------------------------------: | :-----------------------------------------------: |
 | ![Decimal numbers](images/decimal.jpg) | ![Custom list styles](images/custom-list-styles.jpg) | ![Specified string](images/specified-string.jpg) |
 
-In addition, for the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an ordered list. For example:
+#### Based on the existing highest level
+
+For the *Based on the existing highest level* setting, use the highest level of headings in the note as the base for ordered list. For example:
+
+| Default | Based on the existing highest level |
+| :-----: | :----------------------------------: |
+| ![Default](images/heading-2.jpg) | ![Based on the existing highest level](images/based-on-existing.jpg) |
+
+#### Ignore the single heading at the top-level
+
+For the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an ordered list. This setting contains *Based on the existing highest level*, but it deals with more "aggressive". For example:
 
 | Default | Ignore the single heading at the top-level |
 | :-----: | :----------------------------------------: |
 | ![Default](images/default.jpg) | ![Ignore the single heading at the top-level](images/ignore-single-heading.jpg) |
+
+#### Allow zero level
 
 For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
 
