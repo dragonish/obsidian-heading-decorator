@@ -165,10 +165,10 @@ export default class HeadingPlugin extends Plugin {
               //? on the reading tab.
               const elementLevel = queryHeadingLevelByElement(headingElement);
               if (elementLevel === level) {
-                const decortorContent = counter.decorator(level);
+                const decoratorContent = counter.decorator(level);
                 decorateHTMLElement(
                   headingElement,
-                  decortorContent,
+                  decoratorContent,
                   opacity,
                   position
                 );
@@ -188,10 +188,10 @@ export default class HeadingPlugin extends Plugin {
 
         headingElements.forEach((headingElement) => {
           const level = queryHeadingLevelByElement(headingElement);
-          const decortorContent = counter.decorator(level);
+          const decoratorContent = counter.decorator(level);
           decorateHTMLElement(
             headingElement,
-            decortorContent,
+            decoratorContent,
             opacity,
             position
           );
