@@ -11,11 +11,8 @@ import {
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type {
   HeadingPluginSettings,
-  OpacityOptions,
-  PostionOptions,
   OrderedCounterStyleType,
   HeadingPluginData,
-  PluginDecoratorSettingsType,
 } from "./common/data";
 import {
   headingsSelector,

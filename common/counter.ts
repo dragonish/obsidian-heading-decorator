@@ -1,8 +1,4 @@
-import type {
-  LevelTuple,
-  BaseDecoratorOptions,
-  DecoratorOptions,
-} from "./data";
+import type { BaseDecoratorOptions, DecoratorOptions } from "./data";
 import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 

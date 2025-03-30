@@ -1,4 +1,3 @@
-import type { OpacityOptions, PostionOptions } from "./data";
 import {
   readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
