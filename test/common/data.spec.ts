@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { diffLevel, compareHeadingText } from "../../common/data";
+import { diffLevel, compareMarkdownText } from "../../common/data";
 
 describe("common/data", function () {
   it("diffLevel", function () {
@@ -17,18 +17,18 @@ describe("common/data", function () {
     expect(diffLevel(1, 6)).to.be.true;
   });
 
-  it("compareHeadingText", function () {
-    expect(compareHeadingText("", "")).to.be.true;
-    expect(compareHeadingText("h1", "h1")).to.be.true;
-    expect(compareHeadingText("h1", "h2")).to.be.false;
-    expect(compareHeadingText("h1", "`h1`")).to.be.true;
-    expect(compareHeadingText("h1 h2", "`h1` h2")).to.be.true;
-    expect(compareHeadingText("h1 `", "h1 `` ` ``")).to.be.true;
-    expect(compareHeadingText("h1", "*h1*")).to.be.true;
-    expect(compareHeadingText("h1", "**h1**")).to.be.true;
-    expect(compareHeadingText("h1", "_h1_")).to.be.true;
-    expect(compareHeadingText("h1", "__h1__")).to.be.true;
-    expect(compareHeadingText("h1", "==h1==")).to.be.true;
-    expect(compareHeadingText("h1", "~~h1~~")).to.be.true;
+  it("compareMarkdownText", function () {
+    expect(compareMarkdownText("", "")).to.be.true;
+    expect(compareMarkdownText("h1", "h1")).to.be.true;
+    expect(compareMarkdownText("h1", "h2")).to.be.false;
+    expect(compareMarkdownText("h1", "`h1`")).to.be.true;
+    expect(compareMarkdownText("h1 h2", "`h1` h2")).to.be.true;
+    expect(compareMarkdownText("h1 `", "h1 `` ` ``")).to.be.true;
+    expect(compareMarkdownText("h1", "*h1*")).to.be.true;
+    expect(compareMarkdownText("h1", "**h1**")).to.be.true;
+    expect(compareMarkdownText("h1", "_h1_")).to.be.true;
+    expect(compareMarkdownText("h1", "__h1__")).to.be.true;
+    expect(compareMarkdownText("h1", "==h1==")).to.be.true;
+    expect(compareMarkdownText("h1", "~~h1~~")).to.be.true;
   });
 });

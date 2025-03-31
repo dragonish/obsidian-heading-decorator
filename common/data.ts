@@ -201,13 +201,13 @@ export function diffLevel(current: number, last: number): boolean {
 }
 
 /**
- * Compare heading text.
+ * Compare Markdown text.
  *
- * @param l left heading text.
- * @param r right heading text.
- * @returns boolean. if left heading text is equal to right heading text, return true. otherwise, return false.
+ * @param l left Markdown text.
+ * @param r right Markdown text.
+ * @returns boolean. if left Markdown text is equal to right Markdown text, return true. otherwise, return false.
  */
-export function compareHeadingText(l: string, r: string): boolean {
+export function compareMarkdownText(l: string, r: string): boolean {
   if (l === r) {
     return true;
   } else if (

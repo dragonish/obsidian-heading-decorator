@@ -1,8 +1,10 @@
+import { htmlToMarkdown } from "obsidian";
 import {
   readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
   afterDecoratorClassName,
   outlineHeadingDecoratorClassName,
+  compareMarkdownText,
 } from "./data";
 
 /**
@@ -126,4 +128,15 @@ export function decorateOutlineElement(
       );
     }
   }
+}
+
+/**
+ * Compare heading text.
+ *
+ * @param l The left heading text.
+ * @param r The right heading text.
+ * @returns true if the two headings are equal, false otherwise.
+ */
+export function compareHeadingText(l: string, r: string): boolean {
+  return compareMarkdownText(htmlToMarkdown(l), htmlToMarkdown(r));
 }

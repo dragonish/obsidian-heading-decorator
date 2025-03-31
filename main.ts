@@ -22,7 +22,6 @@ import {
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   diffLevel,
-  compareHeadingText,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
 import { Heading } from "./common/heading";
@@ -32,6 +31,7 @@ import {
   queryHeadingLevelByElement,
   getTreeItemLevel,
   getTreeItemText,
+  compareHeadingText,
 } from "./common/dom";
 import {
   HeadingViewPlugin,
