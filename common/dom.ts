@@ -91,6 +91,7 @@ export function getTreeItemLevel(element: Element): number {
 
 /**
  * Get the text of a given tree item.
+ *
  * @param element The HTML element to get the text for.
  * @returns The text of the tree item.
  */
