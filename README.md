@@ -6,7 +6,7 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implement displaying specific content around headings based on their levels.
 
-This plugin supports optional decoration for reading view and editing view (*Live Preview* and *Source mode*). This plugin does not modify any note content, only decorates the heading section based on the existing note content.
+This plugin supports optional decoration for reading view, editing view (*Live Preview* and *Source mode*) and *[Outline](https://help.obsidian.md/plugins/outline)* plugin. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
 
 ## Preview
 
@@ -27,6 +27,7 @@ The plugin supports configure heading decorator for each editor mode. You can co
 - **Enabled in reading view**: Decorate the heading under the *Reading* view.
 - **Enabled in live preview**: Decorate the heading under the *Live Preview*.
 - **Enabled in source mode**: Decorate the heading under the *Source mode*.
+- **Enabled in outline plugin**: Decorate the heading under the *Outline* plugin.
 
 ### Effect
 
