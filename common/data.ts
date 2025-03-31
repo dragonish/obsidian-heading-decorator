@@ -61,6 +61,7 @@ export type HeadingPluginSettings = {
   enabledInReading: boolean;
   enabledInPreview: boolean;
   enabledInSource: boolean;
+  enabledInOutline: boolean;
 } & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
 
 export type HeadingPluginData = Omit<
@@ -74,6 +75,8 @@ export const previewHeadingDecoratorClassName =
   "preview-custom-heading-decorator";
 export const sourceHeadingDecoratorClassName =
   "source-custom-heading-decorator";
+export const outlineHeadingDecoratorClassName =
+  "outline-custom-heading-decorator";
 export const beforeDecoratorClassName = "before-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";
 export const headingsSelector =
@@ -180,4 +183,38 @@ export function getUnorderedLevelHeadings(value: string): HeadingTuple {
  */
 export function getOrderedCustomIdents(value: string) {
   return value.split(/\s+/g).filter((v) => v);
+}
+
+/**
+ * Diff level between two numbers.
+ *
+ * @param current current level.
+ * @param last last level.
+ * @returns boolean. if current level is less than or equal to last level, return true. otherwise, return false.
+ */
+export function diffLevel(current: number, last: number): boolean {
+  const diff = current - last;
+  if (diff > 0) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Compare heading text.
+ *
+ * @param l left heading text.
+ * @param r right heading text.
+ * @returns boolean. if left heading text is equal to right heading text, return true. otherwise, return false.
+ */
+export function compareHeadingText(l: string, r: string): boolean {
+  if (l === r) {
+    return true;
+  } else if (
+    l.replaceAll(/[`=_~*\s]/g, "") === r.replaceAll(/[`=_~*\s]/g, "")
+  ) {
+    return true;
+  }
+
+  return false;
 }

@@ -2,6 +2,7 @@ import {
   readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
   afterDecoratorClassName,
+  outlineHeadingDecoratorClassName,
 } from "./data";
 
 /**
@@ -67,5 +68,62 @@ export function decorateHTMLElement(
       readingHeadingDecoratorClassName,
       getPositionClassName(position)
     );
+  }
+}
+
+/**
+ * Get the tree item level of a given element.
+ *
+ * @param element The element to get the tree item level for.
+ * @returns The tree item level.
+ */
+export function getTreeItemLevel(element: Element): number {
+  let level = 0;
+  let current = element.closest(".tree-item");
+  while (current) {
+    level++;
+    current = current.parentElement?.closest(".tree-item") || null;
+  }
+  return level;
+}
+
+/**
+ * Get the text of a given tree item.
+ * @param element The HTML element to get the text for.
+ * @returns The text of the tree item.
+ */
+export function getTreeItemText(element: HTMLElement): string {
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner"
+  );
+  return inner ? inner.innerText : "";
+}
+
+/**
+ * Decorate an outline HTML element with a given content, opacity and position.
+ *
+ * @param element The HTML element to decorate.
+ * @param content The content to decorate with.
+ * @param opacity The opacity of the decorator.
+ * @param position The position of the decorator.
+ */
+export function decorateOutlineElement(
+  element: HTMLElement,
+  content: string,
+  opacity: OpacityOptions,
+  position: PostionOptions
+): void {
+  if (content) {
+    const inner = element.querySelector<HTMLElement>(
+      ".tree-item-self .tree-item-inner"
+    );
+    if (inner) {
+      inner.dataset.headingDecorator = content;
+      inner.dataset.decoratorOpacity = `${opacity}%`;
+      inner.classList.add(
+        outlineHeadingDecoratorClassName,
+        getPositionClassName(position)
+      );
+    }
   }
 }

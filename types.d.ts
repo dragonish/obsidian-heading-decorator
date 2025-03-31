@@ -16,4 +16,5 @@ type PostionOptions = "before" | "after";
 type PluginDecoratorSettingsType =
   | "readingSettings"
   | "previewSettings"
-  | "sourceSettings";
+  | "sourceSettings"
+  | "outlineSettings";

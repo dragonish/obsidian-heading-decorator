@@ -6,6 +6,7 @@ import {
   PluginSettingTab,
   Setting,
   Editor,
+  WorkspaceLeaf,
   debounce,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
@@ -20,19 +21,32 @@ import {
   defaultHeadingDecoratorSettings,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
+  diffLevel,
+  compareHeadingText,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
 import { Heading } from "./common/heading";
-import { decorateHTMLElement, queryHeadingLevelByElement } from "./common/dom";
+import {
+  decorateHTMLElement,
+  decorateOutlineElement,
+  queryHeadingLevelByElement,
+  getTreeItemLevel,
+  getTreeItemText,
+} from "./common/dom";
 import {
   HeadingViewPlugin,
   headingDecorationsField,
   editorModeField,
   updateEditorMode,
 } from "./components/view";
+import { OutlineChildComponent } from "./components/outline";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
+}
+
+interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
+  id: string;
 }
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
@@ -42,10 +56,15 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
   previewSettings: defaultHeadingDecoratorSettings(),
   enabledInSource: false,
   sourceSettings: defaultHeadingDecoratorSettings(),
+  enabledInOutline: false,
+  outlineSettings: defaultHeadingDecoratorSettings(),
 };
 
 export default class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
+
+  private outlineIdList: string[] = [];
+  private outlineComponents: OutlineChildComponent[] = [];
 
   async onload() {
     await this.loadSettings();
@@ -218,26 +237,55 @@ export default class HeadingPlugin extends Plugin {
 
     // Listen for editor mode changes
     this.registerEvent(
-      this.app.workspace.on(
-        "active-leaf-change",
-        this.handleModeChange.bind(this)
-      )
+      this.app.workspace.on("active-leaf-change", () => {
+        this.handleModeChange();
+        this.loadOutlineComponents();
+      })
     );
     this.registerEvent(
-      this.app.workspace.on("layout-change", this.handleModeChange.bind(this))
+      this.app.workspace.on("layout-change", () => {
+        this.handleModeChange();
+        this.loadOutlineComponents();
+      })
     );
 
+    this.loadOutlineComponents();
+
     this.addSettingTab(new HeadingSettingTab(this.app, this));
+  }
+
+  onunload(): void {
+    this.unloadOutlineComponents();
   }
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
-  async saveSettings() {
+  async saveSettings(outlineState?: boolean) {
     await this.saveData(this.settings);
 
+    if (outlineState != undefined) {
+      if (outlineState) {
+        this.loadOutlineComponents();
+      } else {
+        this.unloadOutlineComponents();
+      }
+    }
+
     this.debouncedSaveSettings();
+  }
+
+  private loadOutlineComponents() {
+    if (this.settings.enabledInOutline) {
+      this.handleOutline();
+    }
+  }
+
+  private unloadOutlineComponents() {
+    this.outlineComponents.forEach((child) => child.onunload());
+    this.outlineComponents = [];
+    this.outlineIdList = [];
   }
 
   private craeteHeadingViewPlugin(
@@ -267,6 +315,176 @@ export default class HeadingPlugin extends Plugin {
         });
       }
     }
+  }
+
+  private handleOutline() {
+    const leaves = this.app.workspace.getLeavesOfType("outline");
+    leaves.forEach((leaf: ObsidianWorkspaceLeaf) => {
+      if (!leaf.id || this.outlineIdList.includes(leaf.id)) {
+        return;
+      }
+
+      const view = leaf.view;
+      const viewContent = view.containerEl.querySelector<HTMLElement>(
+        '[data-type="outline"] .view-content'
+      );
+      if (!viewContent) {
+        return;
+      }
+
+      this.outlineIdList.push(leaf.id);
+      const oc = new OutlineChildComponent(viewContent, () => {
+        const headingElements =
+          viewContent.querySelectorAll<HTMLElement>(".tree-item");
+        if (headingElements.length === 0) {
+          return;
+        }
+
+        const {
+          opacity,
+          position,
+          ordered,
+          orderedDelimiter,
+          orderedTrailingDelimiter,
+          orderedStyleType,
+          orderedSpecifiedString,
+          orderedCustomIdents,
+          orderedIgnoreSingle,
+          orderedBasedOnExisting,
+          orderedAllowZeroLevel,
+          unorderedLevelHeadings,
+        } = this.settings.outlineSettings;
+
+        let fromFile = false;
+        const state = view.getState();
+        if (typeof state.file === "string") {
+          const file = this.app.vault.getFileByPath(state.file);
+          if (file) {
+            const cacheHeadings =
+              this.app.metadataCache.getFileCache(file)?.headings || [];
+
+            let ignoreTopLevel = 0;
+            if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
+              const queier = new Querier(orderedAllowZeroLevel);
+              for (const cacheHeading of cacheHeadings) {
+                queier.handler(cacheHeading.level);
+                ignoreTopLevel = queier.query(orderedIgnoreSingle);
+                if (ignoreTopLevel === 0) {
+                  break;
+                }
+              }
+            }
+
+            const counter = new Counter({
+              ordered,
+              delimiter: orderedDelimiter,
+              trailingDelimiter: orderedTrailingDelimiter,
+              styleType: orderedStyleType,
+              customIdents: getOrderedCustomIdents(orderedCustomIdents),
+              specifiedString: orderedSpecifiedString,
+              ignoreTopLevel,
+              allowZeroLevel: orderedAllowZeroLevel,
+              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+            });
+
+            let lastCacheLevel = 0;
+            let lastReadLevel = 0;
+            for (
+              let i = 0, j = 0;
+              i < headingElements.length && j < cacheHeadings.length;
+              i++, j++
+            ) {
+              const readLevel = getTreeItemLevel(headingElements[i]);
+              const readText = getTreeItemText(headingElements[i]);
+              let cacheLevel = cacheHeadings[j].level;
+              if (i > 0) {
+                const diff = diffLevel(readLevel, lastReadLevel);
+                while (
+                  j < cacheHeadings.length - 1 &&
+                  (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
+                    !compareHeadingText(cacheHeadings[j].heading, readText))
+                ) {
+                  counter.handler(cacheLevel);
+                  j++;
+                  cacheLevel = cacheHeadings[j].level;
+                }
+              }
+
+              const decoratorContent = counter.decorator(cacheLevel);
+              decorateOutlineElement(
+                headingElements[i],
+                decoratorContent,
+                opacity,
+                position
+              );
+
+              lastCacheLevel = cacheLevel;
+              lastReadLevel = readLevel;
+            }
+
+            fromFile = true;
+          }
+        }
+
+        if (!fromFile) {
+          if (ordered) {
+            let ignoreTopLevel = 0;
+            if (orderedIgnoreSingle || orderedBasedOnExisting) {
+              const queier = new Querier();
+              for (let i = 0; i < headingElements.length; i++) {
+                const element = headingElements[i];
+                const level = getTreeItemLevel(element);
+                queier.handler(level);
+                ignoreTopLevel = queier.query(orderedIgnoreSingle);
+                if (ignoreTopLevel === 0) {
+                  break;
+                }
+              }
+            }
+
+            const counter = new Counter({
+              ordered: true,
+              delimiter: orderedDelimiter,
+              trailingDelimiter: orderedTrailingDelimiter,
+              styleType: orderedStyleType,
+              customIdents: getOrderedCustomIdents(orderedCustomIdents),
+              specifiedString: orderedSpecifiedString,
+              ignoreTopLevel,
+              allowZeroLevel: orderedAllowZeroLevel,
+            });
+
+            headingElements.forEach((headingElement) => {
+              const level = getTreeItemLevel(headingElement);
+              const decoratorContent = counter.decorator(level);
+              decorateOutlineElement(
+                headingElement,
+                decoratorContent,
+                opacity,
+                position
+              );
+            });
+          } else {
+            const counter = new Counter({
+              ordered: false,
+              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+            });
+
+            headingElements.forEach((headingElement) => {
+              const level = getTreeItemLevel(headingElement);
+              const decoratorContent = counter.decorator(level);
+              decorateOutlineElement(
+                headingElement,
+                decoratorContent,
+                opacity,
+                position
+              );
+            });
+          }
+        }
+      });
+      this.outlineComponents.push(oc);
+      view.addChild(oc);
+    });
   }
 
   private debouncedSaveSettings = debounce(
@@ -376,6 +594,29 @@ class HeadingSettingTab extends PluginSettingTab {
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
           this.manageHeadingDecoratorSettings("sourceSettings");
+        });
+      });
+
+    //* enabledInOutline
+    new Setting(containerEl)
+      .setName("Enabled in outline plugin")
+      .setDesc("Decorate the heading under the outline plugin.")
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enabledInOutline)
+          .onChange(async (value) => {
+            this.plugin.settings.enabledInOutline = value;
+            await this.plugin.saveSettings(
+              this.plugin.settings.enabledInOutline
+            );
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Manage outline plugin heading decorator")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("outlineSettings");
         });
       });
   }
