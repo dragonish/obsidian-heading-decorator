@@ -63,7 +63,7 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
 export default class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
 
-  private outlineIdList: string[] = [];
+  private outlineIdSet: Set<string> = new Set();
   private outlineComponents: OutlineChildComponent[] = [];
 
   async onload() {
@@ -285,7 +285,7 @@ export default class HeadingPlugin extends Plugin {
   private unloadOutlineComponents() {
     this.outlineComponents.forEach((child) => child.detach());
     this.outlineComponents = [];
-    this.outlineIdList = [];
+    this.outlineIdSet.clear();
   }
 
   private craeteHeadingViewPlugin(
@@ -321,7 +321,7 @@ export default class HeadingPlugin extends Plugin {
     const leaves = this.app.workspace.getLeavesOfType("outline");
     leaves.forEach((leaf: ObsidianWorkspaceLeaf) => {
       const leafId = leaf.id;
-      if (!leafId || this.outlineIdList.includes(leafId)) {
+      if (!leafId || this.outlineIdSet.has(leafId)) {
         return;
       }
 
@@ -333,7 +333,7 @@ export default class HeadingPlugin extends Plugin {
         return;
       }
 
-      this.outlineIdList.push(leafId);
+      this.outlineIdSet.add(leafId);
       const oc = new OutlineChildComponent(leafId, view, viewContent, () => {
         const headingElements =
           viewContent.querySelectorAll<HTMLElement>(".tree-item");
