@@ -650,6 +650,9 @@ class HeadingSettingTab extends PluginSettingTab {
       case "sourceSettings":
         tabName = "Manage source mode heading decorator";
         break;
+      case "outlineSettings":
+        tabName = "Manage outline plugin heading decorator";
+        break;
     }
 
     new Setting(containerEl)
