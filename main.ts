@@ -283,7 +283,7 @@ export default class HeadingPlugin extends Plugin {
   }
 
   private unloadOutlineComponents() {
-    this.outlineComponents.forEach((child) => child.onunload());
+    this.outlineComponents.forEach((child) => child.detach());
     this.outlineComponents = [];
     this.outlineIdList = [];
   }
@@ -320,7 +320,8 @@ export default class HeadingPlugin extends Plugin {
   private handleOutline() {
     const leaves = this.app.workspace.getLeavesOfType("outline");
     leaves.forEach((leaf: ObsidianWorkspaceLeaf) => {
-      if (!leaf.id || this.outlineIdList.includes(leaf.id)) {
+      const leafId = leaf.id;
+      if (!leafId || this.outlineIdList.includes(leafId)) {
         return;
       }
 
@@ -332,8 +333,8 @@ export default class HeadingPlugin extends Plugin {
         return;
       }
 
-      this.outlineIdList.push(leaf.id);
-      const oc = new OutlineChildComponent(viewContent, () => {
+      this.outlineIdList.push(leafId);
+      const oc = new OutlineChildComponent(leafId, view, viewContent, () => {
         const headingElements =
           viewContent.querySelectorAll<HTMLElement>(".tree-item");
         if (headingElements.length === 0) {
@@ -484,6 +485,11 @@ export default class HeadingPlugin extends Plugin {
       });
       this.outlineComponents.push(oc);
       view.addChild(oc);
+      view.register(() => {
+        this.outlineComponents = this.outlineComponents.filter(
+          (item) => !item.equal(leafId)
+        );
+      });
     });
   }
 

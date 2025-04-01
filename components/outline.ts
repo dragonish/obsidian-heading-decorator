@@ -1,6 +1,8 @@
-import { Component } from "obsidian";
+import { Component, View } from "obsidian";
 
 export class OutlineChildComponent extends Component {
+  private leafId: string;
+  private view: View | null;
   private containerEl: HTMLElement | null;
   private callback: () => void;
   private observer: MutationObserver | null = null;
@@ -9,10 +11,25 @@ export class OutlineChildComponent extends Component {
     subtree: true,
   };
 
-  constructor(containerEl: HTMLElement, callback: () => void) {
+  constructor(
+    leafId: string,
+    view: View,
+    containerEl: HTMLElement,
+    callback: () => void
+  ) {
     super();
+    this.leafId = leafId;
+    this.view = view;
     this.containerEl = containerEl;
     this.callback = callback;
+  }
+
+  equal(leafId: string): boolean {
+    return this.leafId === leafId;
+  }
+
+  detach(): void {
+    this.view?.removeChild(this);
   }
 
   onload(): void {
@@ -36,5 +53,6 @@ export class OutlineChildComponent extends Component {
     this.observer?.disconnect();
     this.observer = null;
     this.containerEl = null;
+    this.view = null;
   }
 }
