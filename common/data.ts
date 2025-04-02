@@ -164,6 +164,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
     orderedSpecifiedString: "#",
     orderedIgnoreSingle: false,
+    orderedBasedOnExisting: false,
     orderedAllowZeroLevel: false,
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };
