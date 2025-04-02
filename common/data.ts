@@ -254,3 +254,30 @@ export function getBoolean(value: unknown) {
 
   return null;
 }
+
+/**
+ * Check if css string contains enable/disable heading classes.
+ *
+ * @param cssString CSS string.
+ * @param mode Mode to check for.
+ * @returns true if css string contains enable-${mode}-heading, false if it contains disable-${mode}-heading, and null otherwise.
+ */
+export function checkEnabledCss(
+  cssString: string,
+  mode: HeadingMetadataSettingsType
+) {
+  const cssClasses = cssString.split(" ").map((c) => c.trim());
+  for (const cssClass of cssClasses) {
+    switch (cssClass) {
+      case `enable-${mode}-heading`:
+        return true;
+      case `disable-${mode}-heading`:
+        return false;
+      case "enable-heading":
+        return true;
+      case "disable-heading":
+        return false;
+    }
+  }
+  return null; // default to null if no matching class is found
+}

@@ -1,6 +1,11 @@
 import "mocha";
 import { expect } from "chai";
-import { diffLevel, compareMarkdownText, getBoolean } from "../../common/data";
+import {
+  diffLevel,
+  compareMarkdownText,
+  getBoolean,
+  checkEnabledCss,
+} from "../../common/data";
 
 describe("common/data", function () {
   it("diffLevel", function () {
@@ -52,5 +57,38 @@ describe("common/data", function () {
     expect(getBoolean(123)).to.be.null;
     expect(getBoolean([])).to.be.null;
     expect(getBoolean({})).to.be.null;
+  });
+
+  it("checkEnabledCss", function () {
+    expect(checkEnabledCss("", "reading")).to.be.null;
+    expect(checkEnabledCss("enable-preview-heading", "reading")).to.be.null;
+    expect(checkEnabledCss("enable-heading", "reading")).to.be.true;
+    expect(checkEnabledCss("disable-heading", "reading")).to.be.false;
+    expect(checkEnabledCss("enable-reading-heading", "reading")).to.be.true;
+    expect(checkEnabledCss("disable-reading-heading", "reading")).to.be.false;
+    expect(checkEnabledCss("enable-heading disable-heading", "reading")).to.be
+      .true;
+    expect(checkEnabledCss("disable-heading enable-heading", "reading")).to.be
+      .false;
+    expect(
+      checkEnabledCss(
+        "enable-reading-heading disable-reading-heading",
+        "reading"
+      )
+    ).to.be.true;
+    expect(
+      checkEnabledCss(
+        "disable-reading-heading enable-reading-heading",
+        "reading"
+      )
+    ).to.be.false;
+    expect(checkEnabledCss("enable-heading disable-reading-heading", "reading"))
+      .to.be.true;
+    expect(checkEnabledCss("disable-heading enable-reading-heading", "reading"))
+      .to.be.false;
+    expect(checkEnabledCss("enable-reading-heading disable-heading", "reading"))
+      .to.be.true;
+    expect(checkEnabledCss("disable-reading-heading enable-heading", "reading"))
+      .to.be.false;
   });
 });

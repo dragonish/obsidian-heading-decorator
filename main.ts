@@ -24,6 +24,7 @@ import {
   getOrderedCustomIdents,
   diffLevel,
   getBoolean,
+  checkEnabledCss,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
 import { Heading } from "./common/heading";
@@ -556,8 +557,23 @@ export default class HeadingPlugin extends Plugin {
         return (
           getBoolean(metadataSettings[mode]) ?? getBoolean(metadataSettings.all)
         );
-      } else {
+      }
+      if (metadataSettings != null) {
         return getBoolean(metadataSettings);
+      } else {
+        const cssclasses = frontmatter.cssclasses;
+        if (Array.isArray(cssclasses)) {
+          for (const cssItem of cssclasses) {
+            if (typeof cssItem === "string") {
+              const s = checkEnabledCss(cssItem, mode);
+              if (s != null) {
+                return s;
+              }
+            }
+          }
+        } else if (typeof cssclasses === "string") {
+          return checkEnabledCss(cssclasses, mode);
+        }
       }
     }
 
