@@ -74,6 +74,14 @@ For the *Ignore the single heading at the top-level* setting, if the top-level h
 | :-----: | :----------------------------------------: |
 | ![Default](images/default.jpg) | ![Ignore the single heading at the top-level](images/ignore-single-heading.jpg) |
 
+##### The maximum number of ignored
+
+For enabled: Ignore the single heading at the top-level. The maximum number of ignored headings at the top-level. For example:
+
+| Default | Ignore the single heading at the top-level with default value (`6`) | The maximum number of ignored is `1` |
+| :-----: | :-----------------------------------------------------------------: | :----------------------------------: |
+| ![Default](images/no-ignore.jpg) | ![Ignore the single heading at the top-level](images/ignore-default.jpg) | ![The maximum number of ignored is 1](images/ignore-with-number-1.jpg) |
+
 #### Allow zero level
 
 For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
