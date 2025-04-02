@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { diffLevel, compareMarkdownText } from "../../common/data";
+import { diffLevel, compareMarkdownText, getBoolean } from "../../common/data";
 
 describe("common/data", function () {
   it("diffLevel", function () {
@@ -30,5 +30,27 @@ describe("common/data", function () {
     expect(compareMarkdownText("h1", "__h1__")).to.be.true;
     expect(compareMarkdownText("h1", "==h1==")).to.be.true;
     expect(compareMarkdownText("h1", "~~h1~~")).to.be.true;
+  });
+
+  it("getBoolean", function () {
+    expect(getBoolean(true)).to.be.true;
+    expect(getBoolean(false)).to.be.false;
+    expect(getBoolean("true")).to.be.true;
+    expect(getBoolean("false")).to.be.false;
+    expect(getBoolean("yes")).to.be.true;
+    expect(getBoolean("no")).to.be.false;
+    expect(getBoolean("on")).to.be.true;
+    expect(getBoolean("off")).to.be.false;
+    expect(getBoolean("1")).to.be.true;
+    expect(getBoolean("0")).to.be.false;
+    expect(getBoolean(1)).to.be.true;
+    expect(getBoolean(0)).to.be.false;
+    expect(getBoolean(null)).to.be.null;
+    expect(getBoolean(undefined)).to.be.null;
+    expect(getBoolean("")).to.be.null;
+    expect(getBoolean("abc")).to.be.null;
+    expect(getBoolean(123)).to.be.null;
+    expect(getBoolean([])).to.be.null;
+    expect(getBoolean({})).to.be.null;
   });
 });

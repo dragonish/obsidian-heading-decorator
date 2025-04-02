@@ -41,6 +41,8 @@ export type DecoratorOptions =
   | UnorderedDecoratorOptions;
 
 interface HeadingDecoratorSettings {
+  enabledInEachNote?: boolean;
+
   ordered: boolean;
   opacity: OpacityOptions;
   position: PostionOptions;
@@ -58,6 +60,7 @@ interface HeadingDecoratorSettings {
 }
 
 export type HeadingPluginSettings = {
+  metadataKeyword: string;
   enabledInReading: boolean;
   enabledInPreview: boolean;
   enabledInSource: boolean;
@@ -66,6 +69,7 @@ export type HeadingPluginSettings = {
 
 export type HeadingPluginData = Omit<
   HeadingPluginSettings,
+  | "metadataKeyword"
   | "enabledInReading"
   | "readingSettings"
   | "enabledInOutline"
@@ -150,6 +154,7 @@ export const orderedStyleTypeOptions: Record<OrderedCounterStyleType, string> =
  */
 export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
   return {
+    enabledInEachNote: true,
     opacity: 20,
     position: "before",
     ordered: true,
@@ -220,4 +225,32 @@ export function compareMarkdownText(l: string, r: string): boolean {
   }
 
   return false;
+}
+
+/**
+ * Get boolean value from unknown.
+ *
+ * @param value unknown value.
+ * @returns boolean or null. if value is boolean, return value. otherwise, return null or convert to boolean based on value. if value is not convertible to boolean, return null.
+ */
+export function getBoolean(value: unknown) {
+  if (value == null) {
+    return null;
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  } else {
+    const trueSet = new Set<unknown>(["true", "yes", "on", "1", 1]);
+    if (trueSet.has(value)) {
+      return true;
+    }
+
+    const falseSet = new Set<unknown>(["false", "no", "off", "0", 0]);
+    if (falseSet.has(value)) {
+      return false;
+    }
+  }
+
+  return null;
 }

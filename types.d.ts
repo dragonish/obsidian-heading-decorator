@@ -18,3 +18,9 @@ type PluginDecoratorSettingsType =
   | "previewSettings"
   | "sourceSettings"
   | "outlineSettings";
+
+type HeadingMetadataSettingsType = "reading" | "preview" | "source" | "outline";
+type HeadingMetaDataSettings = Record<
+  HeadingMetadataSettingsType | "all",
+  boolean
+>;

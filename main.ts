@@ -1,11 +1,12 @@
 import {
   App,
-  Plugin,
-  TFile,
+  Editor,
+  FrontMatterCache,
   MarkdownView,
+  Plugin,
   PluginSettingTab,
   Setting,
-  Editor,
+  TFile,
   WorkspaceLeaf,
   debounce,
 } from "obsidian";
@@ -22,6 +23,7 @@ import {
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   diffLevel,
+  getBoolean,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
 import { Heading } from "./common/heading";
@@ -50,6 +52,7 @@ interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
 }
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
+  metadataKeyword: "heading",
   enabledInReading: true,
   readingSettings: defaultHeadingDecoratorSettings(),
   enabledInPreview: true,
@@ -79,6 +82,21 @@ export default class HeadingPlugin extends Plugin {
     // Register markdown post processor
     this.registerMarkdownPostProcessor(async (element, context) => {
       if (!this.settings.enabledInReading) {
+        return;
+      }
+
+      const metadataEnabled = this.getEnabledFromFrontmatter(
+        "reading",
+        context.frontmatter
+      );
+      if (metadataEnabled == null) {
+        if (
+          this.settings.readingSettings.enabledInEachNote != undefined &&
+          !this.settings.readingSettings.enabledInEachNote
+        ) {
+          return;
+        }
+      } else if (!metadataEnabled) {
         return;
       }
 
@@ -334,6 +352,7 @@ export default class HeadingPlugin extends Plugin {
       }
 
       this.outlineIdSet.add(leafId);
+
       const oc = new OutlineChildComponent(leafId, view, viewContent, () => {
         const headingElements =
           viewContent.querySelectorAll<HTMLElement>(".tree-item");
@@ -342,6 +361,7 @@ export default class HeadingPlugin extends Plugin {
         }
 
         const {
+          enabledInEachNote,
           opacity,
           position,
           ordered,
@@ -356,133 +376,96 @@ export default class HeadingPlugin extends Plugin {
           unorderedLevelHeadings,
         } = this.settings.outlineSettings;
 
-        let fromFile = false;
         const state = view.getState();
-        if (typeof state.file === "string") {
-          const file = this.app.vault.getFileByPath(state.file);
-          if (file) {
-            const cacheHeadings =
-              this.app.metadataCache.getFileCache(file)?.headings || [];
+        if (typeof state.file !== "string") {
+          return;
+        }
 
-            let ignoreTopLevel = 0;
-            if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-              const queier = new Querier(orderedAllowZeroLevel);
-              for (const cacheHeading of cacheHeadings) {
-                queier.handler(cacheHeading.level);
-                ignoreTopLevel = queier.query(orderedIgnoreSingle);
-                if (ignoreTopLevel === 0) {
-                  break;
-                }
-              }
+        const file = this.app.vault.getFileByPath(state.file);
+        if (!file) {
+          return;
+        }
+
+        const fileCache = this.app.metadataCache.getFileCache(file);
+        if (!fileCache) {
+          return;
+        }
+
+        const cacheHeadings = fileCache.headings || [];
+        if (cacheHeadings.length === 0) {
+          return;
+        }
+
+        const frontmatter = fileCache.frontmatter;
+        const enabled =
+          this.getEnabledFromFrontmatter("outline", frontmatter) ??
+          enabledInEachNote ??
+          true;
+
+        if (!enabled) {
+          return;
+        }
+
+        let ignoreTopLevel = 0;
+        if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
+          const queier = new Querier(orderedAllowZeroLevel);
+          for (const cacheHeading of cacheHeadings) {
+            queier.handler(cacheHeading.level);
+            ignoreTopLevel = queier.query(orderedIgnoreSingle);
+            if (ignoreTopLevel === 0) {
+              break;
             }
-
-            const counter = new Counter({
-              ordered,
-              delimiter: orderedDelimiter,
-              trailingDelimiter: orderedTrailingDelimiter,
-              styleType: orderedStyleType,
-              customIdents: getOrderedCustomIdents(orderedCustomIdents),
-              specifiedString: orderedSpecifiedString,
-              ignoreTopLevel,
-              allowZeroLevel: orderedAllowZeroLevel,
-              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-            });
-
-            let lastCacheLevel = 0;
-            let lastReadLevel = 0;
-            for (
-              let i = 0, j = 0;
-              i < headingElements.length && j < cacheHeadings.length;
-              i++, j++
-            ) {
-              const readLevel = getTreeItemLevel(headingElements[i]);
-              const readText = getTreeItemText(headingElements[i]);
-              let cacheLevel = cacheHeadings[j].level;
-              if (i > 0) {
-                const diff = diffLevel(readLevel, lastReadLevel);
-                while (
-                  j < cacheHeadings.length - 1 &&
-                  (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
-                    !compareHeadingText(cacheHeadings[j].heading, readText))
-                ) {
-                  counter.handler(cacheLevel);
-                  j++;
-                  cacheLevel = cacheHeadings[j].level;
-                }
-              }
-
-              const decoratorContent = counter.decorator(cacheLevel);
-              decorateOutlineElement(
-                headingElements[i],
-                decoratorContent,
-                opacity,
-                position
-              );
-
-              lastCacheLevel = cacheLevel;
-              lastReadLevel = readLevel;
-            }
-
-            fromFile = true;
           }
         }
 
-        if (!fromFile) {
-          if (ordered) {
-            let ignoreTopLevel = 0;
-            if (orderedIgnoreSingle || orderedBasedOnExisting) {
-              const queier = new Querier();
-              for (let i = 0; i < headingElements.length; i++) {
-                const element = headingElements[i];
-                const level = getTreeItemLevel(element);
-                queier.handler(level);
-                ignoreTopLevel = queier.query(orderedIgnoreSingle);
-                if (ignoreTopLevel === 0) {
-                  break;
-                }
-              }
+        const counter = new Counter({
+          ordered,
+          delimiter: orderedDelimiter,
+          trailingDelimiter: orderedTrailingDelimiter,
+          styleType: orderedStyleType,
+          customIdents: getOrderedCustomIdents(orderedCustomIdents),
+          specifiedString: orderedSpecifiedString,
+          ignoreTopLevel,
+          allowZeroLevel: orderedAllowZeroLevel,
+          levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+        });
+
+        let lastCacheLevel = 0;
+        let lastReadLevel = 0;
+        for (
+          let i = 0, j = 0;
+          i < headingElements.length && j < cacheHeadings.length;
+          i++, j++
+        ) {
+          const readLevel = getTreeItemLevel(headingElements[i]);
+          const readText = getTreeItemText(headingElements[i]);
+          let cacheLevel = cacheHeadings[j].level;
+          if (i > 0) {
+            const diff = diffLevel(readLevel, lastReadLevel);
+            while (
+              j < cacheHeadings.length - 1 &&
+              (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
+                !compareHeadingText(cacheHeadings[j].heading, readText))
+            ) {
+              counter.handler(cacheLevel);
+              j++;
+              cacheLevel = cacheHeadings[j].level;
             }
-
-            const counter = new Counter({
-              ordered: true,
-              delimiter: orderedDelimiter,
-              trailingDelimiter: orderedTrailingDelimiter,
-              styleType: orderedStyleType,
-              customIdents: getOrderedCustomIdents(orderedCustomIdents),
-              specifiedString: orderedSpecifiedString,
-              ignoreTopLevel,
-              allowZeroLevel: orderedAllowZeroLevel,
-            });
-
-            headingElements.forEach((headingElement) => {
-              const level = getTreeItemLevel(headingElement);
-              const decoratorContent = counter.decorator(level);
-              decorateOutlineElement(
-                headingElement,
-                decoratorContent,
-                opacity,
-                position
-              );
-            });
-          } else {
-            const counter = new Counter({
-              ordered: false,
-              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-            });
-
-            headingElements.forEach((headingElement) => {
-              const level = getTreeItemLevel(headingElement);
-              const decoratorContent = counter.decorator(level);
-              decorateOutlineElement(
-                headingElement,
-                decoratorContent,
-                opacity,
-                position
-              );
-            });
           }
+
+          const decoratorContent = counter.decorator(cacheLevel);
+          decorateOutlineElement(
+            headingElements[i],
+            decoratorContent,
+            opacity,
+            position
+          );
+
+          lastCacheLevel = cacheLevel;
+          lastReadLevel = readLevel;
         }
       });
+
       this.outlineComponents.push(oc);
       view.addChild(oc);
       view.register(() => {
@@ -513,8 +496,44 @@ export default class HeadingPlugin extends Plugin {
   }
 
   async getPluginData(): Promise<HeadingPluginData> {
+    const {
+      metadataKeyword,
+      enabledInPreview: _enabledInPreview,
+      enabledInSource: _enabledInSource,
+      previewSettings,
+      sourceSettings,
+    } = this.settings;
+
+    let enabledInPreview = _enabledInPreview;
+    let enabledInSource = _enabledInSource;
+
+    if (metadataKeyword) {
+      const file = this.getActiveFile();
+      if (file) {
+        const frontmatter =
+          this.app.metadataCache.getFileCache(file)?.frontmatter;
+
+        if (_enabledInPreview) {
+          enabledInPreview =
+            this.getEnabledFromFrontmatter("preview", frontmatter) ??
+            previewSettings.enabledInEachNote ??
+            true;
+        }
+
+        if (_enabledInSource) {
+          enabledInSource =
+            this.getEnabledFromFrontmatter("source", frontmatter) ??
+            sourceSettings.enabledInEachNote ??
+            true;
+        }
+      }
+    }
+
     return {
-      ...this.settings,
+      enabledInPreview,
+      enabledInSource,
+      previewSettings,
+      sourceSettings,
     };
   }
 
@@ -524,6 +543,25 @@ export default class HeadingPlugin extends Plugin {
     } else {
       return this.app.workspace.getActiveFile();
     }
+  }
+
+  private getEnabledFromFrontmatter(
+    mode: HeadingMetadataSettingsType,
+    frontmatter?: FrontMatterCache
+  ): null | boolean {
+    const keyword = this.settings.metadataKeyword;
+    if (keyword && typeof frontmatter === "object" && frontmatter) {
+      const metadataSettings = frontmatter[keyword];
+      if (typeof metadataSettings === "object" && metadataSettings) {
+        return (
+          getBoolean(metadataSettings[mode]) ?? getBoolean(metadataSettings.all)
+        );
+      } else {
+        return getBoolean(metadataSettings);
+      }
+    }
+
+    return null;
   }
 }
 
@@ -540,10 +578,36 @@ class HeadingSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
+    //* metadataKeyword
+    const metadataKeywordSetting = new Setting(containerEl)
+      .setName("Metadata keyword")
+      .addText((text) =>
+        text
+          .setPlaceholder("Enter the keyword")
+          .setValue(this.plugin.settings.metadataKeyword)
+          .onChange(async (value) => {
+            this.plugin.settings.metadataKeyword = value.trim();
+            await this.plugin.saveSettings();
+          })
+      );
+
+    const metadataKeywordDesc = document.createDocumentFragment();
+    metadataKeywordDesc.append(
+      "The key name that reads the enabled status from the ",
+      createEl("a", {
+        href: "https://help.obsidian.md/Editing+and+formatting/Properties",
+        text: "properties",
+      }),
+      "."
+    );
+    metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
+
+    new Setting(containerEl).setName("Reading view").setHeading();
+
     //* enabledInReading
     new Setting(containerEl)
       .setName("Enabled in reading view")
-      .setDesc("Decorate the heading under the reading view.")
+      .setDesc("Allow to decorate the heading under the reading view.")
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInReading)
@@ -561,10 +625,12 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl).setName("Live preview").setHeading();
+
     //* enabledInPreview
     new Setting(containerEl)
       .setName("Enabled in live preview")
-      .setDesc("Decorate the heading under the live preview.")
+      .setDesc("Allow to decorate the heading under the live preview.")
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInPreview)
@@ -582,10 +648,12 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl).setName("Source mode").setHeading();
+
     //* enabledInSource
     new Setting(containerEl)
       .setName("Enabled in source mode")
-      .setDesc("Decorate the heading under the source mode.")
+      .setDesc("Allow to decorate the heading under the source mode.")
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInSource)
@@ -603,10 +671,12 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl).setName("Outline plugin").setHeading();
+
     //* enabledInOutline
     new Setting(containerEl)
       .setName("Enabled in outline plugin")
-      .setDesc("Decorate the heading under the outline plugin.")
+      .setDesc("Allow to decorate the heading under the outline plugin.")
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInOutline)
@@ -669,6 +739,23 @@ class HeadingSettingTab extends PluginSettingTab {
           this.display();
         });
       });
+
+    //* enabledInEachNote
+    new Setting(containerEl)
+      .setName("Enabled in each note")
+      .setDesc(
+        "Toggle this setting to enable the decoration of headings in each note."
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].enabledInEachNote ?? true
+          )
+          .onChange(async (value) => {
+            this.plugin.settings[settingsType].enabledInEachNote = value;
+            await this.plugin.saveSettings();
+          })
+      );
 
     new Setting(containerEl).setName("Effect").setHeading();
 
