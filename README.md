@@ -58,6 +58,14 @@ For example:
 | :-------------: | :----------------------------------: | :-----------------------------------------------: |
 | ![Decimal numbers](images/decimal.jpg) | ![Custom list styles](images/custom-list-styles.jpg) | ![Specified string](images/specified-string.jpg) |
 
+#### Allow zero level
+
+For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
+
+| Default | Allow zero level |
+| :-----: | :--------------: |
+| ![Default](images/omitted.jpg) | ![Allow zero level](images/zero.jpg) |
+
 #### Based on the existing highest level
 
 For the *Based on the existing highest level* setting, use the highest level of headings in the note as the base for ordered list. For example:
@@ -81,14 +89,6 @@ For enabled: Ignore the single heading at the top-level. The maximum number of i
 | Default | Ignore the single heading at the top-level with default value (`6`) | The maximum number of ignored is `1` |
 | :-----: | :-----------------------------------------------------------------: | :----------------------------------: |
 | ![Default](images/no-ignore.jpg) | ![Ignore the single heading at the top-level](images/ignore-default.jpg) | ![The maximum number of ignored is 1](images/ignore-with-number-1.jpg) |
-
-#### Allow zero level
-
-For the *Allow zero level* setting, if the next heading is more than one level higher, the omitted level is zero instead of one. For example:
-
-| Default | Allow zero level |
-| :-----: | :--------------: |
-| ![Default](images/omitted.jpg) | ![Allow zero level](images/zero.jpg) |
 
 ### Unordered
 
