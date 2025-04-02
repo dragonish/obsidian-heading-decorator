@@ -20,14 +20,20 @@ The interaction between the decorator and the collapse button:
 
 ## Settings
 
+### Metadata keyword
+
+The key name that reads the enabled status from the [properties](https://help.obsidian.md/Editing+and+formatting/Properties). The default value is: `heading`. Usage reference: [Enabled status of notes](#enabled-status-of-notes).
+
 ### Enabled
 
 The plugin supports configure heading decorator for each editor mode. You can control the effect range:
 
-- **Enabled in reading view**: Decorate the heading under the *Reading* view.
-- **Enabled in live preview**: Decorate the heading under the *Live Preview*.
-- **Enabled in source mode**: Decorate the heading under the *Source mode*.
-- **Enabled in outline plugin**: Decorate the heading under the *Outline* plugin.
+- **Enabled in reading view**: Allow to decorate the heading under the *Reading* view.
+- **Enabled in live preview**: Allow to decorate the heading under the *Live Preview*.
+- **Enabled in source mode**: Allow to decorate the heading under the *Source mode*.
+- **Enabled in outline plugin**: Allow to decorate the heading under the *Outline* plugin.
+
+In addition, you can enable the default status of each note within the *Manage* subpage. It mainly works together with [Enabled status of notes](#enabled-status-of-notes).
 
 ### Effect
 
@@ -83,6 +89,55 @@ Directly decorate the heading according to the level. For example:
 | Ordered (Decimal numbers) | Unordered (using `H1 H2 H3 H4 H5 H6`) |
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
+
+## Enabled status of notes
+
+This plugin allows for configure the enabled status based on specific fields in the note [properties](https://help.obsidian.md/Editing+and+formatting/Properties). You can individually control the enabled status of a note.
+
+For example:
+
+```yaml
+---
+heading:
+  - reading: true  # Or yes, on, 1.
+  - preview: false # Or no, off, 0.
+  - source: false  # Fields are optional.
+  - outline: ~     # Other values are equivalent to undeclared.
+---
+```
+
+You can use `all` to set all status:
+
+```yaml
+---
+heading:
+  - all: false
+---
+```
+
+Or directly after the field:
+
+```yaml
+---
+heading: false
+---
+```
+
+If you prefer to use Obsidian's `cssclasses` default property, you can also fill in `cssclasses` with some equivalent class names:
+
+- reading: `enable-reading-heading`/`disable-reading-heading`
+- preview: `enable-preview-heading`/`disable-preview-heading`
+- source: `enable-source-heading`/`disable-source-heading`
+- outline: `enable-outline-heading`/`disable-outline-heading`
+- all: `enable-heading`/`disable-heading`
+
+Like:
+
+```yaml
+---
+cssclasses: disable-heading
+---
+```
 
 ## Credits
 
