@@ -442,6 +442,89 @@ describe("common/counter", function () {
     expect(querier4.query(true)).to.equal(2);
   });
 
+  it("Querier.query(ignoreSingle = true) with ignoreMaximum parameter", function () {
+    const querier1 = new Querier();
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(1);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(2);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(3);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(4);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(5);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query(true, 6)).to.equal(6);
+
+    querier1.handler(6);
+    expect(querier1.query(true, 6)).to.equal(5);
+
+    querier1.handler(5);
+    expect(querier1.query(true, 6)).to.equal(4);
+
+    querier1.handler(4);
+    expect(querier1.query(true, 6)).to.equal(3);
+
+    querier1.handler(3);
+    expect(querier1.query(true, 6)).to.equal(2);
+
+    querier1.handler(2);
+    expect(querier1.query(true, 6)).to.equal(1);
+
+    querier1.handler(1);
+    expect(querier1.query(true, 6)).to.equal(0);
+
+    const querier2 = new Querier();
+
+    querier2.handler(6);
+    expect(querier2.query(true, 2)).to.equal(2);
+
+    querier2.handler(2);
+    expect(querier2.query(true, 2)).to.equal(1);
+
+    querier2.handler(1);
+    expect(querier2.query(true, 2)).to.equal(0);
+
+    const querier3 = new Querier();
+
+    querier3.handler(6);
+    expect(querier3.query(true, 1)).to.equal(1);
+
+    querier3.handler(3);
+    expect(querier3.query(true, 1)).to.equal(1);
+
+    querier3.handler(4);
+    expect(querier3.query(true, 1)).to.equal(1);
+
+    const querier4 = new Querier();
+
+    querier4.handler(3);
+    expect(querier4.query(true, 1)).to.equal(1);
+
+    querier4.handler(4);
+    expect(querier4.query(true, 1)).to.equal(1);
+
+    querier4.handler(5);
+    expect(querier4.query(true, 1)).to.equal(1);
+
+    querier4.handler(6);
+    expect(querier4.query(true, 1)).to.equal(1);
+
+    querier4.handler(4);
+    expect(querier4.query(true, 1)).to.equal(1);
+
+    querier4.handler(3);
+    expect(querier4.query(true, 1)).to.equal(1);
+  });
+
   it("Counter.decorator with default", function () {
     const counter1 = new Counter();
     expect(counter1.decorator(-1)).to.be.empty;

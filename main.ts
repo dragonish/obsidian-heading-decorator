@@ -117,6 +117,7 @@ export default class HeadingPlugin extends Plugin {
           orderedSpecifiedString,
           orderedCustomIdents,
           orderedIgnoreSingle,
+          orderedIgnoreMaximum = 6,
           orderedBasedOnExisting,
           orderedAllowZeroLevel,
           unorderedLevelHeadings,
@@ -153,7 +154,10 @@ export default class HeadingPlugin extends Plugin {
 
             queier.handler(level);
 
-            ignoreTopLevel = queier.query(orderedIgnoreSingle);
+            ignoreTopLevel = queier.query(
+              orderedIgnoreSingle,
+              orderedIgnoreMaximum
+            );
             if (ignoreTopLevel === 0) {
               break;
             }
@@ -372,6 +376,7 @@ export default class HeadingPlugin extends Plugin {
           orderedSpecifiedString,
           orderedCustomIdents,
           orderedIgnoreSingle,
+          orderedIgnoreMaximum = 6,
           orderedBasedOnExisting,
           orderedAllowZeroLevel,
           unorderedLevelHeadings,
@@ -412,7 +417,10 @@ export default class HeadingPlugin extends Plugin {
           const queier = new Querier(orderedAllowZeroLevel);
           for (const cacheHeading of cacheHeadings) {
             queier.handler(cacheHeading.level);
-            ignoreTopLevel = queier.query(orderedIgnoreSingle);
+            ignoreTopLevel = queier.query(
+              orderedIgnoreSingle,
+              orderedIgnoreMaximum
+            );
             if (ignoreTopLevel === 0) {
               break;
             }
@@ -903,6 +911,23 @@ class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
+    //* orderedAllowZeroLevel
+    new Setting(containerEl)
+      .setName("Allow zero level")
+      .setDesc(
+        "If the next heading is more than one level higher, the omitted level is zero instead of one."
+      )
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].orderedAllowZeroLevel ?? false
+          )
+          .onChange(async (value) => {
+            this.plugin.settings[settingsType].orderedAllowZeroLevel = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
     //* orderedBasedOnExisting
     new Setting(containerEl)
       .setName("Based on the existing highest level")
@@ -935,21 +960,23 @@ class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
-    //* orderedAllowZeroLevel
+    //* orderedIgnoreMaximum
     new Setting(containerEl)
-      .setName("Allow zero level")
+      .setName("The maximum number of ignored")
       .setDesc(
-        "If the next heading is more than one level higher, the omitted level is zero instead of one."
+        "For enabled: Ignore the single heading at the top-level. The maximum number of ignored headings at the top-level."
       )
-      .addToggle((toggle) =>
-        toggle
+      .addSlider((slider) =>
+        slider
+          .setLimits(1, 6, 1)
           .setValue(
-            this.plugin.settings[settingsType].orderedAllowZeroLevel ?? false
+            this.plugin.settings[settingsType].orderedIgnoreMaximum ?? 6
           )
           .onChange(async (value) => {
-            this.plugin.settings[settingsType].orderedAllowZeroLevel = value;
+            this.plugin.settings[settingsType].orderedIgnoreMaximum = value;
             await this.plugin.saveSettings();
           })
+          .setDynamicTooltip()
       );
 
     new Setting(containerEl).setName("Unordered").setHeading();

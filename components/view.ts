@@ -107,6 +107,7 @@ export class HeadingViewPlugin implements PluginValue {
         orderedCustomIdents,
         orderedSpecifiedString,
         orderedIgnoreSingle,
+        orderedIgnoreMaximum = 6,
         orderedBasedOnExisting,
         orderedAllowZeroLevel,
         unorderedLevelHeadings,
@@ -131,7 +132,10 @@ export class HeadingViewPlugin implements PluginValue {
 
           queier.handler(level);
 
-          ignoreTopLevel = queier.query(orderedIgnoreSingle);
+          ignoreTopLevel = queier.query(
+            orderedIgnoreSingle,
+            orderedIgnoreMaximum
+          );
           if (ignoreTopLevel === 0) {
             break;
           }

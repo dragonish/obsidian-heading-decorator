@@ -43,7 +43,7 @@ export class Querier {
     return this.levels.slice(0, level);
   }
 
-  query(ignoreSingle = false): number {
+  query(ignoreSingle = false, ignoreMaximum = 6): number {
     let res = this.highestLevel - 1;
 
     if (ignoreSingle) {
@@ -56,6 +56,10 @@ export class Querier {
         } else {
           break;
         }
+      }
+
+      if (res > ignoreMaximum) {
+        res = ignoreMaximum;
       }
     }
 

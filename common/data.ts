@@ -52,9 +52,10 @@ interface HeadingDecoratorSettings {
   orderedTrailingDelimiter: boolean;
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
-  orderedIgnoreSingle: boolean;
-  orderedBasedOnExisting?: boolean;
   orderedAllowZeroLevel?: boolean;
+  orderedBasedOnExisting?: boolean;
+  orderedIgnoreSingle: boolean;
+  orderedIgnoreMaximum?: number;
 
   unorderedLevelHeadings: string;
 }
@@ -163,9 +164,10 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedStyleType: "decimal",
     orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
     orderedSpecifiedString: "#",
+    orderedAllowZeroLevel: false,
     orderedIgnoreSingle: false,
     orderedBasedOnExisting: false,
-    orderedAllowZeroLevel: false,
+    orderedIgnoreMaximum: 6,
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };
 }
