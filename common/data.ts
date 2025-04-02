@@ -66,7 +66,10 @@ export type HeadingPluginSettings = {
 
 export type HeadingPluginData = Omit<
   HeadingPluginSettings,
-  "enabledInReading" | "readingSettings"
+  | "enabledInReading"
+  | "readingSettings"
+  | "enabledInOutline"
+  | "outlineSettings"
 >;
 
 export const readingHeadingDecoratorClassName =
