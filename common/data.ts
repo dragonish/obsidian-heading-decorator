@@ -62,6 +62,8 @@ interface HeadingDecoratorSettings {
 
 export type HeadingPluginSettings = {
   metadataKeyword: string;
+  folderBlacklist: string[];
+  fileRegexBlacklist: string[];
   enabledInReading: boolean;
   enabledInPreview: boolean;
   enabledInSource: boolean;
@@ -71,6 +73,8 @@ export type HeadingPluginSettings = {
 export type HeadingPluginData = Omit<
   HeadingPluginSettings,
   | "metadataKeyword"
+  | "folderBlacklist"
+  | "fileRegexBlacklist"
   | "enabledInReading"
   | "readingSettings"
   | "enabledInOutline"
@@ -283,4 +287,26 @@ export function checkEnabledCss(
     }
   }
   return null; // default to null if no matching class is found
+}
+
+/**
+ * Converts a string to a regex object.
+ * @param value The string to convert to a regex.
+ * @returns A regex object if the string is a valid regex, otherwise null.
+ */
+export function stringToRegex(value: string) {
+  const str = value.trim();
+  if (!str) {
+    return null;
+  }
+
+  try {
+    const re = new RegExp(
+      str.substring(1, str.lastIndexOf("/")),
+      str.substring(str.lastIndexOf("/") + 1)
+    );
+    return re;
+  } catch {
+    return null;
+  }
 }

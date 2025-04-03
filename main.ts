@@ -25,6 +25,7 @@ import {
   diffLevel,
   getBoolean,
   checkEnabledCss,
+  stringToRegex,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
 import { Heading } from "./common/heading";
@@ -43,6 +44,7 @@ import {
   updateEditorMode,
 } from "./components/view";
 import { OutlineChildComponent } from "./components/outline";
+import { FolderSuggest } from "./components/suggest";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
@@ -54,6 +56,8 @@ interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
   metadataKeyword: "heading",
+  fileRegexBlacklist: [],
+  folderBlacklist: [],
   enabledInReading: true,
   readingSettings: defaultHeadingDecoratorSettings(),
   enabledInPreview: true,
@@ -90,11 +94,16 @@ export default class HeadingPlugin extends Plugin {
         "reading",
         context.frontmatter
       );
+
       if (metadataEnabled == null) {
         if (
           this.settings.readingSettings.enabledInEachNote != undefined &&
           !this.settings.readingSettings.enabledInEachNote
         ) {
+          return;
+        }
+
+        if (this.getEnabledFromBlacklist(context.sourcePath)) {
           return;
         }
       } else if (!metadataEnabled) {
@@ -403,12 +412,20 @@ export default class HeadingPlugin extends Plugin {
         }
 
         const frontmatter = fileCache.frontmatter;
-        const enabled =
-          this.getEnabledFromFrontmatter("outline", frontmatter) ??
-          enabledInEachNote ??
-          true;
+        const metadataEnabled = this.getEnabledFromFrontmatter(
+          "outline",
+          frontmatter
+        );
 
-        if (!enabled) {
+        if (metadataEnabled == null) {
+          if (enabledInEachNote != undefined && !enabledInEachNote) {
+            return;
+          }
+
+          if (this.getEnabledFromBlacklist(state.file)) {
+            return;
+          }
+        } else if (!metadataEnabled) {
           return;
         }
 
@@ -526,14 +543,14 @@ export default class HeadingPlugin extends Plugin {
           enabledInPreview =
             this.getEnabledFromFrontmatter("preview", frontmatter) ??
             previewSettings.enabledInEachNote ??
-            true;
+            !this.getEnabledFromBlacklist(file.path);
         }
 
         if (_enabledInSource) {
           enabledInSource =
             this.getEnabledFromFrontmatter("source", frontmatter) ??
             sourceSettings.enabledInEachNote ??
-            true;
+            !this.getEnabledFromBlacklist(file.path);
         }
       }
     }
@@ -587,6 +604,29 @@ export default class HeadingPlugin extends Plugin {
 
     return null;
   }
+
+  private getEnabledFromBlacklist(filepath: string): boolean {
+    for (const folder of this.settings.folderBlacklist) {
+      if (filepath.startsWith(`${folder}/`)) {
+        return true;
+      }
+    }
+
+    const filename = filepath.substring(
+      filepath.lastIndexOf("/") + 1,
+      filepath.lastIndexOf(".")
+    );
+    for (const regexStr of this.settings.fileRegexBlacklist) {
+      const regex = stringToRegex(regexStr);
+      if (regex) {
+        if (regex.test(filename)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }
 
 class HeadingSettingTab extends PluginSettingTab {
@@ -625,6 +665,24 @@ class HeadingSettingTab extends PluginSettingTab {
       "."
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
+
+    //* folderBlacklist
+    new Setting(containerEl)
+      .setName("Manage folder blacklist")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageFolderBlacklist();
+        });
+      });
+
+    //* fileRegexBlacklist
+    new Setting(containerEl)
+      .setName("Manage note name regex blacklist")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageFileRegexBlacklist();
+        });
+      });
 
     new Setting(containerEl).setName("Reading view").setHeading();
 
@@ -995,5 +1053,112 @@ class HeadingSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+  }
+
+  private manageFolderBlacklist() {
+    const { containerEl } = this;
+
+    containerEl.empty();
+
+    new Setting(containerEl)
+      .setName("Manage folder blacklist")
+      .setHeading()
+      .addButton((button) => {
+        button.setButtonText("Back").onClick(() => {
+          this.display();
+        });
+      });
+
+    this.plugin.settings.folderBlacklist.forEach((folder, index) => {
+      new Setting(containerEl)
+        .setName(`Folder balcklist ${index + 1}`)
+        .addText((text) => {
+          text.setValue(folder).onChange(async (value) => {
+            this.plugin.settings.folderBlacklist[index] = value;
+            await this.plugin.saveSettings();
+          });
+
+          const suggest = new FolderSuggest(this.app, text.inputEl);
+          suggest.onSelect(async (value) => {
+            text.setValue(value);
+            this.plugin.settings.folderBlacklist[index] = value;
+            suggest.close();
+            await this.plugin.saveSettings();
+          });
+        })
+        .addButton((button) => {
+          button
+            .setButtonText("Delete")
+            .setWarning()
+            .onClick(async () => {
+              this.plugin.settings.folderBlacklist.splice(index, 1);
+              await this.plugin.saveSettings();
+              this.manageFolderBlacklist();
+            });
+        });
+    });
+
+    new Setting(containerEl).addButton((button) => {
+      button
+        .setButtonText("Add")
+        .setCta()
+        .setTooltip("Add a new folder to the blacklist")
+        .onClick(async () => {
+          this.plugin.settings.folderBlacklist.push("");
+          await this.plugin.saveSettings();
+          this.manageFolderBlacklist();
+        });
+    });
+  }
+
+  private manageFileRegexBlacklist() {
+    const { containerEl } = this;
+
+    containerEl.empty();
+
+    new Setting(containerEl)
+      .setName("Manage note name regex blacklist")
+      .setHeading()
+      .addButton((button) => {
+        button.setButtonText("Back").onClick(() => {
+          this.display();
+        });
+      });
+
+    this.plugin.settings.fileRegexBlacklist.forEach((regex, index) => {
+      new Setting(containerEl)
+        .setName(`Note name regex blacklist ${index + 1}`)
+        .addText((text) =>
+          text
+            .setPlaceholder("e.g., /^daily.*/i")
+            .setValue(regex)
+            .onChange(async (value) => {
+              this.plugin.settings.fileRegexBlacklist[index] = value.trim();
+              await this.plugin.saveSettings();
+            })
+        )
+        .addButton((button) => {
+          button
+            .setButtonText("Delete")
+            .setWarning()
+            .onClick(async () => {
+              this.plugin.settings.fileRegexBlacklist.splice(index, 1);
+              await this.plugin.saveSettings();
+              this.manageFileRegexBlacklist();
+            });
+        });
+    });
+
+    new Setting(containerEl).addButton((button) => {
+      button
+        .setButtonText("Add")
+        .setCta()
+        .setTooltip("Add a new note name regex blacklist")
+        .onClick(async () => {
+          this.plugin.settings.fileRegexBlacklist.push("");
+          await this.plugin.saveSettings();
+          this.manageFileRegexBlacklist();
+        });
+    });
   }
 }

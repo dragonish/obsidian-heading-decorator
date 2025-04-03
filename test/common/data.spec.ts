@@ -5,6 +5,7 @@ import {
   compareMarkdownText,
   getBoolean,
   checkEnabledCss,
+  stringToRegex,
 } from "../../common/data";
 
 describe("common/data", function () {
@@ -90,5 +91,14 @@ describe("common/data", function () {
       .to.be.true;
     expect(checkEnabledCss("disable-reading-heading enable-heading", "reading"))
       .to.be.false;
+  });
+
+  it("stringToRegex", function () {
+    expect(stringToRegex("")).to.be.null;
+    expect(stringToRegex("abc")).to.be.null;
+    expect(stringToRegex("/abc/")).to.be.an.instanceof(RegExp);
+    expect(stringToRegex("/abc/ig")).to.be.an.instanceof(RegExp);
+    expect(stringToRegex("/a\\/bc/ig")).to.be.an.instanceof(RegExp);
+    expect(stringToRegex("/abc/a")).to.be.null;
   });
 });
