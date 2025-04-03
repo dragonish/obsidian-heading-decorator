@@ -666,24 +666,6 @@ class HeadingSettingTab extends PluginSettingTab {
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
-    //* folderBlacklist
-    new Setting(containerEl)
-      .setName("Manage folder blacklist")
-      .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageFolderBlacklist();
-        });
-      });
-
-    //* fileRegexBlacklist
-    new Setting(containerEl)
-      .setName("Manage note name regex blacklist")
-      .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageFileRegexBlacklist();
-        });
-      });
-
     new Setting(containerEl).setName("Reading view").setHeading();
 
     //* enabledInReading
@@ -775,6 +757,26 @@ class HeadingSettingTab extends PluginSettingTab {
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
           this.manageHeadingDecoratorSettings("outlineSettings");
+        });
+      });
+
+    new Setting(containerEl).setName("Blacklist").setHeading();
+
+    //* folderBlacklist
+    new Setting(containerEl)
+      .setName("Manage folder blacklist")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageFolderBlacklist();
+        });
+      });
+
+    //* fileRegexBlacklist
+    new Setting(containerEl)
+      .setName("Manage note name regex blacklist")
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageFileRegexBlacklist();
         });
       });
   }
