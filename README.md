@@ -98,6 +98,16 @@ Directly decorate the heading according to the level. For example:
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
+### Blacklist
+
+#### Folder blacklist
+
+Disables the heading decorator in notes within the specified folder. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+
+#### Note name regex blocklist
+
+Disables the heading decorator in notes whose note name matches the specified regular expression. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+
 ## Enabled status of notes
 
 This plugin allows for configure the enabled status based on specific fields in the note [properties](https://help.obsidian.md/Editing+and+formatting/Properties). You can individually control the enabled status of a note.
