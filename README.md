@@ -117,10 +117,10 @@ For example:
 ```yaml
 ---
 heading:
-  - reading: true  # Or yes, on, 1.
-  - preview: false # Or no, off, 0.
-  - source: false  # Fields are optional.
-  - outline: ~     # Other values are equivalent to undeclared.
+  reading: true  # Or yes, on, 1.
+  preview: false # Or no, off, 0.
+  source: false  # Fields are optional.
+  outline: ~     # Other values are equivalent to undeclared.
 ---
 ```
 
@@ -129,7 +129,7 @@ You can use `all` to set all status:
 ```yaml
 ---
 heading:
-  - all: false
+  all: false
 ---
 ```
 
