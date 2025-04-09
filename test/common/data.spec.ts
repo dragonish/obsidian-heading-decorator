@@ -37,6 +37,7 @@ describe("common/data", function () {
     expect(compareMarkdownText("h1", "__h1__")).to.be.true;
     expect(compareMarkdownText("h1", "==h1==")).to.be.true;
     expect(compareMarkdownText("h1", "~~h1~~")).to.be.true;
+    expect(compareMarkdownText("h1 \\<content>", "h1 <content>")).to.be.true;
   });
 
   it("getBoolean", function () {

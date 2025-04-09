@@ -228,7 +228,7 @@ export function compareMarkdownText(l: string, r: string): boolean {
   if (l === r) {
     return true;
   } else if (
-    l.replaceAll(/[`=_~*\s]/g, "") === r.replaceAll(/[`=_~*\s]/g, "")
+    l.replaceAll(/[`=_~*\\\s]/g, "") === r.replaceAll(/[`=_~*\\\s]/g, "")
   ) {
     return true;
   }
