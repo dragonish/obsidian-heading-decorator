@@ -43,6 +43,12 @@ Control the display effect of the decorator.
 - **Opacity**: Set the opacity of the heading decorator. The value is the form of percentage.
 - **Position**: Set the position of the heading decorator. You can configure the content to appear before or after the heading.
 
+Here are some examples of the differences between different positions:
+
+| Before the heading | Before the heading (inside) | After the heading | After the heading (inside) |
+| :----------------- | :-------------------------: | :---------------: | :------------------------: |
+| ![before](images/before.jpg) | ![before-inside](images/before-inside.jpg) | ![after](images/after.jpg) | ![after-inside](images/after-inside.jpg) |
+
 ### Ordered
 
 Similar to the effect displayed in the [Preview](#preview).
