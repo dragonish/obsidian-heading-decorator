@@ -2,7 +2,9 @@ import { htmlToMarkdown } from "obsidian";
 import {
   readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
+  beforeInsideDecoratorClassName,
   afterDecoratorClassName,
+  afterInsideDecoratorClassName,
   outlineHeadingDecoratorClassName,
   compareMarkdownText,
 } from "./data";
@@ -36,14 +38,26 @@ export function queryHeadingLevelByElement(element: HTMLElement): number {
  * Get the class name for a given position.
  *
  * @param position The position to get the class name for.
+ * @param ignoreInsideFlag Whether to ignore the inside flag.
  * @returns The class name.
  */
-export function getPositionClassName(position: PostionOptions): string {
+export function getPositionClassName(
+  position: PostionOptions,
+  ignoreInsideFlag?: boolean
+): string {
   switch (position) {
     case "before":
       return beforeDecoratorClassName;
     case "after":
       return afterDecoratorClassName;
+    case "before-inside":
+      return ignoreInsideFlag
+        ? beforeDecoratorClassName
+        : beforeInsideDecoratorClassName;
+    case "after-inside":
+      return ignoreInsideFlag
+        ? afterDecoratorClassName
+        : afterInsideDecoratorClassName;
     default:
       return "";
   }
@@ -64,12 +78,40 @@ export function decorateHTMLElement(
   position: PostionOptions
 ): void {
   if (content) {
-    element.dataset.headingDecorator = content;
-    element.dataset.decoratorOpacity = `${opacity}%`;
-    element.classList.add(
-      readingHeadingDecoratorClassName,
-      getPositionClassName(position)
-    );
+    if (position.includes("inside")) {
+      const span = element.createSpan({
+        cls: [readingHeadingDecoratorClassName, getPositionClassName(position)],
+        text: content,
+        attr: {
+          "data-decorator-opacity": `${opacity}%`,
+        },
+      });
+
+      if (position === "before-inside") {
+        const headingCollapseIndicator = element.find(
+          ".heading-collapse-indicator"
+        );
+        if (headingCollapseIndicator) {
+          headingCollapseIndicator.after(span);
+        } else {
+          const firstChild = element.firstChild;
+          if (firstChild) {
+            firstChild.before(span);
+          } else {
+            element.appendChild(span);
+          }
+        }
+      } else {
+        element.appendChild(span);
+      }
+    } else {
+      element.dataset.headingDecorator = content;
+      element.dataset.decoratorOpacity = `${opacity}%`;
+      element.classList.add(
+        readingHeadingDecoratorClassName,
+        getPositionClassName(position)
+      );
+    }
   }
 }
 
@@ -125,7 +167,7 @@ export function decorateOutlineElement(
       inner.dataset.decoratorOpacity = `${opacity}%`;
       inner.classList.add(
         outlineHeadingDecoratorClassName,
-        getPositionClassName(position)
+        getPositionClassName(position, true)
       );
     }
   }

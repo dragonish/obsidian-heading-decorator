@@ -90,7 +90,9 @@ export const sourceHeadingDecoratorClassName =
 export const outlineHeadingDecoratorClassName =
   "outline-custom-heading-decorator";
 export const beforeDecoratorClassName = "before-heading-decorator";
+export const beforeInsideDecoratorClassName = "before-inside-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";
+export const afterInsideDecoratorClassName = "after-inside-heading-decorator";
 export const headingsSelector =
   ".el-h1 h1, .el-h2 h2, .el-h3 h3, .el-h4 h4, .el-h5 h5, .el-h6 h6";
 export const defaultHeadingTuple: HeadingTuple = [
@@ -309,4 +311,27 @@ export function stringToRegex(value: string) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Find the first non-hash character index in a string. If the string starts with a hash, it will find the first non-hash character after the hash. Otherwise, it will find the first non-space character.
+ *
+ * @param text The string to search.
+ * @returns The index of the first non-hash character. If no such character exists, returns 0.
+ */
+export function findFirstCharacterIndex(text: string): number {
+  if (text.trim().startsWith("#")) {
+    for (let index = 0; index < text.length; index++) {
+      if (text[index] !== "#" && text[index].trim()) {
+        return index;
+      }
+    }
+  } else {
+    for (let index = 0; index < text.length; index++) {
+      if (text[index].trim()) {
+        return index;
+      }
+    }
+  }
+  return 0;
 }

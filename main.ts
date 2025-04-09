@@ -789,7 +789,7 @@ class HeadingSettingTab extends PluginSettingTab {
   }
 
   private isPositionValue(value: string): value is PostionOptions {
-    return value === "before" || value === "after";
+    return ["before", "after", "before-inside", "after-inside"].includes(value);
   }
 
   private manageHeadingDecoratorSettings(
@@ -883,10 +883,22 @@ class HeadingSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Position")
       .setDesc("Set the position of the heading decorator.")
-      .addDropdown((dropdown) =>
+      .addDropdown((dropdown) => {
+        const options: Record<string, string> =
+          settingsType === "outlineSettings"
+            ? {
+                before: "Before the heading",
+                after: "After the heading",
+              }
+            : {
+                before: "Before the heading",
+                "before-inside": "Before the heading (inside)",
+                after: "After the heading",
+                "after-inside": "After the heading (inside)",
+              };
+
         dropdown
-          .addOption("before", "Before the heading")
-          .addOption("after", "After the heading")
+          .addOptions(options)
           .setValue(this.plugin.settings[settingsType].position)
           .onChange(async (value) => {
             this.plugin.settings[settingsType].position = this.isPositionValue(
@@ -895,8 +907,8 @@ class HeadingSettingTab extends PluginSettingTab {
               ? value
               : "before";
             await this.plugin.saveSettings();
-          })
-      );
+          });
+      });
 
     new Setting(containerEl).setName("Ordered").setHeading();
 

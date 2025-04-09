@@ -7,12 +7,14 @@ import {
   Decoration,
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
+import { HeadingWidget } from "./weight";
 import type { HeadingPluginData } from "../common/data";
 import {
   previewHeadingDecoratorClassName,
   sourceHeadingDecoratorClassName,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
+  findFirstCharacterIndex,
 } from "../common/data";
 import { getPositionClassName } from "../common/dom";
 import { Counter, Querier } from "../common/counter";
@@ -172,14 +174,39 @@ export class HeadingViewPlugin implements PluginValue {
           const headingClassName = isLivePreviwMode
             ? previewHeadingDecoratorClassName
             : sourceHeadingDecoratorClassName;
-          const deco = Decoration.line({
-            attributes: {
-              class: `${headingClassName} ${getPositionClassName(position)}`,
-              "data-heading-decorator": content,
-              "data-decorator-opacity": `${opacity}%`,
-            },
-          });
-          builder.add(line.from, line.from, deco);
+
+          if (position.includes("inside")) {
+            const widget = new HeadingWidget(
+              isLivePreviwMode,
+              content,
+              opacity,
+              position
+            );
+            const deco = Decoration.widget({
+              widget,
+              side: 1,
+              inlineOrder: true,
+              block: false,
+            });
+
+            if (position === "before-inside") {
+              const charIndex = isLivePreviwMode
+                ? findFirstCharacterIndex(lineText)
+                : 0;
+              builder.add(line.from + charIndex, line.from + charIndex, deco);
+            } else {
+              builder.add(line.to, line.to, deco);
+            }
+          } else {
+            const deco = Decoration.line({
+              attributes: {
+                class: `${headingClassName} ${getPositionClassName(position)}`,
+                "data-heading-decorator": content,
+                "data-decorator-opacity": `${opacity}%`,
+              },
+            });
+            builder.add(line.from, line.from, deco);
+          }
         }
       }
 

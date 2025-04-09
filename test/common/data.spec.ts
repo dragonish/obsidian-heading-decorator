@@ -6,6 +6,7 @@ import {
   getBoolean,
   checkEnabledCss,
   stringToRegex,
+  findFirstCharacterIndex,
 } from "../../common/data";
 
 describe("common/data", function () {
@@ -100,5 +101,16 @@ describe("common/data", function () {
     expect(stringToRegex("/abc/ig")).to.be.an.instanceof(RegExp);
     expect(stringToRegex("/a\\/bc/ig")).to.be.an.instanceof(RegExp);
     expect(stringToRegex("/abc/a")).to.be.null;
+  });
+
+  it("findFirstCharacterIndex", function () {
+    expect(findFirstCharacterIndex("")).to.equal(0);
+    expect(findFirstCharacterIndex(" ")).to.equal(0);
+    expect(findFirstCharacterIndex("# h1")).to.equal(2);
+    expect(findFirstCharacterIndex("## h2")).to.equal(3);
+    expect(findFirstCharacterIndex("#\th1")).to.equal(2);
+    expect(findFirstCharacterIndex(" # h1")).to.equal(3);
+    expect(findFirstCharacterIndex("h1")).to.equal(0);
+    expect(findFirstCharacterIndex(" h1")).to.equal(1);
   });
 });
