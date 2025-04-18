@@ -1,5 +1,6 @@
 import { EditorView, WidgetType } from "@codemirror/view";
 import {
+  headingDecoratorClassName,
   previewHeadingDecoratorClassName,
   sourceHeadingDecoratorClassName,
 } from "../common/data";
@@ -30,7 +31,11 @@ export class HeadingWidget extends WidgetType {
       : sourceHeadingDecoratorClassName;
 
     const span = view.dom.createSpan({
-      cls: [headingClassName, getPositionClassName(this.position)],
+      cls: [
+        headingDecoratorClassName,
+        headingClassName,
+        getPositionClassName(this.position),
+      ],
       text: this.content,
       attr: {
         "data-decorator-opacity": `${this.opacity}%`,

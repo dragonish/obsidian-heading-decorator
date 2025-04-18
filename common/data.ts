@@ -81,6 +81,7 @@ export type HeadingPluginData = Omit<
   | "outlineSettings"
 >;
 
+export const headingDecoratorClassName = "custom-heading-decorator";
 export const readingHeadingDecoratorClassName =
   "reading-custom-heading-decorator";
 export const previewHeadingDecoratorClassName =
