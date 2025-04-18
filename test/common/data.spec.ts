@@ -28,16 +28,22 @@ describe("common/data", function () {
     expect(compareMarkdownText("", "")).to.be.true;
     expect(compareMarkdownText("h1", "h1")).to.be.true;
     expect(compareMarkdownText("h1", "h2")).to.be.false;
-    expect(compareMarkdownText("h1", "`h1`")).to.be.true;
-    expect(compareMarkdownText("h1 h2", "`h1` h2")).to.be.true;
-    expect(compareMarkdownText("h1 `", "h1 `` ` ``")).to.be.true;
-    expect(compareMarkdownText("h1", "*h1*")).to.be.true;
-    expect(compareMarkdownText("h1", "**h1**")).to.be.true;
-    expect(compareMarkdownText("h1", "_h1_")).to.be.true;
-    expect(compareMarkdownText("h1", "__h1__")).to.be.true;
-    expect(compareMarkdownText("h1", "==h1==")).to.be.true;
-    expect(compareMarkdownText("h1", "~~h1~~")).to.be.true;
+    expect(compareMarkdownText("`h1`", "h1")).to.be.true;
+    expect(compareMarkdownText("`h1` h2", "h1 h2")).to.be.true;
+    expect(compareMarkdownText("h1 `` ` ``", "h1 `")).to.be.true;
+    expect(compareMarkdownText("*h1*", "h1")).to.be.true;
+    expect(compareMarkdownText("**h1**", "h1")).to.be.true;
+    expect(compareMarkdownText("_h1_", "h1")).to.be.true;
+    expect(compareMarkdownText("__h1__", "h1")).to.be.true;
+    expect(compareMarkdownText("==h1==", "h1")).to.be.true;
+    expect(compareMarkdownText("~~h1~~", "h1")).to.be.true;
     expect(compareMarkdownText("h1 \\<content>", "h1 <content>")).to.be.true;
+    expect(compareMarkdownText("[h1](/h1)", "h1")).to.be.true;
+    expect(compareMarkdownText("[h1](/h1) content", "h1 content")).to.be.true;
+    expect(compareMarkdownText("[[h1]]", "h1")).to.be.true;
+    expect(compareMarkdownText("[[h2|h1]]", "h1")).to.be.true;
+    expect(compareMarkdownText("[[h1#h2]]", "h1 > h2")).to.be.true;
+    expect(compareMarkdownText("[[#h2]]", "h2")).to.be.true;
   });
 
   it("getBoolean", function () {
