@@ -46,7 +46,7 @@ Control the display effect of the decorator.
 Here are some examples of the differences between different positions:
 
 | Before the heading | Before the heading (inside) | After the heading | After the heading (inside) |
-| :----------------- | :-------------------------: | :---------------: | :------------------------: |
+| :----------------: | :-------------------------: | :---------------: | :------------------------: |
 | ![before](images/before.jpg) | ![before-inside](images/before-inside.jpg) | ![after](images/after.jpg) | ![after-inside](images/after-inside.jpg) |
 
 ### Ordered
