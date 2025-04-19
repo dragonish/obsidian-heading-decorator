@@ -163,7 +163,7 @@ cssclasses: disable-heading
 ---
 ```
 
-## Custom style
+## Custom decorator styles
 
 You can customize the heading decorator style by CSS classes. For decorators in the editor, `.custom-heading-decorator` can be used. Or for specific editor modes:
 
