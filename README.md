@@ -171,8 +171,6 @@ You can customize the heading decorator style by CSS classes. For decorators in 
 - live preview: `.preview-custom-heading-decorator`.
 - source mode: `.source-custom-heading-decorator`.
 
-For the decorators in the outline, `.outline-custom-heading-decorator` can be used.
-
 For the decorators in the outline, it is necessary to use `.outline-custom-heading-decorator` with pseudo-element keywords: `.outline-custom-heading-decorator::before` or `.outline-custom-heading-decorator::after`.
 
 For example, make all the decorators display in green:
