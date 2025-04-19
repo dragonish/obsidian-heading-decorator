@@ -88,12 +88,12 @@
 .cm-focused
   .cm-active
   .custom-heading-decorator.preview-custom-heading-decorator,
-.cm-line:has(.cm-header.cm-formatting)
+.cm-line:has(.cm-header.cm-formatting-header)
   .custom-heading-decorator.preview-custom-heading-decorator,
 .cm-focused
   .cm-active
   .custom-heading-decorator.preview-custom-heading-decorator,
-.cm-line:has(.cm-header.cm-formatting)
+.cm-line:has(.cm-header.cm-formatting-header)
   .custom-heading-decorator.preview-custom-heading-decorator {
   display: none;
 }
