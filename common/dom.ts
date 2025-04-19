@@ -176,10 +176,10 @@ export function decorateOutlineElement(
 /**
  * Compare heading text.
  *
- * @param l The left heading text.
- * @param r The right heading text.
+ * @param source The source heading text.
+ * @param outline The outline heading text.
  * @returns true if the two headings are equal, false otherwise.
  */
-export function compareHeadingText(l: string, r: string): boolean {
-  return compareMarkdownText(htmlToMarkdown(l), htmlToMarkdown(r));
+export function compareHeadingText(source: string, outline: string): boolean {
+  return compareMarkdownText(htmlToMarkdown(source), htmlToMarkdown(outline));
 }

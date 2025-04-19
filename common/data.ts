@@ -220,17 +220,41 @@ export function diffLevel(current: number, last: number): boolean {
 /**
  * Compare Markdown text.
  *
- * @param l left Markdown text.
- * @param r right Markdown text.
+ * @param source The source heading text.
+ * @param outline The outline heading text.
  * @returns boolean. if left Markdown text is equal to right Markdown text, return true. otherwise, return false.
  */
-export function compareMarkdownText(l: string, r: string): boolean {
-  if (l === r) {
+export function compareMarkdownText(source: string, outline: string): boolean {
+  if (source === outline) {
     return true;
-  } else if (
-    l.replaceAll(/[`=_~*\\\s]/g, "") === r.replaceAll(/[`=_~*\\\s]/g, "")
-  ) {
-    return true;
+  } else {
+    source = source.replaceAll(/\[(.+)\]\(.*\)/g, "$1");
+
+    if (source === outline) {
+      return true;
+    }
+
+    source = source.replaceAll(/\[\[.+\|(.+)\]\]/g, "$1");
+    if (source === outline) {
+      return true;
+    }
+
+    source = source.replaceAll(/\[\[(.+)#(.+)\]\]/g, "$1 > $2");
+    if (source === outline) {
+      return true;
+    }
+
+    source = source.replaceAll(/\[\[#?(.+)\]\]/g, "$1");
+    if (source === outline) {
+      return true;
+    }
+
+    if (
+      source.replaceAll(/[`=_~*\\\s]/g, "") ===
+      outline.replaceAll(/[`=_~*\\\s]/g, "")
+    ) {
+      return true;
+    }
   }
 
   return false;
