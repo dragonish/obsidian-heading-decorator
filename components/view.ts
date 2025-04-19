@@ -10,13 +10,10 @@ import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { HeadingWidget } from "./weight";
 import type { HeadingPluginData } from "../common/data";
 import {
-  previewHeadingDecoratorClassName,
-  sourceHeadingDecoratorClassName,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   findFirstCharacterIndex,
 } from "../common/data";
-import { getPositionClassName } from "../common/dom";
 import { Counter, Querier } from "../common/counter";
 import { Heading } from "../common/heading";
 
@@ -171,41 +168,27 @@ export class HeadingViewPlugin implements PluginValue {
         const content = counter.decorator(level);
 
         if (content) {
-          const headingClassName = isLivePreviwMode
-            ? previewHeadingDecoratorClassName
-            : sourceHeadingDecoratorClassName;
+          const widget = new HeadingWidget(
+            isLivePreviwMode,
+            content,
+            opacity,
+            position
+          );
+          const deco = Decoration.widget({
+            widget,
+            side: this.getSide(position),
+            block: false,
+          });
 
-          if (position.includes("inside")) {
-            const widget = new HeadingWidget(
-              isLivePreviwMode,
-              content,
-              opacity,
-              position
-            );
-            const deco = Decoration.widget({
-              widget,
-              side: 1,
-              inlineOrder: true,
-              block: false,
-            });
-
-            if (position === "before-inside") {
-              const charIndex = isLivePreviwMode
-                ? findFirstCharacterIndex(lineText)
-                : 0;
-              builder.add(line.from + charIndex, line.from + charIndex, deco);
-            } else {
-              builder.add(line.to, line.to, deco);
-            }
-          } else {
-            const deco = Decoration.line({
-              attributes: {
-                class: `${headingClassName} ${getPositionClassName(position)}`,
-                "data-heading-decorator": content,
-                "data-decorator-opacity": `${opacity}%`,
-              },
-            });
+          if (position === "before-inside") {
+            const charIndex = isLivePreviwMode
+              ? findFirstCharacterIndex(lineText)
+              : 0;
+            builder.add(line.from + charIndex, line.from + charIndex, deco);
+          } else if (position === "before") {
             builder.add(line.from, line.from, deco);
+          } else {
+            builder.add(line.to, line.to, deco);
           }
         }
       }
@@ -220,6 +203,14 @@ export class HeadingViewPlugin implements PluginValue {
       view.dispatch({
         effects: updateHeadingDecorations.of(Decoration.none),
       });
+    }
+  }
+
+  private getSide(position: PostionOptions): number {
+    if (position.includes("before")) {
+      return position.includes("inside") ? 1 : -1;
+    } else {
+      return position.includes("inside") ? -1 : 1;
     }
   }
 }

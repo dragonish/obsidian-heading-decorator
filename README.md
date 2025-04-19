@@ -45,9 +45,9 @@ Control the display effect of the decorator.
 
 Here are some examples of the differences between different positions:
 
-| Before the heading | Before the heading (inside) | After the heading | After the heading (inside) |
-| :----------------: | :-------------------------: | :---------------: | :------------------------: |
-| ![before](images/before.jpg) | ![before-inside](images/before-inside.jpg) | ![after](images/after.jpg) | ![after-inside](images/after-inside.jpg) |
+| Before the heading | Before the heading (inside) | After the heading |
+| :----------------: | :-------------------------: | :---------------: |
+| ![before](images/before.jpg) | ![before-inside](images/before-inside.jpg) | ![after](images/after.jpg) |
 
 ### Ordered
 
@@ -161,6 +161,28 @@ Like:
 ---
 cssclasses: disable-heading
 ---
+```
+
+## Custom style
+
+You can customize the heading decorator style by CSS classes. For decorators in the editor, `.custom-heading-decorator` can be used. Or for specific editor modes:
+
+- reading view: `.reading-custom-heading-decorator`.
+- live preview: `.preview-custom-heading-decorator`.
+- source mode: `.source-custom-heading-decorator`.
+
+For the decorators in the outline, `.outline-custom-heading-decorator` can be used.
+
+For the decorators in the outline, it is necessary to use `.outline-custom-heading-decorator` with pseudo-element keywords: `.outline-custom-heading-decorator::before` or `.outline-custom-heading-decorator::after`.
+
+For example, make all the decorators display in green:
+
+```css
+.custom-heading-decorator,
+.outline-custom-heading-decorator::before,
+.outline-custom-heading-decorator::after {
+  color: green;
+}
 ```
 
 ## Credits

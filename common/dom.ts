@@ -1,5 +1,6 @@
 import { htmlToMarkdown } from "obsidian";
 import {
+  headingDecoratorClassName,
   readingHeadingDecoratorClassName,
   beforeDecoratorClassName,
   beforeInsideDecoratorClassName,
@@ -78,39 +79,41 @@ export function decorateHTMLElement(
   position: PostionOptions
 ): void {
   if (content) {
-    if (position.includes("inside")) {
-      const span = element.createSpan({
-        cls: [readingHeadingDecoratorClassName, getPositionClassName(position)],
-        text: content,
-        attr: {
-          "data-decorator-opacity": `${opacity}%`,
-        },
-      });
+    const span = element.createSpan({
+      cls: [
+        headingDecoratorClassName,
+        readingHeadingDecoratorClassName,
+        getPositionClassName(position),
+      ],
+      text: content,
+      attr: {
+        "data-decorator-opacity": `${opacity}%`,
+      },
+    });
 
-      if (position === "before-inside") {
-        const headingCollapseIndicator = element.find(
-          ".heading-collapse-indicator"
-        );
-        if (headingCollapseIndicator) {
-          headingCollapseIndicator.after(span);
+    if (position === "before-inside") {
+      const headingCollapseIndicator = element.find(
+        ".heading-collapse-indicator"
+      );
+      if (headingCollapseIndicator) {
+        headingCollapseIndicator.after(span);
+      } else {
+        const firstChild = element.firstChild;
+        if (firstChild) {
+          firstChild.before(span);
         } else {
-          const firstChild = element.firstChild;
-          if (firstChild) {
-            firstChild.before(span);
-          } else {
-            element.appendChild(span);
-          }
+          element.appendChild(span);
         }
+      }
+    } else if (position === "before") {
+      const firstChild = element.firstChild;
+      if (firstChild) {
+        firstChild.before(span);
       } else {
         element.appendChild(span);
       }
     } else {
-      element.dataset.headingDecorator = content;
-      element.dataset.decoratorOpacity = `${opacity}%`;
-      element.classList.add(
-        readingHeadingDecoratorClassName,
-        getPositionClassName(position)
-      );
+      element.appendChild(span);
     }
   }
 }
