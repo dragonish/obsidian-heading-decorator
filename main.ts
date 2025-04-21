@@ -374,23 +374,6 @@ export default class HeadingPlugin extends Plugin {
           return;
         }
 
-        const {
-          enabledInEachNote,
-          opacity,
-          position,
-          ordered,
-          orderedDelimiter,
-          orderedTrailingDelimiter,
-          orderedStyleType,
-          orderedSpecifiedString,
-          orderedCustomIdents,
-          orderedIgnoreSingle,
-          orderedIgnoreMaximum = 6,
-          orderedBasedOnExisting,
-          orderedAllowZeroLevel,
-          unorderedLevelHeadings,
-        } = this.settings.outlineSettings;
-
         const state = view.getState();
         if (typeof state.file !== "string") {
           return;
@@ -416,6 +399,23 @@ export default class HeadingPlugin extends Plugin {
           "outline",
           frontmatter
         );
+
+        const {
+          enabledInEachNote,
+          opacity,
+          position,
+          ordered,
+          orderedDelimiter,
+          orderedTrailingDelimiter,
+          orderedStyleType,
+          orderedSpecifiedString,
+          orderedCustomIdents,
+          orderedIgnoreSingle,
+          orderedIgnoreMaximum = 6,
+          orderedBasedOnExisting,
+          orderedAllowZeroLevel,
+          unorderedLevelHeadings,
+        } = this.settings.outlineSettings;
 
         if (metadataEnabled == null) {
           if (enabledInEachNote != undefined && !enabledInEachNote) {
