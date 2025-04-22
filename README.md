@@ -190,6 +190,25 @@ For example, make all the decorators display in green:
 }
 ```
 
+In addition, the plugin provides a set of CSS variables for customizing the spacing of decorators:
+
+- `--reading-heading-decorator-margin`: the margin of the heading decorator in the reading view.
+- `--reading-heading-decorator-translate`: the translating vector value of the heading decorator in the reading view.
+- `--preview-heading-decorator-margin`: the margin of the heading decorator in the live preview.
+- `--preview-heading-decorator-translate`: the translating vector value of the heading decorator in the live preview.
+- `--source-heading-decorator-margin`: the margin of the heading decorator in the source mode.
+- `--source-heading-decorator-translate`: the translating vector value of the heading decorator in the source mode.
+- `--outline-heading-decorator-margin`: the margin of the heading decorator in the outline plugin.
+- `--file-explorer-heading-decorator-margin`: the margin of the heading decorator in the "Headings in Explorer" plugin.
+
+For example, to adjust the spacing in the reading view to `8px`:
+
+```css
+body {
+  --reading-heading-decorator-margin: 8px;
+}
+```
+
 ## Credits
 
 - [@jsamr/counter-style](https://github.com/jsamr/react-native-li/tree/master/packages/counter-style#readme)
