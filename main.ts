@@ -24,7 +24,7 @@ import {
   getOrderedCustomIdents,
   diffLevel,
   getBoolean,
-  checkEnabledCss,
+  checkEnabledCSS,
   stringToRegex,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
@@ -816,16 +816,27 @@ export default class HeadingPlugin extends Plugin {
       } else {
         const cssclasses = frontmatter.cssclasses;
         if (Array.isArray(cssclasses)) {
+          const cssStatus: CSSEnabledStatus = {
+            mode: null,
+            all: null,
+          };
+
           for (const cssItem of cssclasses) {
             if (typeof cssItem === "string") {
-              const s = checkEnabledCss(cssItem, mode);
-              if (s != null) {
-                return s;
+              const { mode: m, all: a } = checkEnabledCSS(cssItem, mode);
+              if (m != null) {
+                cssStatus.mode = m;
+              }
+              if (a != null) {
+                cssStatus.all = a;
               }
             }
           }
+
+          return cssStatus.mode ?? cssStatus.all;
         } else if (typeof cssclasses === "string") {
-          return checkEnabledCss(cssclasses, mode);
+          const { mode: m, all: a } = checkEnabledCSS(cssclasses, mode);
+          return m ?? a;
         }
       }
     }

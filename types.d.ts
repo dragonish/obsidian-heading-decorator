@@ -30,3 +30,8 @@ type HeadingMetaDataSettings = Record<
   HeadingMetadataSettingsType | "all",
   boolean
 >;
+
+interface CSSEnabledStatus {
+  mode: boolean | null;
+  all: boolean | null;
+}
