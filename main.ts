@@ -1032,7 +1032,7 @@ class HeadingSettingTab extends PluginSettingTab {
       .setName("Manage folder blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
-          this.manageFolderBlacklist();
+          this.manageFolderBlacklist(true);
         });
       });
 
@@ -1041,7 +1041,7 @@ class HeadingSettingTab extends PluginSettingTab {
       .setName("Manage note name regex blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
-          this.manageFileRegexBlacklist();
+          this.manageFileRegexBlacklist(true);
         });
       });
   }
@@ -1336,9 +1336,12 @@ class HeadingSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    //* Scroll back to the top
+    containerEl.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  private manageFolderBlacklist() {
+  private manageFolderBlacklist(scrollToTop = false) {
     const { containerEl } = this;
 
     containerEl.empty();
@@ -1392,9 +1395,14 @@ class HeadingSettingTab extends PluginSettingTab {
           this.manageFolderBlacklist();
         });
     });
+
+    //* Scroll back to the top
+    if (scrollToTop) {
+      containerEl.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
-  private manageFileRegexBlacklist() {
+  private manageFileRegexBlacklist(scrollToTop = false) {
     const { containerEl } = this;
 
     containerEl.empty();
@@ -1443,5 +1451,10 @@ class HeadingSettingTab extends PluginSettingTab {
           this.manageFileRegexBlacklist();
         });
     });
+
+    //* Scroll back to the top
+    if (scrollToTop) {
+      containerEl.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 }
