@@ -47,7 +47,7 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./components/view";
-import { OutlineChildComponent } from "./components/outline";
+import { ViewChildComponent } from "./components/child";
 import { FolderSuggest } from "./components/suggest";
 
 interface ObsidianEditor extends Editor {
@@ -83,10 +83,10 @@ export default class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
 
   private outlineIdSet: Set<string> = new Set();
-  private outlineComponents: OutlineChildComponent[] = [];
+  private outlineComponents: ViewChildComponent[] = [];
 
   private fileExplorerIdSet: Set<string> = new Set();
-  private fileExplorerComponents: OutlineChildComponent[] = [];
+  private fileExplorerComponents: ViewChildComponent[] = [];
 
   async onload() {
     await this.loadSettings();
@@ -407,7 +407,7 @@ export default class HeadingPlugin extends Plugin {
 
       this.outlineIdSet.add(leafId);
 
-      const oc = new OutlineChildComponent(
+      const vc = new ViewChildComponent(
         leafId,
         view,
         viewContent,
@@ -544,8 +544,8 @@ export default class HeadingPlugin extends Plugin {
         }
       );
 
-      this.outlineComponents.push(oc);
-      view.addChild(oc);
+      this.outlineComponents.push(vc);
+      view.addChild(vc);
       view.register(() => {
         this.outlineComponents = this.outlineComponents.filter(
           (item) => !item.equal(leafId)
@@ -572,7 +572,7 @@ export default class HeadingPlugin extends Plugin {
 
       this.fileExplorerIdSet.add(leafId);
 
-      const oc = new OutlineChildComponent(
+      const vc = new ViewChildComponent(
         leafId,
         view,
         navFilesContainer,
@@ -720,8 +720,8 @@ export default class HeadingPlugin extends Plugin {
         }
       );
 
-      this.fileExplorerComponents.push(oc);
-      view.addChild(oc);
+      this.fileExplorerComponents.push(vc);
+      view.addChild(vc);
       view.register(() => {
         this.fileExplorerComponents = this.fileExplorerComponents.filter(
           (item) => !item.equal(leafId)
