@@ -177,6 +177,26 @@ export function decorateOutlineElement(
 }
 
 /**
+ * Cancel an outline decorator from an HTML element.
+ *
+ * @param element The HTML element to cancel the decorator.
+ */
+export function cancelOutlineDecorator(element: HTMLElement): void {
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner"
+  );
+  if (inner) {
+    delete inner.dataset.headingDecorator;
+    delete inner.dataset.decoratorOpacity;
+    inner.classList.remove(
+      outlineHeadingDecoratorClassName,
+      beforeDecoratorClassName,
+      afterDecoratorClassName
+    );
+  }
+}
+
+/**
  * Compare heading text.
  *
  * @param source The source heading text.

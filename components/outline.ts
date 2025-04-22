@@ -4,7 +4,8 @@ export class OutlineChildComponent extends Component {
   private leafId: string;
   private view: View | null;
   private containerEl: HTMLElement | null;
-  private callback: () => void;
+  private decorationCallback: () => void;
+  private cancelDecorationCallback: () => void;
   private observer: MutationObserver | null = null;
   private config: MutationObserverInit = {
     childList: true,
@@ -15,13 +16,15 @@ export class OutlineChildComponent extends Component {
     leafId: string,
     view: View,
     containerEl: HTMLElement,
-    callback: () => void
+    decorationCallback: () => void,
+    cancelDecorationCallback: () => void
   ) {
     super();
     this.leafId = leafId;
     this.view = view;
     this.containerEl = containerEl;
-    this.callback = callback;
+    this.decorationCallback = decorationCallback;
+    this.cancelDecorationCallback = cancelDecorationCallback;
   }
 
   equal(leafId: string): boolean {
@@ -29,15 +32,20 @@ export class OutlineChildComponent extends Component {
   }
 
   detach(): void {
-    this.view?.removeChild(this);
+    if (this.view) {
+      //* Cancel decoration
+      this.cancelDecorationCallback();
+
+      this.view.removeChild(this);
+    }
   }
 
   onload(): void {
-    this.callback();
+    this.decorationCallback();
 
     this.observer = new MutationObserver(() => {
       this.observer?.disconnect();
-      this.callback();
+      this.decorationCallback();
       if (this.containerEl) {
         this.observer?.observe(this.containerEl, this.config);
       }

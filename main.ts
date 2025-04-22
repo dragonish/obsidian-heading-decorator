@@ -32,6 +32,7 @@ import { Heading } from "./common/heading";
 import {
   decorateHTMLElement,
   decorateOutlineElement,
+  cancelOutlineDecorator,
   queryHeadingLevelByElement,
   getTreeItemLevel,
   getTreeItemText,
@@ -367,130 +368,142 @@ export default class HeadingPlugin extends Plugin {
 
       this.outlineIdSet.add(leafId);
 
-      const oc = new OutlineChildComponent(leafId, view, viewContent, () => {
-        const headingElements =
-          viewContent.querySelectorAll<HTMLElement>(".tree-item");
-        if (headingElements.length === 0) {
-          return;
-        }
-
-        const state = view.getState();
-        if (typeof state.file !== "string") {
-          return;
-        }
-
-        const file = this.app.vault.getFileByPath(state.file);
-        if (!file) {
-          return;
-        }
-
-        const fileCache = this.app.metadataCache.getFileCache(file);
-        if (!fileCache) {
-          return;
-        }
-
-        const cacheHeadings = fileCache.headings || [];
-        if (cacheHeadings.length === 0) {
-          return;
-        }
-
-        const frontmatter = fileCache.frontmatter;
-        const metadataEnabled = this.getEnabledFromFrontmatter(
-          "outline",
-          frontmatter
-        );
-
-        const {
-          enabledInEachNote,
-          opacity,
-          position,
-          ordered,
-          orderedDelimiter,
-          orderedTrailingDelimiter,
-          orderedStyleType,
-          orderedSpecifiedString,
-          orderedCustomIdents,
-          orderedIgnoreSingle,
-          orderedIgnoreMaximum = 6,
-          orderedBasedOnExisting,
-          orderedAllowZeroLevel,
-          unorderedLevelHeadings,
-        } = this.settings.outlineSettings;
-
-        if (metadataEnabled == null) {
-          if (enabledInEachNote != undefined && !enabledInEachNote) {
+      const oc = new OutlineChildComponent(
+        leafId,
+        view,
+        viewContent,
+        () => {
+          const headingElements =
+            viewContent.querySelectorAll<HTMLElement>(".tree-item");
+          if (headingElements.length === 0) {
             return;
           }
 
-          if (this.getEnabledFromBlacklist(state.file)) {
+          const state = view.getState();
+          if (typeof state.file !== "string") {
             return;
           }
-        } else if (!metadataEnabled) {
-          return;
-        }
 
-        let ignoreTopLevel = 0;
-        if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-          const queier = new Querier(orderedAllowZeroLevel);
-          for (const cacheHeading of cacheHeadings) {
-            queier.handler(cacheHeading.level);
-            ignoreTopLevel = queier.query(
-              orderedIgnoreSingle,
-              orderedIgnoreMaximum
-            );
-            if (ignoreTopLevel === 0) {
-              break;
-            }
-          }
-        }
-
-        const counter = new Counter({
-          ordered,
-          delimiter: orderedDelimiter,
-          trailingDelimiter: orderedTrailingDelimiter,
-          styleType: orderedStyleType,
-          customIdents: getOrderedCustomIdents(orderedCustomIdents),
-          specifiedString: orderedSpecifiedString,
-          ignoreTopLevel,
-          allowZeroLevel: orderedAllowZeroLevel,
-          levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-        });
-
-        let lastCacheLevel = 0;
-        let lastReadLevel = 0;
-        for (
-          let i = 0, j = 0;
-          i < headingElements.length && j < cacheHeadings.length;
-          i++, j++
-        ) {
-          const readLevel = getTreeItemLevel(headingElements[i]);
-          const readText = getTreeItemText(headingElements[i]);
-          let cacheLevel = cacheHeadings[j].level;
-          if (i > 0) {
-            const diff = diffLevel(readLevel, lastReadLevel);
-            while (
-              j < cacheHeadings.length - 1 &&
-              (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
-                !compareHeadingText(cacheHeadings[j].heading, readText))
-            ) {
-              counter.handler(cacheLevel);
-              j++;
-              cacheLevel = cacheHeadings[j].level;
-            }
+          const file = this.app.vault.getFileByPath(state.file);
+          if (!file) {
+            return;
           }
 
-          const decoratorContent = counter.decorator(cacheLevel);
-          decorateOutlineElement(
-            headingElements[i],
-            decoratorContent,
-            opacity,
-            position
+          const fileCache = this.app.metadataCache.getFileCache(file);
+          if (!fileCache) {
+            return;
+          }
+
+          const cacheHeadings = fileCache.headings || [];
+          if (cacheHeadings.length === 0) {
+            return;
+          }
+
+          const frontmatter = fileCache.frontmatter;
+          const metadataEnabled = this.getEnabledFromFrontmatter(
+            "outline",
+            frontmatter
           );
 
-          lastCacheLevel = cacheLevel;
-          lastReadLevel = readLevel;
+          const {
+            enabledInEachNote,
+            opacity,
+            position,
+            ordered,
+            orderedDelimiter,
+            orderedTrailingDelimiter,
+            orderedStyleType,
+            orderedSpecifiedString,
+            orderedCustomIdents,
+            orderedIgnoreSingle,
+            orderedIgnoreMaximum = 6,
+            orderedBasedOnExisting,
+            orderedAllowZeroLevel,
+            unorderedLevelHeadings,
+          } = this.settings.outlineSettings;
+
+          if (metadataEnabled == null) {
+            if (enabledInEachNote != undefined && !enabledInEachNote) {
+              return;
+            }
+
+            if (this.getEnabledFromBlacklist(state.file)) {
+              return;
+            }
+          } else if (!metadataEnabled) {
+            return;
+          }
+
+          let ignoreTopLevel = 0;
+          if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
+            const queier = new Querier(orderedAllowZeroLevel);
+            for (const cacheHeading of cacheHeadings) {
+              queier.handler(cacheHeading.level);
+              ignoreTopLevel = queier.query(
+                orderedIgnoreSingle,
+                orderedIgnoreMaximum
+              );
+              if (ignoreTopLevel === 0) {
+                break;
+              }
+            }
+          }
+
+          const counter = new Counter({
+            ordered,
+            delimiter: orderedDelimiter,
+            trailingDelimiter: orderedTrailingDelimiter,
+            styleType: orderedStyleType,
+            customIdents: getOrderedCustomIdents(orderedCustomIdents),
+            specifiedString: orderedSpecifiedString,
+            ignoreTopLevel,
+            allowZeroLevel: orderedAllowZeroLevel,
+            levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+          });
+
+          let lastCacheLevel = 0;
+          let lastReadLevel = 0;
+          for (
+            let i = 0, j = 0;
+            i < headingElements.length && j < cacheHeadings.length;
+            i++, j++
+          ) {
+            const readLevel = getTreeItemLevel(headingElements[i]);
+            const readText = getTreeItemText(headingElements[i]);
+            let cacheLevel = cacheHeadings[j].level;
+            if (i > 0) {
+              const diff = diffLevel(readLevel, lastReadLevel);
+              while (
+                j < cacheHeadings.length - 1 &&
+                (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
+                  !compareHeadingText(cacheHeadings[j].heading, readText))
+              ) {
+                counter.handler(cacheLevel);
+                j++;
+                cacheLevel = cacheHeadings[j].level;
+              }
+            }
+
+            const decoratorContent = counter.decorator(cacheLevel);
+            decorateOutlineElement(
+              headingElements[i],
+              decoratorContent,
+              opacity,
+              position
+            );
+
+            lastCacheLevel = cacheLevel;
+            lastReadLevel = readLevel;
+          }
+        },
+        () => {
+          const headingElements =
+            viewContent.querySelectorAll<HTMLElement>(".tree-item");
+          headingElements.forEach((ele) => {
+            cancelOutlineDecorator(ele);
+          });
         }
-      });
+      );
 
       this.outlineComponents.push(oc);
       view.addChild(oc);
