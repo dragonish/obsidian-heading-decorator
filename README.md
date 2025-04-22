@@ -105,15 +105,15 @@ Directly decorate the heading according to the level. For example:
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
-### Blacklist
+### Blocklist
 
-#### Folder blacklist
+#### Folder blocklist
 
-Disables the heading decorator in notes within the specified folder. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+Disables the heading decorator in notes within the specified folder. For notes that are on the blocklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
 
 #### Note name regex blocklist
 
-Disables the heading decorator in notes whose note name matches the specified regular expression. The format uses [JavaScript regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), for example: `/^daily.*/i`. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+Disables the heading decorator in notes whose note name matches the specified regular expression. The format uses [JavaScript regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), for example: `/^daily.*/i`. For notes that are on the blocklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
 
 ## Enabled status of notes
 
