@@ -1025,11 +1025,11 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl).setName("Blacklist").setHeading();
+    new Setting(containerEl).setName("Blocklist").setHeading();
 
     //* folderBlacklist
     new Setting(containerEl)
-      .setName("Manage folder blacklist")
+      .setName("Manage folder blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
           this.manageFolderBlacklist();
@@ -1038,7 +1038,7 @@ class HeadingSettingTab extends PluginSettingTab {
 
     //* fileRegexBlacklist
     new Setting(containerEl)
-      .setName("Manage note name regex blacklist")
+      .setName("Manage note name regex blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
           this.manageFileRegexBlacklist();
@@ -1344,7 +1344,7 @@ class HeadingSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage folder blacklist")
+      .setName("Manage folder blocklist")
       .setHeading()
       .addButton((button) => {
         button.setButtonText("Back").onClick(() => {
@@ -1354,7 +1354,7 @@ class HeadingSettingTab extends PluginSettingTab {
 
     this.plugin.settings.folderBlacklist.forEach((folder, index) => {
       new Setting(containerEl)
-        .setName(`Folder balcklist ${index + 1}`)
+        .setName(`Folder blocklist ${index + 1}`)
         .addText((text) => {
           text.setValue(folder).onChange(async (value) => {
             this.plugin.settings.folderBlacklist[index] = value;
@@ -1385,7 +1385,7 @@ class HeadingSettingTab extends PluginSettingTab {
       button
         .setButtonText("Add")
         .setCta()
-        .setTooltip("Add a new folder to the blacklist")
+        .setTooltip("Add a new folder to the blocklist")
         .onClick(async () => {
           this.plugin.settings.folderBlacklist.push("");
           await this.plugin.saveSettings();
@@ -1400,7 +1400,7 @@ class HeadingSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage note name regex blacklist")
+      .setName("Manage note name regex blocklist")
       .setHeading()
       .addButton((button) => {
         button.setButtonText("Back").onClick(() => {
@@ -1410,7 +1410,7 @@ class HeadingSettingTab extends PluginSettingTab {
 
     this.plugin.settings.fileRegexBlacklist.forEach((regex, index) => {
       new Setting(containerEl)
-        .setName(`Note name regex blacklist ${index + 1}`)
+        .setName(`Note name regex blocklist ${index + 1}`)
         .addText((text) =>
           text
             .setPlaceholder("e.g., /^daily.*/i")
@@ -1436,7 +1436,7 @@ class HeadingSettingTab extends PluginSettingTab {
       button
         .setButtonText("Add")
         .setCta()
-        .setTooltip("Add a new note name regex blacklist")
+        .setTooltip("Add a new note name regex blocklist")
         .onClick(async () => {
           this.plugin.settings.fileRegexBlacklist.push("");
           await this.plugin.saveSettings();
