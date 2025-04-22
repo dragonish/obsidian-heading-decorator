@@ -17,9 +17,15 @@ type PluginDecoratorSettingsType =
   | "readingSettings"
   | "previewSettings"
   | "sourceSettings"
-  | "outlineSettings";
+  | "outlineSettings"
+  | "fileExplorerSettings";
 
-type HeadingMetadataSettingsType = "reading" | "preview" | "source" | "outline";
+type HeadingMetadataSettingsType =
+  | "reading"
+  | "preview"
+  | "source"
+  | "outline"
+  | "file-explorer";
 type HeadingMetaDataSettings = Record<
   HeadingMetadataSettingsType | "all",
   boolean

@@ -68,6 +68,7 @@ export type HeadingPluginSettings = {
   enabledInPreview: boolean;
   enabledInSource: boolean;
   enabledInOutline: boolean;
+  enabledInFileExplorer: boolean;
 } & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
 
 export type HeadingPluginData = Omit<
@@ -79,6 +80,8 @@ export type HeadingPluginData = Omit<
   | "readingSettings"
   | "enabledInOutline"
   | "outlineSettings"
+  | "enabledInFileExplorer"
+  | "fileExplorerSettings"
 >;
 
 export const headingDecoratorClassName = "custom-heading-decorator";
@@ -90,6 +93,8 @@ export const sourceHeadingDecoratorClassName =
   "source-custom-heading-decorator";
 export const outlineHeadingDecoratorClassName =
   "outline-custom-heading-decorator";
+export const fileExplorerHeadingDecoratorClassName =
+  "file-explorer-custom-heading-decorator";
 export const beforeDecoratorClassName = "before-heading-decorator";
 export const beforeInsideDecoratorClassName = "before-inside-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";
