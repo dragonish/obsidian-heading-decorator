@@ -668,7 +668,7 @@ class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
-    const metadataKeywordDesc = document.createDocumentFragment();
+    const metadataKeywordDesc = createFragment();
     metadataKeywordDesc.append(
       "The key name that reads the enabled status from the ",
       createEl("a", {
