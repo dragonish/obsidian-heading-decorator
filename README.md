@@ -157,11 +157,11 @@ If you prefer to use Obsidian's default property `cssclasses`, you can also fill
 - file-explorer: `enable-file-explorer-heading`/`disable-file-explorer-heading`
 - all: `enable-heading`/`disable-heading`
 
-Like:
+For example, a value equivalent to the above example:
 
 ```yaml
 ---
-cssclasses: disable-heading
+cssclasses: disable-heading enable-reading-heading
 ---
 ```
 
