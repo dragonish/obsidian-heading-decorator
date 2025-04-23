@@ -6,7 +6,7 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implement displaying specific content around headings based on their levels.
 
-This plugin supports optional decoration for reading view, editing view (*Live Preview* and *Source mode*) and *[Outline](https://help.obsidian.md/plugins/outline)* plugin. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
+This plugin supports optional decoration for reading view, editing view (*Live Preview* and *Source mode*), *[Outline](https://help.obsidian.md/plugins/outline)* and *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
 
 ## Preview
 
@@ -32,6 +32,7 @@ The plugin supports configure heading decorator for each editor mode. You can co
 - **Enabled in live preview**: Allow to decorate the heading under the *Live Preview*.
 - **Enabled in source mode**: Allow to decorate the heading under the *Source mode*.
 - **Enabled in outline plugin**: Allow to decorate the heading under the *Outline* plugin.
+- **Enabled in "Headings in Explorer" plugin**: Allow to decorate the heading under the *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin.
 
 In addition, you can enable the default status of each note within the *Manage* subpage. It mainly works together with [Enabled status of notes](#enabled-status-of-notes).
 
@@ -55,7 +56,7 @@ Similar to the effect displayed in the [Preview](#preview).
 
 You can control the counter style type and delimiter. There are two special types of counter styles:
 
-- **Custom list styles**: Set custom list styles for ordered list. Using spaces to separate entries. 
+- **Custom list styles**: Set custom list styles for ordered list. Using spaces to separate entries.
 - **Specified string**: Set a specified string for ordered list.
 
 For example:
@@ -104,42 +105,21 @@ Directly decorate the heading according to the level. For example:
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
-### Blacklist
+### Blocklist
 
-#### Folder blacklist
+#### Folder blocklist
 
-Disables the heading decorator in notes within the specified folder. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+Disables the heading decorator in notes within the specified folder. For notes that are on the blocklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
 
 #### Note name regex blocklist
 
-Disables the heading decorator in notes whose note name matches the specified regular expression. The format uses [JavaScript regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), for example: `/^daily.*/i`. For notes that are on the blacklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
+Disables the heading decorator in notes whose note name matches the specified regular expression. The format uses [JavaScript regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), for example: `/^daily.*/i`. For notes that are on the blocklist, you can still use [Enabled status of notes](#enabled-status-of-notes).
 
 ## Enabled status of notes
 
 This plugin allows for configure the enabled status based on specific fields in the note [properties](https://help.obsidian.md/Editing+and+formatting/Properties). You can individually control the enabled status of a note.
 
-For example:
-
-```yaml
----
-heading:
-  reading: true  # Or yes, on, 1.
-  preview: false # Or no, off, 0.
-  source: false  # Fields are optional.
-  outline: ~     # Other values are equivalent to undeclared.
----
-```
-
-You can use `all` to set all status:
-
-```yaml
----
-heading:
-  all: false
----
-```
-
-Or directly after the field:
+You can specify the status after the configured property [keyword](#metadata-keyword):
 
 ```yaml
 ---
@@ -147,19 +127,41 @@ heading: false
 ---
 ```
 
-If you prefer to use Obsidian's `cssclasses` default property, you can also fill in `cssclasses` with some equivalent class names:
+The values `true`, `yes`, `on` or `1` indicates enabled; the values `false`, `no`, `off` or `0` indicates disabled. Other values are equivalent to undeclared.
+
+You can also use the following subfields to specify the status of a specific mode:
+
+- **reading**: the status of the decorator in the reading view.
+- **preview**: the status of the decorator in the live preview.
+- **source**: the status of the decorator in the source mode.
+- **outline**: the status of the decorator in the outline plugin.
+- **file-explorer**: the status of the decorator in the "Headings in Explorer" plugin.
+- **all**: the status of the decorator in all modes.
+
+For example, you can set all other modes to be disabled and enable the decorator in the reading view alone:
+
+```yaml
+---
+heading:
+  all: false
+  reading: true
+---
+```
+
+If you prefer to use Obsidian's default property `cssclasses`, you can also fill in `cssclasses` with some equivalent class names:
 
 - reading: `enable-reading-heading`/`disable-reading-heading`
 - preview: `enable-preview-heading`/`disable-preview-heading`
 - source: `enable-source-heading`/`disable-source-heading`
 - outline: `enable-outline-heading`/`disable-outline-heading`
+- file-explorer: `enable-file-explorer-heading`/`disable-file-explorer-heading`
 - all: `enable-heading`/`disable-heading`
 
-Like:
+For example, a value equivalent to the above example:
 
 ```yaml
 ---
-cssclasses: disable-heading
+cssclasses: disable-heading enable-reading-heading
 ---
 ```
 
@@ -167,19 +169,43 @@ cssclasses: disable-heading
 
 You can customize the heading decorator style by CSS classes. For decorators in the editor, `.custom-heading-decorator` can be used. Or for specific editor modes:
 
-- reading view: `.reading-custom-heading-decorator`.
-- live preview: `.preview-custom-heading-decorator`.
-- source mode: `.source-custom-heading-decorator`.
+- Reading view: `.reading-custom-heading-decorator`.
+- Live Preview: `.preview-custom-heading-decorator`.
+- Source mode: `.source-custom-heading-decorator`.
 
-For the decorators in the outline, it is necessary to use `.outline-custom-heading-decorator` with pseudo-element keywords: `.outline-custom-heading-decorator::before` or `.outline-custom-heading-decorator::after`.
+For decorators in other plugins, it is necessary to combine pseudo-element keywords:
+
+- Outline: `.outline-custom-heading-decorator::before` or `.outline-custom-heading-decorator::after`.
+- Headings in Explorer: `.file-explorer-custom-heading-decorator::before` or `.file-explorer-custom-heading-decorator::after`.
 
 For example, make all the decorators display in green:
 
 ```css
 .custom-heading-decorator,
 .outline-custom-heading-decorator::before,
-.outline-custom-heading-decorator::after {
+.outline-custom-heading-decorator::after,
+.file-explorer-custom-heading-decorator::before,
+.file-explorer-custom-heading-decorator::after {
   color: green;
+}
+```
+
+In addition, the plugin provides a set of CSS variables for customizing the spacing of decorators:
+
+- `--reading-heading-decorator-margin`: the margin of the heading decorator in the reading view.
+- `--reading-heading-decorator-translate`: the translating vector value of the heading decorator in the reading view.
+- `--preview-heading-decorator-margin`: the margin of the heading decorator in the live preview.
+- `--preview-heading-decorator-translate`: the translating vector value of the heading decorator in the live preview.
+- `--source-heading-decorator-margin`: the margin of the heading decorator in the source mode.
+- `--source-heading-decorator-translate`: the translating vector value of the heading decorator in the source mode.
+- `--outline-heading-decorator-margin`: the margin of the heading decorator in the outline plugin.
+- `--file-explorer-heading-decorator-margin`: the margin of the heading decorator in the "Headings in Explorer" plugin.
+
+For example, to adjust the spacing in the reading view to `8px`:
+
+```css
+body {
+  --reading-heading-decorator-margin: 8px;
 }
 ```
 

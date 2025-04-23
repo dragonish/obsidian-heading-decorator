@@ -24,7 +24,7 @@ import {
   getOrderedCustomIdents,
   diffLevel,
   getBoolean,
-  checkEnabledCss,
+  checkEnabledCSS,
   stringToRegex,
 } from "./common/data";
 import { Counter, Querier } from "./common/counter";
@@ -33,9 +33,12 @@ import {
   decorateHTMLElement,
   decorateOutlineElement,
   cancelOutlineDecorator,
+  decorateFileHeadingElement,
+  cancelFileHeadingDecorator,
   queryHeadingLevelByElement,
   getTreeItemLevel,
   getTreeItemText,
+  getFileHeadingItemLevel,
   compareHeadingText,
 } from "./common/dom";
 import {
@@ -44,7 +47,7 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./components/view";
-import { OutlineChildComponent } from "./components/outline";
+import { ViewChildComponent } from "./components/child";
 import { FolderSuggest } from "./components/suggest";
 
 interface ObsidianEditor extends Editor {
@@ -53,6 +56,11 @@ interface ObsidianEditor extends Editor {
 
 interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
   id: string;
+}
+
+interface SettingsChangeState {
+  outline?: boolean;
+  fileExplorer?: boolean;
 }
 
 const DEFAULT_SETTINGS: HeadingPluginSettings = {
@@ -67,13 +75,18 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
   sourceSettings: defaultHeadingDecoratorSettings(),
   enabledInOutline: false,
   outlineSettings: defaultHeadingDecoratorSettings(),
+  enabledInFileExplorer: false,
+  fileExplorerSettings: defaultHeadingDecoratorSettings(),
 };
 
 export default class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
 
   private outlineIdSet: Set<string> = new Set();
-  private outlineComponents: OutlineChildComponent[] = [];
+  private outlineComponents: ViewChildComponent[] = [];
+
+  private fileExplorerIdSet: Set<string> = new Set();
+  private fileExplorerComponents: ViewChildComponent[] = [];
 
   async onload() {
     await this.loadSettings();
@@ -273,36 +286,50 @@ export default class HeadingPlugin extends Plugin {
       this.app.workspace.on("active-leaf-change", () => {
         this.handleModeChange();
         this.loadOutlineComponents();
+        this.loadFileExplorerComponents();
       })
     );
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
         this.handleModeChange();
         this.loadOutlineComponents();
+        this.loadFileExplorerComponents();
       })
     );
 
     this.loadOutlineComponents();
+    this.loadFileExplorerComponents();
 
     this.addSettingTab(new HeadingSettingTab(this.app, this));
   }
 
   onunload(): void {
     this.unloadOutlineComponents();
+    this.unloadFileExplorerComponents();
   }
 
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
-  async saveSettings(outlineState?: boolean) {
+  async saveSettings(state?: SettingsChangeState) {
     await this.saveData(this.settings);
 
-    if (outlineState != undefined) {
-      if (outlineState) {
-        this.loadOutlineComponents();
-      } else {
-        this.unloadOutlineComponents();
+    if (state) {
+      if (state.outline != undefined) {
+        if (state.outline) {
+          this.loadOutlineComponents();
+        } else {
+          this.unloadOutlineComponents();
+        }
+      }
+
+      if (state.fileExplorer != undefined) {
+        if (state.fileExplorer) {
+          this.loadFileExplorerComponents();
+        } else {
+          this.unloadFileExplorerComponents();
+        }
       }
     }
 
@@ -319,6 +346,18 @@ export default class HeadingPlugin extends Plugin {
     this.outlineComponents.forEach((child) => child.detach());
     this.outlineComponents = [];
     this.outlineIdSet.clear();
+  }
+
+  private loadFileExplorerComponents() {
+    if (this.settings.enabledInFileExplorer) {
+      this.handleHeadingsInExplorer();
+    }
+  }
+
+  private unloadFileExplorerComponents() {
+    this.fileExplorerComponents.forEach((child) => child.detach());
+    this.fileExplorerComponents = [];
+    this.fileExplorerIdSet.clear();
   }
 
   private craeteHeadingViewPlugin(
@@ -368,7 +407,7 @@ export default class HeadingPlugin extends Plugin {
 
       this.outlineIdSet.add(leafId);
 
-      const oc = new OutlineChildComponent(
+      const vc = new ViewChildComponent(
         leafId,
         view,
         viewContent,
@@ -505,10 +544,186 @@ export default class HeadingPlugin extends Plugin {
         }
       );
 
-      this.outlineComponents.push(oc);
-      view.addChild(oc);
+      this.outlineComponents.push(vc);
+      view.addChild(vc);
       view.register(() => {
         this.outlineComponents = this.outlineComponents.filter(
+          (item) => !item.equal(leafId)
+        );
+      });
+    });
+  }
+
+  private handleHeadingsInExplorer() {
+    const leaves = this.app.workspace.getLeavesOfType("file-explorer");
+    leaves.forEach((leaf: ObsidianWorkspaceLeaf) => {
+      const leafId = leaf.id;
+      if (!leafId || this.fileExplorerIdSet.has(leafId)) {
+        return;
+      }
+
+      const view = leaf.view;
+      const navFilesContainer = view.containerEl.querySelector<HTMLElement>(
+        '[data-type="file-explorer"] .nav-files-container'
+      );
+      if (!navFilesContainer) {
+        return;
+      }
+
+      this.fileExplorerIdSet.add(leafId);
+
+      const vc = new ViewChildComponent(
+        leafId,
+        view,
+        navFilesContainer,
+        () => {
+          const navFileTitles =
+            navFilesContainer.querySelectorAll<HTMLElement>(".nav-file-title");
+
+          navFileTitles.forEach((navFile) => {
+            const headingElements = navFile.querySelectorAll<HTMLElement>(
+              ".file-heading-container .clickable-heading"
+            );
+            if (headingElements.length === 0) {
+              return;
+            }
+
+            const filePath = navFile.dataset.path;
+            if (!filePath) {
+              return;
+            }
+
+            const file = this.app.vault.getFileByPath(filePath);
+            if (!file) {
+              return;
+            }
+
+            const fileCache = this.app.metadataCache.getFileCache(file);
+            if (!fileCache) {
+              return;
+            }
+
+            const cacheHeadings = fileCache.headings || [];
+            if (cacheHeadings.length === 0) {
+              return;
+            }
+
+            const frontmatter = fileCache.frontmatter;
+            const metadataEnabled = this.getEnabledFromFrontmatter(
+              "file-explorer",
+              frontmatter
+            );
+
+            const {
+              enabledInEachNote,
+              opacity,
+              position,
+              ordered,
+              orderedDelimiter,
+              orderedTrailingDelimiter,
+              orderedStyleType,
+              orderedSpecifiedString,
+              orderedCustomIdents,
+              orderedIgnoreSingle,
+              orderedIgnoreMaximum = 6,
+              orderedBasedOnExisting,
+              orderedAllowZeroLevel,
+              unorderedLevelHeadings,
+            } = this.settings.fileExplorerSettings;
+
+            if (metadataEnabled == null) {
+              if (enabledInEachNote != undefined && !enabledInEachNote) {
+                return;
+              }
+
+              if (this.getEnabledFromBlacklist(filePath)) {
+                return;
+              }
+            } else if (!metadataEnabled) {
+              return;
+            }
+
+            let ignoreTopLevel = 0;
+            if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
+              const queier = new Querier(orderedAllowZeroLevel);
+              for (const cacheHeading of cacheHeadings) {
+                queier.handler(cacheHeading.level);
+                ignoreTopLevel = queier.query(
+                  orderedIgnoreSingle,
+                  orderedIgnoreMaximum
+                );
+                if (ignoreTopLevel === 0) {
+                  break;
+                }
+              }
+            }
+
+            const counter = new Counter({
+              ordered,
+              delimiter: orderedDelimiter,
+              trailingDelimiter: orderedTrailingDelimiter,
+              styleType: orderedStyleType,
+              customIdents: getOrderedCustomIdents(orderedCustomIdents),
+              specifiedString: orderedSpecifiedString,
+              ignoreTopLevel,
+              allowZeroLevel: orderedAllowZeroLevel,
+              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+            });
+
+            const marginMultiplier =
+              parseInt(
+                getComputedStyle(document.body).getPropertyValue(
+                  "--clickable-heading-margin-multiplier"
+                )
+              ) || 10;
+
+            for (
+              let i = 0, j = 0;
+              i < headingElements.length && j < cacheHeadings.length;
+              i++, j++
+            ) {
+              const readLevel = getFileHeadingItemLevel(
+                headingElements[i],
+                marginMultiplier
+              );
+              const readText = headingElements[i].innerText;
+              let cacheLevel = cacheHeadings[j].level;
+
+              while (
+                j < cacheHeadings.length - 1 &&
+                (cacheLevel !== readLevel ||
+                  cacheHeadings[j].heading !== readText)
+              ) {
+                counter.handler(cacheLevel);
+                j++;
+                cacheLevel = cacheHeadings[j].level;
+              }
+
+              const decoratorContent = counter.decorator(cacheLevel);
+              decorateFileHeadingElement(
+                headingElements[i],
+                decoratorContent,
+                opacity,
+                position
+              );
+            }
+          });
+        },
+        () => {
+          const headingElements =
+            navFilesContainer.querySelectorAll<HTMLElement>(
+              ".nav-file-title .file-heading-container .clickable-heading"
+            );
+          headingElements.forEach((ele) => {
+            cancelFileHeadingDecorator(ele);
+          });
+        }
+      );
+
+      this.fileExplorerComponents.push(vc);
+      view.addChild(vc);
+      view.register(() => {
+        this.fileExplorerComponents = this.fileExplorerComponents.filter(
           (item) => !item.equal(leafId)
         );
       });
@@ -601,16 +816,27 @@ export default class HeadingPlugin extends Plugin {
       } else {
         const cssclasses = frontmatter.cssclasses;
         if (Array.isArray(cssclasses)) {
+          const cssStatus: CSSEnabledStatus = {
+            mode: null,
+            all: null,
+          };
+
           for (const cssItem of cssclasses) {
             if (typeof cssItem === "string") {
-              const s = checkEnabledCss(cssItem, mode);
-              if (s != null) {
-                return s;
+              const { mode: m, all: a } = checkEnabledCSS(cssItem, mode);
+              if (m != null) {
+                cssStatus.mode = m;
+              }
+              if (a != null) {
+                cssStatus.all = a;
               }
             }
           }
+
+          return cssStatus.mode ?? cssStatus.all;
         } else if (typeof cssclasses === "string") {
-          return checkEnabledCss(cssclasses, mode);
+          const { mode: m, all: a } = checkEnabledCSS(cssclasses, mode);
+          return m ?? a;
         }
       }
     }
@@ -759,9 +985,9 @@ class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.enabledInOutline)
           .onChange(async (value) => {
             this.plugin.settings.enabledInOutline = value;
-            await this.plugin.saveSettings(
-              this.plugin.settings.enabledInOutline
-            );
+            await this.plugin.saveSettings({
+              outline: this.plugin.settings.enabledInOutline,
+            });
           })
       );
 
@@ -773,23 +999,60 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl).setName("Blacklist").setHeading();
+    new Setting(containerEl)
+      .setName("Headings in Explorer plugin")
+      .setHeading();
+
+    //* enabledInFileExplorer
+    const enabledInFileExplorerSetting = new Setting(containerEl)
+      .setName('Enabled in "Headings in Explorer" plugin')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enabledInFileExplorer)
+          .onChange(async (value) => {
+            this.plugin.settings.enabledInFileExplorer = value;
+            await this.plugin.saveSettings({
+              fileExplorer: this.plugin.settings.enabledInFileExplorer,
+            });
+          })
+      );
+
+    const enabledInFileExplorerDesc = createFragment();
+    enabledInFileExplorerDesc.append(
+      "Allow to decorate the heading under the ",
+      createEl("a", {
+        href: "https://github.com/patrickchiang/obsidian-headings-in-explorer",
+        text: "Headings in Explorer",
+      }),
+      " plugin."
+    );
+    enabledInFileExplorerSetting.descEl.appendChild(enabledInFileExplorerDesc);
+
+    new Setting(containerEl)
+      .setName('Manage "Headings in Explorer" plugin heading decorator')
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("fileExplorerSettings");
+        });
+      });
+
+    new Setting(containerEl).setName("Blocklist").setHeading();
 
     //* folderBlacklist
     new Setting(containerEl)
-      .setName("Manage folder blacklist")
+      .setName("Manage folder blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
-          this.manageFolderBlacklist();
+          this.manageFolderBlacklist(true);
         });
       });
 
     //* fileRegexBlacklist
     new Setting(containerEl)
-      .setName("Manage note name regex blacklist")
+      .setName("Manage note name regex blocklist")
       .addButton((button) => {
         button.setButtonText("Manage").onClick(() => {
-          this.manageFileRegexBlacklist();
+          this.manageFileRegexBlacklist(true);
         });
       });
   }
@@ -825,6 +1088,9 @@ class HeadingSettingTab extends PluginSettingTab {
         break;
       case "outlineSettings":
         tabName = "Manage outline plugin heading decorator";
+        break;
+      case "fileExplorerSettings":
+        tabName = 'Manage "Headings in Explorer" plugin heading decorator';
         break;
     }
 
@@ -898,7 +1164,8 @@ class HeadingSettingTab extends PluginSettingTab {
       .setDesc("Set the position of the heading decorator.")
       .addDropdown((dropdown) => {
         const options: Record<string, string> =
-          settingsType === "outlineSettings"
+          settingsType === "outlineSettings" ||
+          settingsType === "fileExplorerSettings"
             ? {
                 before: "Before the heading",
                 after: "After the heading",
@@ -1080,15 +1347,18 @@ class HeadingSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    //* Scroll back to the top
+    containerEl.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  private manageFolderBlacklist() {
+  private manageFolderBlacklist(scrollToTop = false) {
     const { containerEl } = this;
 
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage folder blacklist")
+      .setName("Manage folder blocklist")
       .setHeading()
       .addButton((button) => {
         button.setButtonText("Back").onClick(() => {
@@ -1098,7 +1368,7 @@ class HeadingSettingTab extends PluginSettingTab {
 
     this.plugin.settings.folderBlacklist.forEach((folder, index) => {
       new Setting(containerEl)
-        .setName(`Folder balcklist ${index + 1}`)
+        .setName(`Folder blocklist ${index + 1}`)
         .addText((text) => {
           text.setValue(folder).onChange(async (value) => {
             this.plugin.settings.folderBlacklist[index] = value;
@@ -1129,22 +1399,27 @@ class HeadingSettingTab extends PluginSettingTab {
       button
         .setButtonText("Add")
         .setCta()
-        .setTooltip("Add a new folder to the blacklist")
+        .setTooltip("Add a new folder to the blocklist")
         .onClick(async () => {
           this.plugin.settings.folderBlacklist.push("");
           await this.plugin.saveSettings();
           this.manageFolderBlacklist();
         });
     });
+
+    //* Scroll back to the top
+    if (scrollToTop) {
+      containerEl.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
-  private manageFileRegexBlacklist() {
+  private manageFileRegexBlacklist(scrollToTop = false) {
     const { containerEl } = this;
 
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage note name regex blacklist")
+      .setName("Manage note name regex blocklist")
       .setHeading()
       .addButton((button) => {
         button.setButtonText("Back").onClick(() => {
@@ -1154,7 +1429,7 @@ class HeadingSettingTab extends PluginSettingTab {
 
     this.plugin.settings.fileRegexBlacklist.forEach((regex, index) => {
       new Setting(containerEl)
-        .setName(`Note name regex blacklist ${index + 1}`)
+        .setName(`Note name regex blocklist ${index + 1}`)
         .addText((text) =>
           text
             .setPlaceholder("e.g., /^daily.*/i")
@@ -1180,12 +1455,17 @@ class HeadingSettingTab extends PluginSettingTab {
       button
         .setButtonText("Add")
         .setCta()
-        .setTooltip("Add a new note name regex blacklist")
+        .setTooltip("Add a new note name regex blocklist")
         .onClick(async () => {
           this.plugin.settings.fileRegexBlacklist.push("");
           await this.plugin.saveSettings();
           this.manageFileRegexBlacklist();
         });
     });
+
+    //* Scroll back to the top
+    if (scrollToTop) {
+      containerEl.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 }

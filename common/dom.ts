@@ -7,6 +7,7 @@ import {
   afterDecoratorClassName,
   afterInsideDecoratorClassName,
   outlineHeadingDecoratorClassName,
+  fileExplorerHeadingDecoratorClassName,
   compareMarkdownText,
 } from "./data";
 
@@ -194,6 +195,64 @@ export function cancelOutlineDecorator(element: HTMLElement): void {
       afterDecoratorClassName
     );
   }
+}
+
+/**
+ * Get the level of a file heading item based on its margin-left value.
+ *
+ * @param element The file heading item element.
+ * @param marginMultiplier The multiplier used to calculate the level.
+ * @returns The level of the file heading item.
+ */
+export function getFileHeadingItemLevel(
+  element: HTMLElement,
+  marginMultiplier: number
+): number {
+  const marginLeft = element.style.marginLeft;
+  if (marginLeft) {
+    const value = parseInt(marginLeft.replace("px", ""));
+    return Math.floor(value / marginMultiplier) + 1;
+  }
+  return 0;
+}
+
+/**
+ * Decorate a file heading element with a custom content and style.
+ *
+ * @param element The file heading element to decorate.
+ * @param content The content to decorate with.
+ * @param opacity The opacity of the decorator.
+ * @param position The position of the decorator.
+ */
+export function decorateFileHeadingElement(
+  element: HTMLElement,
+  content: string,
+  opacity: OpacityOptions,
+  position: PostionOptions
+): void {
+  if (content) {
+    element.dataset.headingDecorator = content;
+    element.dataset.decoratorOpacity = `${opacity}%`;
+    element.classList.add(
+      fileExplorerHeadingDecoratorClassName,
+      getPositionClassName(position, true)
+    );
+  }
+}
+
+/**
+ * Cancel a file heading decorator from an element.
+ *
+ * @param element The file heading element to cancel decorator.
+ */
+export function cancelFileHeadingDecorator(element: HTMLElement): void {
+  delete element.dataset.headingDecorator;
+  delete element.dataset.decoratorOpacity;
+  element.classList.remove(
+    fileExplorerHeadingDecoratorClassName,
+    beforeDecoratorClassName,
+    afterDecoratorClassName
+  );
 }
 
 /**

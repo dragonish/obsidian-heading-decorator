@@ -4,7 +4,7 @@ import {
   diffLevel,
   compareMarkdownText,
   getBoolean,
-  checkEnabledCss,
+  checkEnabledCSS,
   stringToRegex,
   findFirstCharacterIndex,
 } from "../../common/data";
@@ -68,37 +68,60 @@ describe("common/data", function () {
     expect(getBoolean({})).to.be.null;
   });
 
-  it("checkEnabledCss", function () {
-    expect(checkEnabledCss("", "reading")).to.be.null;
-    expect(checkEnabledCss("enable-preview-heading", "reading")).to.be.null;
-    expect(checkEnabledCss("enable-heading", "reading")).to.be.true;
-    expect(checkEnabledCss("disable-heading", "reading")).to.be.false;
-    expect(checkEnabledCss("enable-reading-heading", "reading")).to.be.true;
-    expect(checkEnabledCss("disable-reading-heading", "reading")).to.be.false;
-    expect(checkEnabledCss("enable-heading disable-heading", "reading")).to.be
-      .true;
-    expect(checkEnabledCss("disable-heading enable-heading", "reading")).to.be
-      .false;
+  it("checkEnabledCSS", function () {
+    expect(checkEnabledCSS("", "reading")).to.deep.equal({
+      mode: null,
+      all: null,
+    });
+    expect(checkEnabledCSS("enable-preview-heading", "reading")).to.deep.equal({
+      mode: null,
+      all: null,
+    });
+    expect(checkEnabledCSS("enable-heading", "reading")).to.deep.equal({
+      mode: null,
+      all: true,
+    });
+    expect(checkEnabledCSS("disable-heading", "reading")).to.deep.equal({
+      mode: null,
+      all: false,
+    });
+    expect(checkEnabledCSS("enable-reading-heading", "reading")).to.deep.equal({
+      mode: true,
+      all: null,
+    });
+    expect(checkEnabledCSS("disable-reading-heading", "reading")).to.deep.equal(
+      { mode: false, all: null }
+    );
     expect(
-      checkEnabledCss(
+      checkEnabledCSS("enable-heading disable-heading", "reading")
+    ).to.deep.equal({ mode: null, all: false });
+    expect(
+      checkEnabledCSS("disable-heading enable-heading", "reading")
+    ).to.deep.equal({ mode: null, all: true });
+    expect(
+      checkEnabledCSS(
         "enable-reading-heading disable-reading-heading",
         "reading"
       )
-    ).to.be.true;
+    ).to.deep.equal({ mode: false, all: null });
     expect(
-      checkEnabledCss(
+      checkEnabledCSS(
         "disable-reading-heading enable-reading-heading",
         "reading"
       )
-    ).to.be.false;
-    expect(checkEnabledCss("enable-heading disable-reading-heading", "reading"))
-      .to.be.true;
-    expect(checkEnabledCss("disable-heading enable-reading-heading", "reading"))
-      .to.be.false;
-    expect(checkEnabledCss("enable-reading-heading disable-heading", "reading"))
-      .to.be.true;
-    expect(checkEnabledCss("disable-reading-heading enable-heading", "reading"))
-      .to.be.false;
+    ).to.deep.equal({ mode: true, all: null });
+    expect(
+      checkEnabledCSS("enable-heading disable-reading-heading", "reading")
+    ).to.deep.equal({ mode: false, all: true });
+    expect(
+      checkEnabledCSS("disable-heading enable-reading-heading", "reading")
+    ).to.deep.equal({ mode: true, all: false });
+    expect(
+      checkEnabledCSS("enable-reading-heading disable-heading", "reading")
+    ).to.deep.equal({ mode: true, all: false });
+    expect(
+      checkEnabledCSS("disable-reading-heading enable-heading", "reading")
+    ).to.deep.equal({ mode: false, all: true });
   });
 
   it("stringToRegex", function () {

@@ -1,6 +1,6 @@
 import { Component, View } from "obsidian";
 
-export class OutlineChildComponent extends Component {
+export class ViewChildComponent extends Component {
   private leafId: string;
   private view: View | null;
   private containerEl: HTMLElement | null;
