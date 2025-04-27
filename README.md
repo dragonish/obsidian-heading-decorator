@@ -105,6 +105,12 @@ Directly decorate the heading according to the level. For example:
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
+### Other settings for source mode
+
+#### Hide number signs on inactive lines
+
+Hide number signs (`#`) on inactive lines similar to live preview.
+
 ### Blocklist
 
 #### Folder blocklist
