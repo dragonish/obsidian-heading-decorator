@@ -60,6 +60,10 @@ interface HeadingDecoratorSettings {
   unorderedLevelHeadings: string;
 }
 
+interface SourceHeadingDecoratorSettngs extends HeadingDecoratorSettings {
+  hideNumberSigns?: boolean;
+}
+
 export type HeadingPluginSettings = {
   metadataKeyword: string;
   folderBlacklist: string[];
@@ -69,7 +73,11 @@ export type HeadingPluginSettings = {
   enabledInSource: boolean;
   enabledInOutline: boolean;
   enabledInFileExplorer: boolean;
-} & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
+} & Record<
+  Exclude<PluginDecoratorSettingsType, "sourceSettings">,
+  HeadingDecoratorSettings
+> &
+  Record<"sourceSettings", SourceHeadingDecoratorSettngs>;
 
 export type HeadingPluginData = Omit<
   HeadingPluginSettings,
@@ -99,6 +107,7 @@ export const beforeDecoratorClassName = "before-heading-decorator";
 export const beforeInsideDecoratorClassName = "before-inside-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";
 export const afterInsideDecoratorClassName = "after-inside-heading-decorator";
+export const hideSourceNumberSignsClassName = "hide-source-number-signs";
 export const headingsSelector =
   ".el-h1 h1, .el-h2 h2, .el-h3 h3, .el-h4 h4, .el-h5 h5, .el-h6 h6";
 export const defaultHeadingTuple: HeadingTuple = [
@@ -181,6 +190,19 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedBasedOnExisting: false,
     orderedIgnoreMaximum: 6,
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
+  };
+}
+
+/**
+ * Default source settings for source heading decorator.
+ *
+ * @returns default source settings for heading decorator.
+ */
+export function defaultSourceHeadingDecoratorSettings(): SourceHeadingDecoratorSettngs {
+  const settings = defaultHeadingDecoratorSettings();
+  return {
+    ...settings,
+    hideNumberSigns: false,
   };
 }
 

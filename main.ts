@@ -20,6 +20,7 @@ import {
   headingsSelector,
   orderedStyleTypeOptions,
   defaultHeadingDecoratorSettings,
+  defaultSourceHeadingDecoratorSettings,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   diffLevel,
@@ -72,7 +73,7 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
   enabledInPreview: true,
   previewSettings: defaultHeadingDecoratorSettings(),
   enabledInSource: false,
-  sourceSettings: defaultHeadingDecoratorSettings(),
+  sourceSettings: defaultSourceHeadingDecoratorSettings(),
   enabledInOutline: false,
   outlineSettings: defaultHeadingDecoratorSettings(),
   enabledInFileExplorer: false,
@@ -1347,6 +1348,27 @@ class HeadingSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    if (settingsType === "sourceSettings") {
+      new Setting(containerEl).setName("Other").setHeading();
+
+      //* hideNumberSigns
+      new Setting(containerEl)
+        .setName("Hide number signs on inactive lines")
+        .setDesc(
+          "Hide number signs (#) on inactive lines similar to live preview."
+        )
+        .addToggle((toggle) => {
+          toggle
+            .setValue(
+              this.plugin.settings[settingsType].hideNumberSigns ?? false
+            )
+            .onChange(async (value) => {
+              this.plugin.settings[settingsType].hideNumberSigns = value;
+              await this.plugin.saveSettings();
+            });
+        });
+    }
 
     //* Scroll back to the top
     containerEl.scrollTo({ top: 0, behavior: "smooth" });

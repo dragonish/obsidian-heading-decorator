@@ -262,6 +262,14 @@ body {
 .custom-heading-decorator.source-custom-heading-decorator[data-decorator-opacity="100%"] {
   opacity: 100%;
 }
+
+.hide-source-number-signs {
+  display: none;
+}
+.cm-focused .cm-active .hide-source-number-signs,
+.cm-focused .cm-active .hide-source-number-signs {
+  display: unset;
+}
 /* source end */
 
 /* outline start */

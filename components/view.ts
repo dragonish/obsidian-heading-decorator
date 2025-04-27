@@ -13,6 +13,7 @@ import {
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   findFirstCharacterIndex,
+  hideSourceNumberSignsClassName,
 } from "../common/data";
 import { Counter, Querier } from "../common/counter";
 import { Heading } from "../common/heading";
@@ -180,14 +181,45 @@ export class HeadingViewPlugin implements PluginValue {
             block: false,
           });
 
+          let hideDeco: Decoration | null = null;
+          if (!isLivePreviwMode) {
+            const hideNumberSigns = pluginData.sourceSettings.hideNumberSigns;
+            if (hideNumberSigns) {
+              hideDeco = Decoration.mark({
+                class: hideSourceNumberSignsClassName,
+              });
+            }
+          }
+
           if (position === "before-inside") {
             const charIndex = isLivePreviwMode
               ? findFirstCharacterIndex(lineText)
               : 0;
             builder.add(line.from + charIndex, line.from + charIndex, deco);
+
+            if (hideDeco) {
+              const cIndex = findFirstCharacterIndex(lineText);
+              if (cIndex > 0) {
+                builder.add(line.from, line.from + cIndex, hideDeco);
+              }
+            }
           } else if (position === "before") {
             builder.add(line.from, line.from, deco);
+
+            if (hideDeco) {
+              const cIndex = findFirstCharacterIndex(lineText);
+              if (cIndex > 0) {
+                builder.add(line.from, line.from + cIndex, hideDeco);
+              }
+            }
           } else {
+            if (hideDeco) {
+              const cIndex = findFirstCharacterIndex(lineText);
+              if (cIndex > 0) {
+                builder.add(line.from, line.from + cIndex, hideDeco);
+              }
+            }
+
             builder.add(line.to, line.to, deco);
           }
         }
