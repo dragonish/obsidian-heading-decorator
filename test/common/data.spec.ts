@@ -44,6 +44,10 @@ describe("common/data", function () {
     expect(compareMarkdownText("[[h2|h1]]", "h1")).to.be.true;
     expect(compareMarkdownText("[[h1#h2]]", "h1 > h2")).to.be.true;
     expect(compareMarkdownText("[[#h2]]", "h2")).to.be.true;
+    expect(compareMarkdownText("- h1", "h1")).to.be.true;
+    expect(compareMarkdownText("* h1", "h1")).to.be.true;
+    expect(compareMarkdownText("+ h1", "h1")).to.be.true;
+    expect(compareMarkdownText("> h1", "h1")).to.be.true;
   });
 
   it("getBoolean", function () {

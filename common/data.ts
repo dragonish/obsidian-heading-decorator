@@ -278,8 +278,8 @@ export function compareMarkdownText(source: string, outline: string): boolean {
     }
 
     if (
-      source.replaceAll(/[`=_~*\\\s]/g, "") ===
-      outline.replaceAll(/[`=_~*\\\s]/g, "")
+      source.replaceAll(/[-+>`=_~*\\\s]/g, "") ===
+      outline.replaceAll(/[-+>`=_~*\\\s]/g, "")
     ) {
       return true;
     }
