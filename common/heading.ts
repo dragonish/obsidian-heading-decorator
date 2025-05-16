@@ -45,7 +45,7 @@ export class Heading {
         return -1;
       }
 
-      if (/^(?:>|[ ]{4,}|\t)/.test(lineText)) {
+      if (/^(?:>|[ ]{4,}|\t|\s*[-*]\s+)/.test(lineText)) {
         return -1;
       }
 
