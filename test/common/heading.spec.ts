@@ -136,5 +136,11 @@ describe("common/heading", function () {
     expect(heading6.handler(5, "", "Heading 2")).to.equal(-1);
     expect(heading6.handler(6, "Heading 2", "-")).to.equal(2);
     expect(heading6.handler(7, "-", "")).to.equal(-1);
+    expect(heading6.handler(8, "", "* item d")).to.equal(-1);
+    expect(heading6.handler(9, "* item d", "-")).to.equal(-1);
+    expect(heading6.handler(10, "-", "")).to.equal(-1);
+    expect(heading6.handler(11, "", "+ item e")).to.equal(-1);
+    expect(heading6.handler(12, "+ item e", "-")).to.equal(-1);
+    expect(heading6.handler(13, "-", "")).to.equal(-1);
   });
 });
