@@ -18,6 +18,7 @@ type PluginDecoratorSettingsType =
   | "previewSettings"
   | "sourceSettings"
   | "outlineSettings"
+  | "quietOutlineSettings"
   | "fileExplorerSettings";
 
 type HeadingMetadataSettingsType =
@@ -25,6 +26,7 @@ type HeadingMetadataSettingsType =
   | "preview"
   | "source"
   | "outline"
+  | "quiet-outline"
   | "file-explorer";
 type HeadingMetaDataSettings = Record<
   HeadingMetadataSettingsType | "all",

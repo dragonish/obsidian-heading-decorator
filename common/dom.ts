@@ -7,6 +7,7 @@ import {
   afterDecoratorClassName,
   afterInsideDecoratorClassName,
   outlineHeadingDecoratorClassName,
+  quietOutlineHeadingDecoratorClassName,
   fileExplorerHeadingDecoratorClassName,
   compareMarkdownText,
 } from "./data";
@@ -191,6 +192,82 @@ export function cancelOutlineDecorator(element: HTMLElement): void {
     delete inner.dataset.decoratorOpacity;
     inner.classList.remove(
       outlineHeadingDecoratorClassName,
+      beforeDecoratorClassName,
+      afterDecoratorClassName
+    );
+  }
+}
+
+/**
+ * Query the heading level of an HTML element that is part of the quiet outline.
+ *
+ * @param element
+ * @returns The heading level or `-1` if not found.
+ */
+export function queryHeadingLevelByQuietOutlineElement(
+  element: HTMLElement
+): number {
+  const classList = element.classList;
+  if (classList.contains("level-1")) {
+    return 1;
+  } else if (classList.contains("level-2")) {
+    return 2;
+  } else if (classList.contains("level-3")) {
+    return 3;
+  } else if (classList.contains("level-4")) {
+    return 4;
+  } else if (classList.contains("level-5")) {
+    return 5;
+  } else if (classList.contains("level-6")) {
+    return 6;
+  }
+
+  return -1;
+}
+
+/**
+ * Decorate an HTML element that is part of the quiet outline with a heading decorator.
+ *
+ * @param element The HTML element to decorate.
+ * @param content The content to decorate with.
+ * @param opacity The opacity of the decorator.
+ * @param position The position of the decorator.
+ */
+export function decorateQuietOutlineElement(
+  element: HTMLElement,
+  content: string,
+  opacity: OpacityOptions,
+  position: PostionOptions
+): void {
+  if (content) {
+    const nodeContent = element.querySelector<HTMLElement>(
+      ".n-tree-node-content"
+    );
+    if (nodeContent) {
+      nodeContent.dataset.headingDecorator = content;
+      nodeContent.dataset.decoratorOpacity = `${opacity}%`;
+      nodeContent.classList.add(
+        quietOutlineHeadingDecoratorClassName,
+        getPositionClassName(position, true)
+      );
+    }
+  }
+}
+
+/**
+ * Cancel the decorator from an HTML element that is part of the quiet outline.
+ *
+ * @param element The HTML element to cancel the decorator.
+ */
+export function cancelQuietOutlineDecorator(element: HTMLElement): void {
+  const nodeContent = element.querySelector<HTMLElement>(
+    ".n-tree-node-content"
+  );
+  if (nodeContent) {
+    delete nodeContent.dataset.headingDecorator;
+    delete nodeContent.dataset.decoratorOpacity;
+    nodeContent.classList.remove(
+      quietOutlineHeadingDecoratorClassName,
       beforeDecoratorClassName,
       afterDecoratorClassName
     );

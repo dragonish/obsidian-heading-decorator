@@ -7,6 +7,7 @@ body {
   --source-heading-decorator-margin: var(--size-2-3);
   --source-heading-decorator-translate: var(--size-4-3);
   --outline-heading-decorator-margin: var(--size-4-1);
+  --quiet-outline-heading-decorator-margin: var(--size-4-1);
   --file-explorer-heading-decorator-margin: var(--size-4-1);
 }
 /* variables end */
@@ -328,6 +329,63 @@ body {
   opacity: 100%;
 }
 /* outline end */
+
+/* quiet-outline start */
+.quiet-outline-custom-heading-decorator.before-heading-decorator::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator::after {
+  content: attr(data-heading-decorator);
+  opacity: 20%;
+}
+
+.quiet-outline-custom-heading-decorator.before-heading-decorator::before {
+  margin-inline-end: var(--quiet-outline-heading-decorator-margin);
+}
+
+.quiet-outline-custom-heading-decorator.after-heading-decorator::after {
+  margin-inline-start: var(--quiet-outline-heading-decorator-margin);
+}
+
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="10%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="10%"]::after {
+  opacity: 10%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="20%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="20%"]::after {
+  opacity: 20%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="30%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="30%"]::after {
+  opacity: 30%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="40%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="40%"]::after {
+  opacity: 40%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="50%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="50%"]::after {
+  opacity: 50%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="60%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="60%"]::after {
+  opacity: 60%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="70%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="70%"]::after {
+  opacity: 70%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="80%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="80%"]::after {
+  opacity: 80%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="90%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="90%"]::after {
+  opacity: 90%;
+}
+.quiet-outline-custom-heading-decorator.before-heading-decorator[data-decorator-opacity="100%"]::before,
+.quiet-outline-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]::after {
+  opacity: 100%;
+}
+/* quiet-outline end */
 
 /* file-explorer start */
 .file-explorer-custom-heading-decorator.before-heading-decorator::before,

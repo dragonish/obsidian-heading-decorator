@@ -41,6 +41,9 @@ import {
   getTreeItemText,
   getFileHeadingItemLevel,
   compareHeadingText,
+  queryHeadingLevelByQuietOutlineElement,
+  decorateQuietOutlineElement,
+  cancelQuietOutlineDecorator,
 } from "./common/dom";
 import {
   HeadingViewPlugin,
@@ -61,6 +64,7 @@ interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
 
 interface SettingsChangeState {
   outline?: boolean;
+  quietOutline?: boolean;
   fileExplorer?: boolean;
 }
 
@@ -76,6 +80,8 @@ const DEFAULT_SETTINGS: HeadingPluginSettings = {
   sourceSettings: defaultSourceHeadingDecoratorSettings(),
   enabledInOutline: false,
   outlineSettings: defaultHeadingDecoratorSettings(),
+  enabledInQuietOutline: false,
+  quietOutlineSettings: defaultHeadingDecoratorSettings(),
   enabledInFileExplorer: false,
   fileExplorerSettings: defaultHeadingDecoratorSettings(),
 };
@@ -85,6 +91,9 @@ export default class HeadingPlugin extends Plugin {
 
   private outlineIdSet: Set<string> = new Set();
   private outlineComponents: ViewChildComponent[] = [];
+
+  private quietOutlineIdSet: Set<string> = new Set();
+  private quietOutlineComponents: ViewChildComponent[] = [];
 
   private fileExplorerIdSet: Set<string> = new Set();
   private fileExplorerComponents: ViewChildComponent[] = [];
@@ -287,6 +296,7 @@ export default class HeadingPlugin extends Plugin {
       this.app.workspace.on("active-leaf-change", () => {
         this.handleModeChange();
         this.loadOutlineComponents();
+        this.loadQuietOutlineComponents();
         this.loadFileExplorerComponents();
       })
     );
@@ -294,11 +304,13 @@ export default class HeadingPlugin extends Plugin {
       this.app.workspace.on("layout-change", () => {
         this.handleModeChange();
         this.loadOutlineComponents();
+        this.loadQuietOutlineComponents();
         this.loadFileExplorerComponents();
       })
     );
 
     this.loadOutlineComponents();
+    this.loadQuietOutlineComponents();
     this.loadFileExplorerComponents();
 
     this.addSettingTab(new HeadingSettingTab(this.app, this));
@@ -306,6 +318,7 @@ export default class HeadingPlugin extends Plugin {
 
   onunload(): void {
     this.unloadOutlineComponents();
+    this.unloadQuietOutlineComponents();
     this.unloadFileExplorerComponents();
   }
 
@@ -322,6 +335,14 @@ export default class HeadingPlugin extends Plugin {
           this.loadOutlineComponents();
         } else {
           this.unloadOutlineComponents();
+        }
+      }
+
+      if (state.quietOutline != undefined) {
+        if (state.quietOutline) {
+          this.loadQuietOutlineComponents();
+        } else {
+          this.unloadQuietOutlineComponents();
         }
       }
 
@@ -347,6 +368,18 @@ export default class HeadingPlugin extends Plugin {
     this.outlineComponents.forEach((child) => child.detach());
     this.outlineComponents = [];
     this.outlineIdSet.clear();
+  }
+
+  private loadQuietOutlineComponents() {
+    if (this.settings.enabledInQuietOutline) {
+      this.handleQuietOutline();
+    }
+  }
+
+  private unloadQuietOutlineComponents() {
+    this.quietOutlineComponents.forEach((child) => child.detach());
+    this.quietOutlineComponents = [];
+    this.quietOutlineIdSet.clear();
   }
 
   private loadFileExplorerComponents() {
@@ -549,6 +582,140 @@ export default class HeadingPlugin extends Plugin {
       view.addChild(vc);
       view.register(() => {
         this.outlineComponents = this.outlineComponents.filter(
+          (item) => !item.equal(leafId)
+        );
+      });
+    });
+  }
+
+  private handleQuietOutline() {
+    const leaves = this.app.workspace.getLeavesOfType("quiet-outline");
+    leaves.forEach((leaf: ObsidianWorkspaceLeaf) => {
+      const leafId = leaf.id;
+      if (!leafId || this.quietOutlineIdSet.has(leafId)) {
+        return;
+      }
+
+      const view = leaf.view;
+      const viewContent = view.containerEl.querySelector<HTMLElement>(
+        '[data-type="quiet-outline"] .view-content'
+      );
+      if (!viewContent) {
+        return;
+      }
+
+      this.quietOutlineIdSet.add(leafId);
+
+      const vc = new ViewChildComponent(
+        leafId,
+        view,
+        viewContent,
+        () => {
+          const headingELements =
+            viewContent.querySelectorAll<HTMLElement>(".n-tree-node");
+          if (headingELements.length === 0) {
+            return;
+          }
+
+          const file = this.getActiveFile();
+          if (!file) {
+            return;
+          }
+
+          const fileCache = this.app.metadataCache.getFileCache(file);
+          if (!fileCache) {
+            return;
+          }
+
+          const frontmatter = fileCache.frontmatter;
+          const metadataEnabled = this.getEnabledFromFrontmatter(
+            "quiet-outline",
+            frontmatter
+          );
+
+          const {
+            enabledInEachNote,
+            opacity,
+            position,
+            ordered,
+            orderedDelimiter,
+            orderedTrailingDelimiter,
+            orderedStyleType,
+            orderedSpecifiedString,
+            orderedCustomIdents,
+            orderedIgnoreSingle,
+            orderedIgnoreMaximum = 6,
+            orderedBasedOnExisting,
+            orderedAllowZeroLevel,
+            unorderedLevelHeadings,
+          } = this.settings.quietOutlineSettings;
+
+          if (metadataEnabled == null) {
+            if (enabledInEachNote != undefined && !enabledInEachNote) {
+              return;
+            }
+
+            if (this.getEnabledFromBlacklist(file.path)) {
+              return;
+            }
+          } else if (!metadataEnabled) {
+            return;
+          }
+
+          let ignoreTopLevel = 0;
+          if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
+            const queier = new Querier(orderedAllowZeroLevel);
+            for (const eleIndex in headingELements) {
+              const level = queryHeadingLevelByQuietOutlineElement(
+                headingELements[eleIndex]
+              );
+              queier.handler(level);
+              ignoreTopLevel = queier.query(
+                orderedIgnoreSingle,
+                orderedIgnoreMaximum
+              );
+              if (ignoreTopLevel === 0) {
+                break;
+              }
+            }
+          }
+
+          const counter = new Counter({
+            ordered,
+            delimiter: orderedDelimiter,
+            trailingDelimiter: orderedTrailingDelimiter,
+            styleType: orderedStyleType,
+            customIdents: getOrderedCustomIdents(orderedCustomIdents),
+            specifiedString: orderedSpecifiedString,
+            ignoreTopLevel,
+            allowZeroLevel: orderedAllowZeroLevel,
+            levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
+          });
+
+          headingELements.forEach((headingEle) => {
+            const level = queryHeadingLevelByQuietOutlineElement(headingEle);
+            const decoratorContent = counter.decorator(level);
+            decorateQuietOutlineElement(
+              headingEle,
+              decoratorContent,
+              opacity,
+              position
+            );
+          });
+        },
+        () => {
+          const headingElements =
+            viewContent.querySelectorAll<HTMLElement>(".n-tree-node");
+          headingElements.forEach((ele) => {
+            cancelQuietOutlineDecorator(ele);
+          });
+        }
+      );
+
+      this.quietOutlineComponents.push(vc);
+      view.addChild(vc);
+      view.register(() => {
+        this.quietOutlineComponents = this.quietOutlineComponents.filter(
           (item) => !item.equal(leafId)
         );
       });
@@ -1000,6 +1167,41 @@ class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl).setName("Quiet Outline plugin").setHeading();
+
+    //* enabledInQuietOutline
+    const enabledInQuietOutlineSetting = new Setting(containerEl)
+      .setName('Enabled in "Quiet Outline" plugin')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enabledInQuietOutline)
+          .onChange(async (value) => {
+            this.plugin.settings.enabledInQuietOutline = value;
+            await this.plugin.saveSettings({
+              quietOutline: this.plugin.settings.enabledInQuietOutline,
+            });
+          })
+      );
+
+    const enabledInQuietOutlineDesc = createFragment();
+    enabledInQuietOutlineDesc.append(
+      "Allow to decorate the heading under the ",
+      createEl("a", {
+        href: "https://github.com/guopenghui/obsidian-quiet-outline",
+        text: "Quiet Outline",
+      }),
+      " plugin."
+    );
+    enabledInQuietOutlineSetting.descEl.appendChild(enabledInQuietOutlineDesc);
+
+    new Setting(containerEl)
+      .setName('Manage "Quiet Outline" plugin heading decorator')
+      .addButton((button) => {
+        button.setButtonText("Manage").onClick(() => {
+          this.manageHeadingDecoratorSettings("quietOutlineSettings");
+        });
+      });
+
     new Setting(containerEl)
       .setName("Headings in Explorer plugin")
       .setHeading();
@@ -1090,6 +1292,9 @@ class HeadingSettingTab extends PluginSettingTab {
       case "outlineSettings":
         tabName = "Manage outline plugin heading decorator";
         break;
+      case "quietOutlineSettings":
+        tabName = 'Manage "Quiet Outline" plugin heading decorator';
+        break;
       case "fileExplorerSettings":
         tabName = 'Manage "Headings in Explorer" plugin heading decorator';
         break;
@@ -1166,6 +1371,7 @@ class HeadingSettingTab extends PluginSettingTab {
       .addDropdown((dropdown) => {
         const options: Record<string, string> =
           settingsType === "outlineSettings" ||
+          settingsType === "quietOutlineSettings" ||
           settingsType === "fileExplorerSettings"
             ? {
                 before: "Before the heading",
