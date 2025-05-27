@@ -6,7 +6,7 @@ This is a plugin for [Obsidian](https://obsidian.md).
 
 Implement displaying specific content around headings based on their levels.
 
-This plugin supports optional decoration for reading view, editing view (*Live Preview* and *Source mode*), *[Outline](https://help.obsidian.md/plugins/outline)* and *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
+This plugin supports optional decoration for reading view, editing view (*Live Preview* and *Source mode*), *[Outline](https://help.obsidian.md/plugins/outline)*, *[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* and *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin. This plugin does not modify any note content, only decorates the heading section based on the existing note content.
 
 ## Preview
 
@@ -32,6 +32,7 @@ The plugin supports configure heading decorator for each editor mode. You can co
 - **Enabled in live preview**: Allow to decorate the heading under the *Live Preview*.
 - **Enabled in source mode**: Allow to decorate the heading under the *Source mode*.
 - **Enabled in outline plugin**: Allow to decorate the heading under the *Outline* plugin.
+- **Enabled in "Quiet Outline" plugin**: Allow to decorate the heading under the *[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* plugin.
 - **Enabled in "Headings in Explorer" plugin**: Allow to decorate the heading under the *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin.
 
 In addition, you can enable the default status of each note within the *Manage* subpage. It mainly works together with [Enabled status of notes](#enabled-status-of-notes).
@@ -141,6 +142,7 @@ You can also use the following subfields to specify the status of a specific mod
 - **preview**: the status of the decorator in the live preview.
 - **source**: the status of the decorator in the source mode.
 - **outline**: the status of the decorator in the outline plugin.
+- **quiet-outline**: the status of the decorator in the "Quiet Outline" plugin.
 - **file-explorer**: the status of the decorator in the "Headings in Explorer" plugin.
 - **all**: the status of the decorator in all modes.
 
@@ -160,6 +162,7 @@ If you prefer to use Obsidian's default property `cssclasses`, you can also fill
 - preview: `enable-preview-heading`/`disable-preview-heading`
 - source: `enable-source-heading`/`disable-source-heading`
 - outline: `enable-outline-heading`/`disable-outline-heading`
+- quiet-outline: `enable-quiet-outline-heading`/`disable-quiet-outline-heading`
 - file-explorer: `enable-file-explorer-heading`/`disable-file-explorer-heading`
 - all: `enable-heading`/`disable-heading`
 
@@ -182,6 +185,7 @@ You can customize the heading decorator style by CSS classes. For decorators in 
 For decorators in other plugins, it is necessary to combine pseudo-element keywords:
 
 - Outline: `.outline-custom-heading-decorator::before` or `.outline-custom-heading-decorator::after`.
+- Quiet Outline: `.quiet-outline-custom-heading-decorator::before` or `.quiet-outline-custom-heading-decorator::after`.
 - Headings in Explorer: `.file-explorer-custom-heading-decorator::before` or `.file-explorer-custom-heading-decorator::after`.
 
 For example, make all the decorators display in green:
@@ -190,6 +194,8 @@ For example, make all the decorators display in green:
 .custom-heading-decorator,
 .outline-custom-heading-decorator::before,
 .outline-custom-heading-decorator::after,
+.quiet-outline-custom-heading-decorator::before,
+.quiet-outline-custom-heading-decorator::after,
 .file-explorer-custom-heading-decorator::before,
 .file-explorer-custom-heading-decorator::after {
   color: green;
@@ -205,6 +211,7 @@ In addition, the plugin provides a set of CSS variables for customizing the spac
 - `--source-heading-decorator-margin`: the margin of the heading decorator in the source mode.
 - `--source-heading-decorator-translate`: the translating vector value of the heading decorator in the source mode.
 - `--outline-heading-decorator-margin`: the margin of the heading decorator in the outline plugin.
+- `--quiet-outline-heading-decorator-margin`: the margin of the heading decorator in the "Quiet Outline" plugin.
 - `--file-explorer-heading-decorator-margin`: the margin of the heading decorator in the "Headings in Explorer" plugin.
 
 For example, to adjust the spacing in the reading view to `8px`:
