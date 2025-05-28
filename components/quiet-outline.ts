@@ -19,7 +19,7 @@ import { Querier, Counter } from "../common/counter";
 export function quietOutlineHandler(
   settings: HeadingDecoratorSettings,
   container: HTMLElement,
-  headingELements: NodeListOf<HTMLElement>
+  headingElements: NodeListOf<HTMLElement>
 ): void {
   const {
     opacity,
@@ -42,9 +42,9 @@ export function quietOutlineHandler(
   let ignoreTopLevel = 0;
   if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
     const queier = new Querier(orderedAllowZeroLevel);
-    for (const eleIndex in headingELements) {
+    for (const eleIndex in headingElements) {
       const level = queryHeadingLevelByQuietOutlineElement(
-        headingELements[eleIndex]
+        headingElements[eleIndex]
       );
       queier.handler(level);
       ignoreTopLevel = queier.query(orderedIgnoreSingle, orderedIgnoreMaximum);
@@ -66,7 +66,7 @@ export function quietOutlineHandler(
     levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
   });
 
-  headingELements.forEach((headingEle) => {
+  headingElements.forEach((headingEle) => {
     const level = queryHeadingLevelByQuietOutlineElement(headingEle);
     const decoratorContent = counter.decorator(level);
     decorateQuietOutlineElement(
