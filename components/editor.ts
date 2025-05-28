@@ -55,7 +55,7 @@ export const editorModeField = StateField.define<boolean>({
   },
 });
 
-export class HeadingViewPlugin implements PluginValue {
+export class HeadingEditorViewPlugin implements PluginValue {
   getPluginData: () => Promise<HeadingPluginData>;
 
   constructor(

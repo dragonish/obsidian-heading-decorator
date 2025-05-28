@@ -34,11 +34,11 @@ import {
   compareHeadingText,
 } from "../common/dom";
 import {
-  HeadingViewPlugin,
+  HeadingEditorViewPlugin,
   headingDecorationsField,
   editorModeField,
   updateEditorMode,
-} from "./view";
+} from "./editor";
 import { ViewChildComponent } from "./child";
 import {
   quietOutlineHandler,
@@ -372,7 +372,7 @@ export class HeadingPlugin extends Plugin {
     getPluginData: () => Promise<HeadingPluginData>
   ) {
     return ViewPlugin.fromClass(
-      class extends HeadingViewPlugin {
+      class extends HeadingEditorViewPlugin {
         constructor(view: EditorView) {
           super(view, getPluginData);
         }
