@@ -9,6 +9,13 @@ import {
 } from "../common/data";
 import { Querier, Counter } from "../common/counter";
 
+/**
+ * Handles the quiet outline for a given set of heading elements.
+ *
+ * @param settings - The settings to use for the quiet outline.
+ * @param container - The container element to add the quiet outline to.
+ * @param headingElements - The heading elements to process.
+ */
 export function quietOutlineHandler(
   settings: HeadingDecoratorSettings,
   container: HTMLElement,
