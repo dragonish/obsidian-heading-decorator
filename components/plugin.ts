@@ -13,7 +13,6 @@ import {
   headingsSelector,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
-  diffLevel,
   getBoolean,
   checkEnabledCSS,
   stringToRegex,
@@ -21,18 +20,7 @@ import {
 } from "../common/data";
 import { Counter, Querier } from "../common/counter";
 import { Heading } from "../common/heading";
-import {
-  decorateHTMLElement,
-  decorateOutlineElement,
-  cancelOutlineDecorator,
-  decorateFileHeadingElement,
-  cancelFileHeadingDecorator,
-  queryHeadingLevelByElement,
-  getTreeItemLevel,
-  getTreeItemText,
-  getFileHeadingItemLevel,
-  compareHeadingText,
-} from "../common/dom";
+import { decorateHTMLElement, queryHeadingLevelByElement } from "../common/dom";
 import {
   HeadingEditorViewPlugin,
   headingDecorationsField,
@@ -40,10 +28,15 @@ import {
   updateEditorMode,
 } from "./editor";
 import { ViewChildComponent } from "./child";
+import { outlineHandler, cancelOutlineDecoration } from "./outline";
 import {
   quietOutlineHandler,
   cancelQuietOutlineDecoration,
 } from "./quiet-outline";
+import {
+  fileExplorerHandler,
+  cancelFileExplorerDecoration,
+} from "./file-explorer";
 import { HeadingSettingTab } from "./setting-tab";
 
 interface ObsidianEditor extends Editor {
@@ -54,14 +47,17 @@ interface ObsidianWorkspaceLeaf extends WorkspaceLeaf {
   id: string;
 }
 
-interface SettingsChangeState {
-  outline?: boolean;
-  quietOutline?: boolean;
-  fileExplorer?: boolean;
+type OnChangeCallback = (path: string, newValue: unknown) => void;
+
+interface RevocableProxy {
+  proxy: HeadingPluginSettings;
+  revoke: () => void;
 }
 
 export class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
+
+  private revokes: (() => void)[] = [];
 
   private outlineIdSet: Set<string> = new Set();
   private outlineComponents: ViewChildComponent[] = [];
@@ -71,6 +67,94 @@ export class HeadingPlugin extends Plugin {
 
   private fileExplorerIdSet: Set<string> = new Set();
   private fileExplorerComponents: ViewChildComponent[] = [];
+
+  private debouncedRerenderPreviewMarkdown = debounce(
+    this.rerenderPreviewMarkdown.bind(this),
+    1000,
+    true
+  );
+
+  private debouncedRerenderOutlineDecorator = debounce(
+    this.rerenderOutlineDecorator.bind(this),
+    1000,
+    true
+  );
+
+  private debouncedRerenderQuietOutlineDecorator = debounce(
+    this.rerenderQuietOutlineDecorator.bind(this),
+    1000,
+    true
+  );
+
+  private debouncedRerenderFileExplorerDecorator = debounce(
+    this.rerenderFileExplorerDecorator.bind(this),
+    1000,
+    true
+  );
+
+  private createDeepRevocableProxy<T extends HeadingPluginSettings>(
+    obj: T,
+    onChange: OnChangeCallback,
+    revokes: (() => void)[],
+    cache = new WeakMap<object, RevocableProxy>(),
+    path = ""
+  ): RevocableProxy {
+    if (typeof obj !== "object" || obj === null) {
+      return { proxy: obj, revoke: () => {} };
+    }
+
+    // If it has already been proxy, return the cached proxy directly.
+    if (cache.has(obj)) {
+      return cache.get(obj)!;
+    }
+
+    const revocable = Proxy.revocable(obj, {
+      get: (target, prop, receiver) => {
+        const value = Reflect.get(target, prop, receiver);
+        if (typeof value === "object" && value !== null) {
+          const newPath = path ? `${path}.${String(prop)}` : String(prop);
+          return this.createDeepRevocableProxy(
+            value as unknown as HeadingPluginSettings,
+            onChange,
+            revokes,
+            cache,
+            newPath
+          ).proxy;
+        }
+        return value;
+      },
+      set: (target, prop, value, receiver) => {
+        const oldValue = Reflect.get(target, prop, receiver);
+        const result = Reflect.set(target, prop, value, receiver);
+        if (oldValue !== value) {
+          const changedPath = path ? `${path}.${String(prop)}` : String(prop);
+          onChange(changedPath, value);
+        }
+        return result;
+      },
+    });
+    revokes.push(revocable.revoke);
+    cache.set(obj, revocable);
+    return revocable;
+  }
+
+  private async loadSettings() {
+    const rawSettings = Object.assign<HeadingPluginSettings, unknown>(
+      defalutSettings(),
+      await this.loadData()
+    );
+
+    this.revokes.forEach((revoke) => revoke());
+    this.revokes = [];
+
+    const { proxy } = this.createDeepRevocableProxy(
+      rawSettings,
+      this.settingsChanged.bind(this),
+      this.revokes
+    );
+
+    this.settings = proxy;
+  }
 
   async onload() {
     await this.loadSettings();
@@ -294,42 +378,55 @@ export class HeadingPlugin extends Plugin {
     this.unloadOutlineComponents();
     this.unloadQuietOutlineComponents();
     this.unloadFileExplorerComponents();
+
+    this.revokes.forEach((revoke) => revoke());
+    this.revokes = [];
   }
 
-  async loadSettings() {
-    this.settings = Object.assign({}, defalutSettings(), await this.loadData());
-  }
-
-  async saveSettings(state?: SettingsChangeState) {
+  async saveSettings() {
     await this.saveData(this.settings);
+  }
 
-    if (state) {
-      if (state.outline != undefined) {
-        if (state.outline) {
-          this.loadOutlineComponents();
-        } else {
-          this.unloadOutlineComponents();
-        }
+  private settingsChanged(path: string, value: unknown) {
+    if (path === "enabledInOutline") {
+      if (value) {
+        this.loadOutlineComponents();
+      } else {
+        this.unloadOutlineComponents();
       }
-
-      if (state.quietOutline != undefined) {
-        if (state.quietOutline) {
-          this.loadQuietOutlineComponents();
-        } else {
-          this.unloadQuietOutlineComponents();
-        }
+    } else if (path === "enabledInQuietOutline") {
+      if (value) {
+        this.loadQuietOutlineComponents();
+      } else {
+        this.unloadQuietOutlineComponents();
       }
-
-      if (state.fileExplorer != undefined) {
-        if (state.fileExplorer) {
-          this.loadFileExplorerComponents();
-        } else {
-          this.unloadFileExplorerComponents();
-        }
+    } else if (path === "enabledInFileExplorer") {
+      if (value) {
+        this.loadFileExplorerComponents();
+      } else {
+        this.unloadFileExplorerComponents();
       }
+    } else if (path.startsWith("outlineSettings")) {
+      this.debouncedRerenderOutlineDecorator();
+    } else if (path.startsWith("quietOutlineSettings")) {
+      this.debouncedRerenderQuietOutlineDecorator();
+    } else if (path.startsWith("fileExplorerSettings")) {
+      this.debouncedRerenderFileExplorerDecorator();
+    } else if (
+      path === "enabledInReading" ||
+      path.startsWith("readingSettings")
+    ) {
+      this.debouncedRerenderPreviewMarkdown();
+    } else if (
+      path === "metadataKeyword" ||
+      path.startsWith("fileRegexBlacklist") ||
+      path.startsWith("folderBlacklist")
+    ) {
+      this.debouncedRerenderPreviewMarkdown();
+      this.debouncedRerenderOutlineDecorator();
+      this.debouncedRerenderQuietOutlineDecorator();
+      this.debouncedRerenderFileExplorerDecorator();
     }
-
-    this.debouncedSaveSettings();
   }
 
   private loadOutlineComponents() {
@@ -452,103 +549,36 @@ export class HeadingPlugin extends Plugin {
             frontmatter
           );
 
-          const {
-            enabledInEachNote,
-            opacity,
-            position,
-            ordered,
-            orderedDelimiter,
-            orderedTrailingDelimiter,
-            orderedStyleType,
-            orderedSpecifiedString,
-            orderedCustomIdents,
-            orderedIgnoreSingle,
-            orderedIgnoreMaximum = 6,
-            orderedBasedOnExisting,
-            orderedAllowZeroLevel,
-            unorderedLevelHeadings,
-          } = this.settings.outlineSettings;
+          const { enabledInEachNote } = this.settings.outlineSettings;
 
+          let enabled = true;
           if (metadataEnabled == null) {
             if (enabledInEachNote != undefined && !enabledInEachNote) {
-              return;
+              enabled = false;
             }
 
             if (this.getEnabledFromBlacklist(state.file)) {
-              return;
+              enabled = false;
             }
           } else if (!metadataEnabled) {
-            return;
+            enabled = false;
           }
 
-          let ignoreTopLevel = 0;
-          if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-            const queier = new Querier(orderedAllowZeroLevel);
-            for (const cacheHeading of cacheHeadings) {
-              queier.handler(cacheHeading.level);
-              ignoreTopLevel = queier.query(
-                orderedIgnoreSingle,
-                orderedIgnoreMaximum
-              );
-              if (ignoreTopLevel === 0) {
-                break;
-              }
-            }
-          }
-
-          const counter = new Counter({
-            ordered,
-            delimiter: orderedDelimiter,
-            trailingDelimiter: orderedTrailingDelimiter,
-            styleType: orderedStyleType,
-            customIdents: getOrderedCustomIdents(orderedCustomIdents),
-            specifiedString: orderedSpecifiedString,
-            ignoreTopLevel,
-            allowZeroLevel: orderedAllowZeroLevel,
-            levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-          });
-
-          let lastCacheLevel = 0;
-          let lastReadLevel = 0;
-          for (
-            let i = 0, j = 0;
-            i < headingElements.length && j < cacheHeadings.length;
-            i++, j++
-          ) {
-            const readLevel = getTreeItemLevel(headingElements[i]);
-            const readText = getTreeItemText(headingElements[i]);
-            let cacheLevel = cacheHeadings[j].level;
-            if (i > 0) {
-              const diff = diffLevel(readLevel, lastReadLevel);
-              while (
-                j < cacheHeadings.length - 1 &&
-                (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
-                  !compareHeadingText(cacheHeadings[j].heading, readText))
-              ) {
-                counter.handler(cacheLevel);
-                j++;
-                cacheLevel = cacheHeadings[j].level;
-              }
-            }
-
-            const decoratorContent = counter.decorator(cacheLevel);
-            decorateOutlineElement(
-              headingElements[i],
-              decoratorContent,
-              opacity,
-              position
+          if (enabled) {
+            outlineHandler(
+              this.settings.outlineSettings,
+              viewContent,
+              headingElements,
+              cacheHeadings
             );
-
-            lastCacheLevel = cacheLevel;
-            lastReadLevel = readLevel;
+          } else {
+            cancelOutlineDecoration(viewContent);
           }
         },
         () => {
-          const headingElements =
-            viewContent.querySelectorAll<HTMLElement>(".tree-item");
-          headingElements.forEach((ele) => {
-            cancelOutlineDecorator(ele);
-          });
+          if (viewContent) {
+            cancelOutlineDecoration(viewContent);
+          }
         }
       );
 
@@ -628,16 +658,15 @@ export class HeadingPlugin extends Plugin {
             enabled = false;
           }
 
-          if (!enabled) {
+          if (enabled) {
+            quietOutlineHandler(
+              this.settings.quietOutlineSettings,
+              containerElement,
+              headingELements
+            );
+          } else {
             cancelQuietOutlineDecoration(containerElement);
-            return;
           }
-
-          quietOutlineHandler(
-            this.settings.quietOutlineSettings,
-            containerElement,
-            headingELements
-          );
         },
         () => {
           const containerElement =
@@ -718,108 +747,38 @@ export class HeadingPlugin extends Plugin {
               frontmatter
             );
 
-            const {
-              enabledInEachNote,
-              opacity,
-              position,
-              ordered,
-              orderedDelimiter,
-              orderedTrailingDelimiter,
-              orderedStyleType,
-              orderedSpecifiedString,
-              orderedCustomIdents,
-              orderedIgnoreSingle,
-              orderedIgnoreMaximum = 6,
-              orderedBasedOnExisting,
-              orderedAllowZeroLevel,
-              unorderedLevelHeadings,
-            } = this.settings.fileExplorerSettings;
+            const { enabledInEachNote } = this.settings.fileExplorerSettings;
 
+            let enabled = true;
             if (metadataEnabled == null) {
               if (enabledInEachNote != undefined && !enabledInEachNote) {
-                return;
+                enabled = false;
               }
 
               if (this.getEnabledFromBlacklist(filePath)) {
-                return;
+                enabled = false;
               }
             } else if (!metadataEnabled) {
-              return;
+              enabled = false;
             }
 
-            let ignoreTopLevel = 0;
-            if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-              const queier = new Querier(orderedAllowZeroLevel);
-              for (const cacheHeading of cacheHeadings) {
-                queier.handler(cacheHeading.level);
-                ignoreTopLevel = queier.query(
-                  orderedIgnoreSingle,
-                  orderedIgnoreMaximum
-                );
-                if (ignoreTopLevel === 0) {
-                  break;
-                }
-              }
-            }
-
-            const counter = new Counter({
-              ordered,
-              delimiter: orderedDelimiter,
-              trailingDelimiter: orderedTrailingDelimiter,
-              styleType: orderedStyleType,
-              customIdents: getOrderedCustomIdents(orderedCustomIdents),
-              specifiedString: orderedSpecifiedString,
-              ignoreTopLevel,
-              allowZeroLevel: orderedAllowZeroLevel,
-              levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-            });
-
-            const marginMultiplier =
-              parseInt(
-                getComputedStyle(document.body).getPropertyValue(
-                  "--clickable-heading-margin-multiplier"
-                )
-              ) || 10;
-
-            for (
-              let i = 0, j = 0;
-              i < headingElements.length && j < cacheHeadings.length;
-              i++, j++
-            ) {
-              const readLevel = getFileHeadingItemLevel(
-                headingElements[i],
-                marginMultiplier
+            if (enabled) {
+              fileExplorerHandler(
+                this.settings.fileExplorerSettings,
+                navFile,
+                headingElements,
+                cacheHeadings
               );
-              const readText = headingElements[i].innerText;
-              let cacheLevel = cacheHeadings[j].level;
-
-              while (
-                j < cacheHeadings.length - 1 &&
-                (cacheLevel !== readLevel ||
-                  cacheHeadings[j].heading !== readText)
-              ) {
-                counter.handler(cacheLevel);
-                j++;
-                cacheLevel = cacheHeadings[j].level;
-              }
-
-              const decoratorContent = counter.decorator(cacheLevel);
-              decorateFileHeadingElement(
-                headingElements[i],
-                decoratorContent,
-                opacity,
-                position
-              );
+            } else {
+              cancelFileExplorerDecoration(navFile);
             }
           });
         },
         () => {
-          const headingElements =
-            navFilesContainer.querySelectorAll<HTMLElement>(
-              ".nav-file-title .file-heading-container .clickable-heading"
-            );
-          headingElements.forEach((ele) => {
-            cancelFileHeadingDecorator(ele);
+          const containerElements =
+            navFilesContainer.querySelectorAll<HTMLElement>(".nav-file-title");
+          containerElements.forEach((ele) => {
+            cancelFileExplorerDecoration(ele);
           });
         }
       );
@@ -834,12 +793,6 @@ export class HeadingPlugin extends Plugin {
     });
   }
 
-  private debouncedSaveSettings = debounce(
-    this.rerenderPreviewMarkdown.bind(this),
-    1000,
-    true
-  );
-
   /**
    * Rerender Preview Markdown.
    * @param file
@@ -851,6 +804,18 @@ export class HeadingPlugin extends Plugin {
         view.previewMode.rerender(true);
       }
     }
+  }
+
+  private rerenderOutlineDecorator() {
+    this.outlineComponents.forEach((vc) => vc.render());
+  }
+
+  private rerenderQuietOutlineDecorator() {
+    this.quietOutlineComponents.forEach((vc) => vc.render());
+  }
+
+  private rerenderFileExplorerDecorator() {
+    this.fileExplorerComponents.forEach((vc) => vc.render());
   }
 
   async getPluginData(): Promise<HeadingPluginData> {

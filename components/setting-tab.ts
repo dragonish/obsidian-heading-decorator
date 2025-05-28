@@ -121,9 +121,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.enabledInOutline)
           .onChange(async (value) => {
             this.plugin.settings.enabledInOutline = value;
-            await this.plugin.saveSettings({
-              outline: this.plugin.settings.enabledInOutline,
-            });
+            await this.plugin.saveSettings();
           })
       );
 
@@ -145,9 +143,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.enabledInQuietOutline)
           .onChange(async (value) => {
             this.plugin.settings.enabledInQuietOutline = value;
-            await this.plugin.saveSettings({
-              quietOutline: this.plugin.settings.enabledInQuietOutline,
-            });
+            await this.plugin.saveSettings();
           })
       );
 
@@ -182,9 +178,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setValue(this.plugin.settings.enabledInFileExplorer)
           .onChange(async (value) => {
             this.plugin.settings.enabledInFileExplorer = value;
-            await this.plugin.saveSettings({
-              fileExplorer: this.plugin.settings.enabledInFileExplorer,
-            });
+            await this.plugin.saveSettings();
           })
       );
 

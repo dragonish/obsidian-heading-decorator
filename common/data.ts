@@ -104,12 +104,15 @@ export const sourceHeadingDecoratorClassName =
   "source-custom-heading-decorator";
 export const outlineHeadingDecoratorClassName =
   "outline-custom-heading-decorator";
+export const outlineContainerClassName = "outline-custom-heading-container";
 export const quietOutlineHeadingDecoratorClassName =
   "quiet-outline-custom-heading-decorator";
 export const quietOutlineContainerClassName =
   "quiet-outline-custom-heading-container";
 export const fileExplorerHeadingDecoratorClassName =
   "file-explorer-custom-heading-decorator";
+export const fileExplorerContainerClassName =
+  "file-explorer-custom-heading-container";
 export const beforeDecoratorClassName = "before-heading-decorator";
 export const beforeInsideDecoratorClassName = "before-inside-heading-decorator";
 export const afterDecoratorClassName = "after-heading-decorator";

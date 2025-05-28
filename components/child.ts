@@ -40,15 +40,19 @@ export class ViewChildComponent extends Component {
     }
   }
 
+  render(): void {
+    this.observer?.disconnect();
+    this.decorationCallback();
+    if (this.containerEl) {
+      this.observer?.observe(this.containerEl, this.config);
+    }
+  }
+
   onload(): void {
     this.decorationCallback();
 
     this.observer = new MutationObserver(() => {
-      this.observer?.disconnect();
-      this.decorationCallback();
-      if (this.containerEl) {
-        this.observer?.observe(this.containerEl, this.config);
-      }
+      this.render();
     });
 
     if (this.containerEl) {
