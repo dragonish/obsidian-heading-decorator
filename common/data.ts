@@ -40,7 +40,7 @@ export type DecoratorOptions =
   | OrderedDecoratorOptions
   | UnorderedDecoratorOptions;
 
-interface HeadingDecoratorSettings {
+export interface HeadingDecoratorSettings {
   enabledInEachNote?: boolean;
 
   ordered: boolean;
@@ -106,6 +106,8 @@ export const outlineHeadingDecoratorClassName =
   "outline-custom-heading-decorator";
 export const quietOutlineHeadingDecoratorClassName =
   "quiet-outline-custom-heading-decorator";
+export const quietOutlineContainerClassName =
+  "quiet-outline-custom-heading-container";
 export const fileExplorerHeadingDecoratorClassName =
   "file-explorer-custom-heading-decorator";
 export const beforeDecoratorClassName = "before-heading-decorator";

@@ -41,9 +41,6 @@ import {
   getTreeItemText,
   getFileHeadingItemLevel,
   compareHeadingText,
-  queryHeadingLevelByQuietOutlineElement,
-  decorateQuietOutlineElement,
-  cancelQuietOutlineDecorator,
 } from "./common/dom";
 import {
   HeadingViewPlugin,
@@ -53,6 +50,10 @@ import {
 } from "./components/view";
 import { ViewChildComponent } from "./components/child";
 import { FolderSuggest } from "./components/suggest";
+import {
+  quietOutlineHandler,
+  cancelQuietOutlineDecoration,
+} from "./components/quiet-outline";
 
 interface ObsidianEditor extends Editor {
   cm: EditorView;
@@ -611,6 +612,12 @@ export default class HeadingPlugin extends Plugin {
         view,
         viewContent,
         () => {
+          const containerElement =
+            viewContent.querySelector<HTMLElement>(".n-tree");
+          if (!containerElement) {
+            return;
+          }
+
           const headingELements =
             viewContent.querySelectorAll<HTMLElement>(".n-tree-node");
           if (headingELements.length === 0) {
@@ -633,82 +640,38 @@ export default class HeadingPlugin extends Plugin {
             frontmatter
           );
 
-          const {
-            enabledInEachNote,
-            opacity,
-            position,
-            ordered,
-            orderedDelimiter,
-            orderedTrailingDelimiter,
-            orderedStyleType,
-            orderedSpecifiedString,
-            orderedCustomIdents,
-            orderedIgnoreSingle,
-            orderedIgnoreMaximum = 6,
-            orderedBasedOnExisting,
-            orderedAllowZeroLevel,
-            unorderedLevelHeadings,
-          } = this.settings.quietOutlineSettings;
+          const { enabledInEachNote } = this.settings.quietOutlineSettings;
 
+          let enabled = true;
           if (metadataEnabled == null) {
             if (enabledInEachNote != undefined && !enabledInEachNote) {
-              return;
+              enabled = false;
             }
 
             if (this.getEnabledFromBlacklist(file.path)) {
-              return;
+              enabled = false;
             }
           } else if (!metadataEnabled) {
+            enabled = false;
+          }
+
+          if (!enabled) {
+            cancelQuietOutlineDecoration(containerElement);
             return;
           }
 
-          let ignoreTopLevel = 0;
-          if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-            const queier = new Querier(orderedAllowZeroLevel);
-            for (const eleIndex in headingELements) {
-              const level = queryHeadingLevelByQuietOutlineElement(
-                headingELements[eleIndex]
-              );
-              queier.handler(level);
-              ignoreTopLevel = queier.query(
-                orderedIgnoreSingle,
-                orderedIgnoreMaximum
-              );
-              if (ignoreTopLevel === 0) {
-                break;
-              }
-            }
-          }
-
-          const counter = new Counter({
-            ordered,
-            delimiter: orderedDelimiter,
-            trailingDelimiter: orderedTrailingDelimiter,
-            styleType: orderedStyleType,
-            customIdents: getOrderedCustomIdents(orderedCustomIdents),
-            specifiedString: orderedSpecifiedString,
-            ignoreTopLevel,
-            allowZeroLevel: orderedAllowZeroLevel,
-            levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-          });
-
-          headingELements.forEach((headingEle) => {
-            const level = queryHeadingLevelByQuietOutlineElement(headingEle);
-            const decoratorContent = counter.decorator(level);
-            decorateQuietOutlineElement(
-              headingEle,
-              decoratorContent,
-              opacity,
-              position
-            );
-          });
+          quietOutlineHandler(
+            this.settings.quietOutlineSettings,
+            containerElement,
+            headingELements
+          );
         },
         () => {
-          const headingElements =
-            viewContent.querySelectorAll<HTMLElement>(".n-tree-node");
-          headingElements.forEach((ele) => {
-            cancelQuietOutlineDecorator(ele);
-          });
+          const containerElement =
+            viewContent.querySelector<HTMLElement>(".n-tree");
+          if (containerElement) {
+            cancelQuietOutlineDecoration(containerElement);
+          }
         }
       );
 
