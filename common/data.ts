@@ -214,6 +214,31 @@ export function defaultSourceHeadingDecoratorSettings(): SourceHeadingDecoratorS
 }
 
 /**
+ * Default plugin settings.
+ *
+ * @returns default plugin settings.
+ */
+export function defalutSettings(): HeadingPluginSettings {
+  return {
+    metadataKeyword: "heading",
+    fileRegexBlacklist: [],
+    folderBlacklist: [],
+    enabledInReading: true,
+    readingSettings: defaultHeadingDecoratorSettings(),
+    enabledInPreview: true,
+    previewSettings: defaultHeadingDecoratorSettings(),
+    enabledInSource: false,
+    sourceSettings: defaultSourceHeadingDecoratorSettings(),
+    enabledInOutline: false,
+    outlineSettings: defaultHeadingDecoratorSettings(),
+    enabledInQuietOutline: false,
+    quietOutlineSettings: defaultHeadingDecoratorSettings(),
+    enabledInFileExplorer: false,
+    fileExplorerSettings: defaultHeadingDecoratorSettings(),
+  };
+}
+
+/**
  * Get unordered level headings from settings.
  *
  * @param value - The value to split and filter.
