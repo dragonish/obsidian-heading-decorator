@@ -3,8 +3,8 @@ import {
   headingDecoratorClassName,
   previewHeadingDecoratorClassName,
   sourceHeadingDecoratorClassName,
+  getPositionClassName,
 } from "../common/data";
-import { getPositionClassName } from "../common/dom";
 
 export class HeadingWidget extends WidgetType {
   readonly isLivePreviwMode: boolean;

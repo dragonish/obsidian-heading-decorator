@@ -266,6 +266,35 @@ export function getOrderedCustomIdents(value: string) {
 }
 
 /**
+ * Get the class name for a given position.
+ *
+ * @param position The position to get the class name for.
+ * @param ignoreInsideFlag Whether to ignore the inside flag.
+ * @returns The class name.
+ */
+export function getPositionClassName(
+  position: PostionOptions,
+  ignoreInsideFlag?: boolean
+): string {
+  switch (position) {
+    case "before":
+      return beforeDecoratorClassName;
+    case "after":
+      return afterDecoratorClassName;
+    case "before-inside":
+      return ignoreInsideFlag
+        ? beforeDecoratorClassName
+        : beforeInsideDecoratorClassName;
+    case "after-inside":
+      return ignoreInsideFlag
+        ? afterDecoratorClassName
+        : afterInsideDecoratorClassName;
+    default:
+      return "";
+  }
+}
+
+/**
  * Diff level between two numbers.
  *
  * @param current current level.

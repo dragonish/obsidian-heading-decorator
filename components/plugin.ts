@@ -11,16 +11,11 @@ import { EditorView, ViewPlugin } from "@codemirror/view";
 import type { HeadingPluginSettings, HeadingPluginData } from "../common/data";
 import {
   headingsSelector,
-  getUnorderedLevelHeadings,
-  getOrderedCustomIdents,
   getBoolean,
   checkEnabledCSS,
   stringToRegex,
   defalutSettings,
 } from "../common/data";
-import { Counter, Querier } from "../common/counter";
-import { Heading } from "../common/heading";
-import { decorateHTMLElement, queryHeadingLevelByElement } from "../common/dom";
 import {
   HeadingEditorViewPlugin,
   headingDecorationsField,
@@ -28,6 +23,7 @@ import {
   updateEditorMode,
 } from "./editor";
 import { ViewChildComponent } from "./child";
+import { readingOrderedHandler, readingUnorderedHandler } from "./reading";
 import { outlineHandler, cancelOutlineDecoration } from "./outline";
 import {
   quietOutlineHandler,
@@ -197,24 +193,7 @@ export class HeadingPlugin extends Plugin {
         return;
       }
 
-      const {
-        readingSettings: {
-          opacity,
-          position,
-          ordered,
-          orderedDelimiter,
-          orderedTrailingDelimiter,
-          orderedStyleType,
-          orderedSpecifiedString,
-          orderedCustomIdents,
-          orderedIgnoreSingle,
-          orderedIgnoreMaximum = 6,
-          orderedBasedOnExisting,
-          orderedAllowZeroLevel,
-          unorderedLevelHeadings,
-        },
-      } = this.settings;
-
+      const { ordered } = this.settings.readingSettings;
       if (ordered) {
         const file = this.getActiveFile(context.sourcePath);
         if (!file) {
@@ -227,108 +206,14 @@ export class HeadingPlugin extends Plugin {
           return;
         }
 
-        let ignoreTopLevel = 0;
-        if (orderedIgnoreSingle || orderedBasedOnExisting) {
-          const queier = new Querier(orderedAllowZeroLevel);
-          const heading = new Heading();
-          for (let lineIndex = 1; lineIndex <= sourceArr.length; lineIndex++) {
-            const lineText = sourceArr[lineIndex - 1];
-            const nextLineIndex = lineIndex + 1;
-            const nextLineText =
-              nextLineIndex <= sourceArr.length
-                ? sourceArr[nextLineIndex - 1]
-                : "";
-            const level = heading.handler(lineIndex, lineText, nextLineText);
-            if (level === -1) {
-              continue;
-            }
-
-            queier.handler(level);
-
-            ignoreTopLevel = queier.query(
-              orderedIgnoreSingle,
-              orderedIgnoreMaximum
-            );
-            if (ignoreTopLevel === 0) {
-              break;
-            }
-          }
-        }
-
-        const counter = new Counter({
-          ordered: true,
-          delimiter: orderedDelimiter,
-          trailingDelimiter: orderedTrailingDelimiter,
-          styleType: orderedStyleType,
-          customIdents: getOrderedCustomIdents(orderedCustomIdents),
-          specifiedString: orderedSpecifiedString,
-          ignoreTopLevel,
-          allowZeroLevel: orderedAllowZeroLevel,
-        });
-        const heading = new Heading();
-        let headingIndex = 1;
-
-        headingElements.forEach((headingElement) => {
-          const sectionInfo = context.getSectionInfo(headingElement);
-          if (!sectionInfo) {
-            return;
-          }
-
-          const lineStart = sectionInfo.lineStart + 1;
-          if (lineStart > sourceArr.length) {
-            return;
-          }
-
-          for (
-            let lineIndex = headingIndex;
-            lineIndex <= lineStart;
-            lineIndex++
-          ) {
-            const lineText = sourceArr[lineIndex - 1];
-            const nextLineIndex = lineIndex + 1;
-            const nextLineText =
-              nextLineIndex <= sourceArr.length
-                ? sourceArr[nextLineIndex - 1]
-                : "";
-            const level = heading.handler(lineIndex, lineText, nextLineText);
-            if (lineIndex === lineStart) {
-              //? 1. When using the page preview feature to only reference fragments, the
-              //? relative position of rows is incorrect.
-              //? 2. In the split editing scenario, there may be a delay in the information
-              //? on the reading tab.
-              const elementLevel = queryHeadingLevelByElement(headingElement);
-              if (elementLevel === level) {
-                const decoratorContent = counter.decorator(level);
-                decorateHTMLElement(
-                  headingElement,
-                  decoratorContent,
-                  opacity,
-                  position
-                );
-              }
-
-              headingIndex = lineIndex + 1;
-            } else {
-              counter.handler(level);
-            }
-          }
-        });
+        readingOrderedHandler(
+          this.settings.readingSettings,
+          context,
+          headingElements,
+          sourceArr
+        );
       } else {
-        const counter = new Counter({
-          ordered: false,
-          levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-        });
-
-        headingElements.forEach((headingElement) => {
-          const level = queryHeadingLevelByElement(headingElement);
-          const decoratorContent = counter.decorator(level);
-          decorateHTMLElement(
-            headingElement,
-            decoratorContent,
-            opacity,
-            position
-          );
-        });
+        readingUnorderedHandler(this.settings.readingSettings, headingElements);
       }
     });
 
