@@ -170,7 +170,9 @@ For example, a value equivalent to the above example:
 
 ```yaml
 ---
-cssclasses: disable-heading enable-reading-heading
+cssclasses:
+  - disable-heading
+  - enable-reading-heading
 ---
 ```
 
