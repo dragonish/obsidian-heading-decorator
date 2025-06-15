@@ -36,7 +36,8 @@
     "typescript-eslint": "^8.34.0"
   },
   "dependencies": {
-    "@jsamr/counter-style": "^2.0.2"
+    "@jsamr/counter-style": "^2.0.2",
+    "obsidian-plugin-i18n": "^0.2.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

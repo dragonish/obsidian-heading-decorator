@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type { HeadingPlugin } from "./plugin";
 import type { OrderedCounterStyleType } from "../common/data";
-import { orderedStyleTypeOptions } from "../common/data";
+import { orderedStyleTypeOptions } from "../common/options";
 import { FolderSuggest } from "./suggest";
 
 export class HeadingSettingTab extends PluginSettingTab {
@@ -19,10 +19,12 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* metadataKeyword
     const metadataKeywordSetting = new Setting(containerEl)
-      .setName("Metadata keyword")
+      .setName(this.plugin.i18n.t("setting.metadataKeyword"))
       .addText((text) =>
         text
-          .setPlaceholder("Enter the keyword")
+          .setPlaceholder(
+            this.plugin.i18n.t("setting.metadataKeywordPlaceholder")
+          )
           .setValue(this.plugin.settings.metadataKeyword)
           .onChange(async (value) => {
             this.plugin.settings.metadataKeyword = value.trim();
@@ -31,22 +33,27 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     const metadataKeywordDesc = createFragment();
+    const metadataKeywordDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.metadataKeywordDesc"
+    );
     metadataKeywordDesc.append(
-      "The key name that reads the enabled status from the ",
+      metadataKeywordDescTuple[0],
       createEl("a", {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
-        text: "properties",
+        text: this.plugin.i18n.t("setting.properties"),
       }),
-      "."
+      metadataKeywordDescTuple[1]
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
-    new Setting(containerEl).setName("Reading view").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.reading"))
+      .setHeading();
 
     //* enabledInReading
     new Setting(containerEl)
-      .setName("Enabled in reading view")
-      .setDesc("Allow to decorate the heading under the reading view.")
+      .setName(this.plugin.i18n.t("setting.enabledInReading"))
+      .setDesc(this.plugin.i18n.t("setting.enabledInReadingDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInReading)
@@ -57,19 +64,23 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Manage reading view heading decorator")
+      .setName(this.plugin.i18n.t("setting.enabledInReadingManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("readingSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("readingSettings");
+          });
       });
 
-    new Setting(containerEl).setName("Live preview").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.livePreview"))
+      .setHeading();
 
     //* enabledInPreview
     new Setting(containerEl)
-      .setName("Enabled in live preview")
-      .setDesc("Allow to decorate the heading under the live preview.")
+      .setName(this.plugin.i18n.t("setting.enabledInPreview"))
+      .setDesc(this.plugin.i18n.t("setting.enabledInPreviewDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInPreview)
@@ -80,19 +91,23 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Manage live preview heading decorator")
+      .setName(this.plugin.i18n.t("setting.enabledInPreviewManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("previewSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("previewSettings");
+          });
       });
 
-    new Setting(containerEl).setName("Source mode").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.sourceMode"))
+      .setHeading();
 
     //* enabledInSource
     new Setting(containerEl)
-      .setName("Enabled in source mode")
-      .setDesc("Allow to decorate the heading under the source mode.")
+      .setName(this.plugin.i18n.t("setting.enabledInSource"))
+      .setDesc(this.plugin.i18n.t("setting.enabledInSourceDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInSource)
@@ -103,19 +118,23 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Manage source mode heading decorator")
+      .setName(this.plugin.i18n.t("setting.enabledInSourceManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("sourceSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("sourceSettings");
+          });
       });
 
-    new Setting(containerEl).setName("Outline plugin").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.outline"))
+      .setHeading();
 
     //* enabledInOutline
     new Setting(containerEl)
-      .setName("Enabled in outline plugin")
-      .setDesc("Allow to decorate the heading under the outline plugin.")
+      .setName(this.plugin.i18n.t("setting.enabledInOutline"))
+      .setDesc(this.plugin.i18n.t("setting.enabledInOutlineDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInOutline)
@@ -126,18 +145,22 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Manage outline plugin heading decorator")
+      .setName(this.plugin.i18n.t("setting.enabledInOutlineManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("outlineSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("outlineSettings");
+          });
       });
 
-    new Setting(containerEl).setName("Quiet Outline plugin").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.quietOutline"))
+      .setHeading();
 
     //* enabledInQuietOutline
     const enabledInQuietOutlineSetting = new Setting(containerEl)
-      .setName('Enabled in "Quiet Outline" plugin')
+      .setName(this.plugin.i18n.t("setting.enabledInQuietOutline"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInQuietOutline)
@@ -148,31 +171,36 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     const enabledInQuietOutlineDesc = createFragment();
+    const enabledInQuietOutLineDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.enabledInQuietOutlineDesc"
+    );
     enabledInQuietOutlineDesc.append(
-      "Allow to decorate the heading under the ",
+      enabledInQuietOutLineDescTuple[0],
       createEl("a", {
         href: "https://github.com/guopenghui/obsidian-quiet-outline",
         text: "Quiet Outline",
       }),
-      " plugin."
+      enabledInQuietOutLineDescTuple[1]
     );
     enabledInQuietOutlineSetting.descEl.appendChild(enabledInQuietOutlineDesc);
 
     new Setting(containerEl)
-      .setName('Manage "Quiet Outline" plugin heading decorator')
+      .setName(this.plugin.i18n.t("setting.enabledInQuietOutlineManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("quietOutlineSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("quietOutlineSettings");
+          });
       });
 
     new Setting(containerEl)
-      .setName("Headings in Explorer plugin")
+      .setName(this.plugin.i18n.t("setting.fileExplorer"))
       .setHeading();
 
     //* enabledInFileExplorer
     const enabledInFileExplorerSetting = new Setting(containerEl)
-      .setName('Enabled in "Headings in Explorer" plugin')
+      .setName(this.plugin.i18n.t("setting.enabledInFileExplorer"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings.enabledInFileExplorer)
@@ -183,42 +211,53 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     const enabledInFileExplorerDesc = createFragment();
+    const enabledInFileExplorerDescTuple = this.plugin.i18n.getPlaceholderTuple(
+      "setting.enabledInFileExplorerDesc"
+    );
     enabledInFileExplorerDesc.append(
-      "Allow to decorate the heading under the ",
+      enabledInFileExplorerDescTuple[0],
       createEl("a", {
         href: "https://github.com/patrickchiang/obsidian-headings-in-explorer",
         text: "Headings in Explorer",
       }),
-      " plugin."
+      enabledInFileExplorerDescTuple[1]
     );
     enabledInFileExplorerSetting.descEl.appendChild(enabledInFileExplorerDesc);
 
     new Setting(containerEl)
-      .setName('Manage "Headings in Explorer" plugin heading decorator')
+      .setName(this.plugin.i18n.t("setting.enabledInFileExplorerManage"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageHeadingDecoratorSettings("fileExplorerSettings");
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageHeadingDecoratorSettings("fileExplorerSettings");
+          });
       });
 
-    new Setting(containerEl).setName("Blocklist").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.blocklist"))
+      .setHeading();
 
     //* folderBlacklist
     new Setting(containerEl)
-      .setName("Manage folder blocklist")
+      .setName(this.plugin.i18n.t("setting.folderBlacklist"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageFolderBlacklist(true);
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageFolderBlacklist(true);
+          });
       });
 
     //* fileRegexBlacklist
     new Setting(containerEl)
-      .setName("Manage note name regex blocklist")
+      .setName(this.plugin.i18n.t("setting.fileRegexBlacklist"))
       .addButton((button) => {
-        button.setButtonText("Manage").onClick(() => {
-          this.manageFileRegexBlacklist(true);
-        });
+        button
+          .setButtonText(this.plugin.i18n.t("button.manage"))
+          .onClick(() => {
+            this.manageFileRegexBlacklist(true);
+          });
       });
   }
 
@@ -243,22 +282,22 @@ export class HeadingSettingTab extends PluginSettingTab {
     let tabName = "";
     switch (settingsType) {
       case "readingSettings":
-        tabName = "Manage reading view heading decorator";
+        tabName = this.plugin.i18n.t("setting.enabledInReadingManage");
         break;
       case "previewSettings":
-        tabName = "Manage live preview heading decorator";
+        tabName = this.plugin.i18n.t("setting.enabledInPreviewManage");
         break;
       case "sourceSettings":
-        tabName = "Manage source mode heading decorator";
+        tabName = this.plugin.i18n.t("setting.enabledInSourceManage");
         break;
       case "outlineSettings":
-        tabName = "Manage outline plugin heading decorator";
+        tabName = this.plugin.i18n.t("setting.enabledInOutlineManage");
         break;
       case "quietOutlineSettings":
-        tabName = 'Manage "Quiet Outline" plugin heading decorator';
+        tabName = this.plugin.i18n.t("setting.enabledInQuietOutlineManage");
         break;
       case "fileExplorerSettings":
-        tabName = 'Manage "Headings in Explorer" plugin heading decorator';
+        tabName = this.plugin.i18n.t("setting.enabledInFileExplorerManage");
         break;
     }
 
@@ -266,17 +305,15 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(tabName)
       .setHeading()
       .addButton((button) => {
-        button.setButtonText("Back").onClick(() => {
+        button.setButtonText(this.plugin.i18n.t("button.back")).onClick(() => {
           this.display();
         });
       });
 
     //* enabledInEachNote
     new Setting(containerEl)
-      .setName("Enabled in each note")
-      .setDesc(
-        "Toggle this setting to enable the decoration of headings in each note."
-      )
+      .setName(this.plugin.i18n.t("setting.enabledInEachNote"))
+      .setDesc(this.plugin.i18n.t("setting.enabledInEachNoteDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(
@@ -288,14 +325,14 @@ export class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
-    new Setting(containerEl).setName("Effect").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.effect"))
+      .setHeading();
 
     //* ordered
     new Setting(containerEl)
-      .setName("Ordered")
-      .setDesc(
-        "Toggle this setting to enable the decoration of headings as an ordered or unordered list."
-      )
+      .setName(this.plugin.i18n.t("setting.ordered"))
+      .setDesc(this.plugin.i18n.t("setting.orderedDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings[settingsType].ordered)
@@ -307,10 +344,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* opacity
     new Setting(containerEl)
-      .setName("Opacity")
-      .setDesc(
-        "Set the opacity of the heading decorator. The value is the form of percentage."
-      )
+      .setName(this.plugin.i18n.t("setting.opacity"))
+      .setDesc(this.plugin.i18n.t("setting.opacityDesc"))
       .addSlider((slider) =>
         slider
           .setLimits(10, 100, 10)
@@ -328,22 +363,22 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* position
     new Setting(containerEl)
-      .setName("Position")
-      .setDesc("Set the position of the heading decorator.")
+      .setName(this.plugin.i18n.t("setting.position"))
+      .setDesc(this.plugin.i18n.t("setting.positionDesc"))
       .addDropdown((dropdown) => {
         const options: Record<string, string> =
           settingsType === "outlineSettings" ||
           settingsType === "quietOutlineSettings" ||
           settingsType === "fileExplorerSettings"
             ? {
-                before: "Before the heading",
-                after: "After the heading",
+                before: this.plugin.i18n.t("setting.before"),
+                after: this.plugin.i18n.t("setting.after"),
               }
             : {
-                before: "Before the heading",
-                "before-inside": "Before the heading (inside)",
-                after: "After the heading",
-                "after-inside": "After the heading (inside)",
+                before: this.plugin.i18n.t("setting.before"),
+                "before-inside": this.plugin.i18n.t("setting.beforeInside"),
+                after: this.plugin.i18n.t("setting.after"),
+                "after-inside": this.plugin.i18n.t("setting.afterInside"),
               };
 
         dropdown
@@ -359,12 +394,14 @@ export class HeadingSettingTab extends PluginSettingTab {
           });
       });
 
-    new Setting(containerEl).setName("Ordered").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.ordered"))
+      .setHeading();
 
     //* orderedStyleType
     new Setting(containerEl)
-      .setName("Style type")
-      .setDesc("Set the style type for ordered list.")
+      .setName(this.plugin.i18n.t("setting.orderedStyleType"))
+      .setDesc(this.plugin.i18n.t("setting.orderedStyleTypeDesc"))
       .addDropdown((dropdown) =>
         dropdown
           .addOptions(orderedStyleTypeOptions)
@@ -378,8 +415,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedDelimiter
     new Setting(containerEl)
-      .setName("Delimiter")
-      .setDesc("Set the delimiter for ordered list.")
+      .setName(this.plugin.i18n.t("setting.orderedDelimiter"))
+      .setDesc(this.plugin.i18n.t("setting.orderedDelimiterDesc"))
       .addText((text) =>
         text
           .setValue(this.plugin.settings[settingsType].orderedDelimiter)
@@ -391,8 +428,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedTrailingDelimiter
     new Setting(containerEl)
-      .setName("Trailing delimiter")
-      .setDesc("Set whether to add a trailing delimiter for ordered list.")
+      .setName(this.plugin.i18n.t("setting.orderedTrailingDelimiter"))
+      .setDesc(this.plugin.i18n.t("setting.orderedTrailingDelimiterDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings[settingsType].orderedTrailingDelimiter)
@@ -404,10 +441,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedCustomIdents
     new Setting(containerEl)
-      .setName("Custom list styles")
-      .setDesc(
-        'For the "Custom list styles" option. Set custom list styles for ordered list. Use spaces to separate entries.'
-      )
+      .setName(this.plugin.i18n.t("setting.orderedCustomIdents"))
+      .setDesc(this.plugin.i18n.t("setting.orderedCustomIdentsDesc"))
       .addText((text) =>
         text
           .setValue(this.plugin.settings[settingsType].orderedCustomIdents)
@@ -419,10 +454,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedSpecifiedString
     new Setting(containerEl)
-      .setName("Specified string")
-      .setDesc(
-        'For the "Specified string" option. Set a specified string for ordered list.'
-      )
+      .setName(this.plugin.i18n.t("setting.orderedSpecifiedString"))
+      .setDesc(this.plugin.i18n.t("setting.orderedSpecifiedStringDesc"))
       .addText((text) =>
         text
           .setValue(this.plugin.settings[settingsType].orderedSpecifiedString)
@@ -434,10 +467,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedAllowZeroLevel
     new Setting(containerEl)
-      .setName("Allow zero level")
-      .setDesc(
-        "If the next heading is more than one level higher, the omitted level is zero instead of one."
-      )
+      .setName(this.plugin.i18n.t("setting.orderedAllowZeroLevel"))
+      .setDesc(this.plugin.i18n.t("setting.orderedAllowZeroLevelDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(
@@ -451,10 +482,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedBasedOnExisting
     new Setting(containerEl)
-      .setName("Based on the existing highest level")
-      .setDesc(
-        "Use the highest level of headings in the note as the base for ordered list."
-      )
+      .setName(this.plugin.i18n.t("setting.orderedBasedOnExisting"))
+      .setDesc(this.plugin.i18n.t("setting.orderedBasedOnExistingDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(
@@ -468,10 +497,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedIgnoreSingle
     new Setting(containerEl)
-      .setName("Ignore the single heading at the top-level")
-      .setDesc(
-        "If the top-level has only a single heading, exclude it when building an ordered list."
-      )
+      .setName(this.plugin.i18n.t("setting.orderedIgnoreSingle"))
+      .setDesc(this.plugin.i18n.t("setting.orderedIgnoreSingleDesc"))
       .addToggle((toggle) =>
         toggle
           .setValue(this.plugin.settings[settingsType].orderedIgnoreSingle)
@@ -483,10 +510,8 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* orderedIgnoreMaximum
     new Setting(containerEl)
-      .setName("The maximum number of ignored")
-      .setDesc(
-        "For enabled: Ignore the single heading at the top-level. The maximum number of ignored headings at the top-level."
-      )
+      .setName(this.plugin.i18n.t("setting.orderedIgnoreMaximum"))
+      .setDesc(this.plugin.i18n.t("setting.orderedIgnoreMaximumDesc"))
       .addSlider((slider) =>
         slider
           .setLimits(1, 6, 1)
@@ -500,14 +525,14 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setDynamicTooltip()
       );
 
-    new Setting(containerEl).setName("Unordered").setHeading();
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.unordered"))
+      .setHeading();
 
     //* unorderedLevelHeadings
     new Setting(containerEl)
-      .setName("Level headings")
-      .setDesc(
-        "Set the names for each level. The value is 6 entries separated by spaces."
-      )
+      .setName(this.plugin.i18n.t("setting.unorderedLevelHeadings"))
+      .setDesc(this.plugin.i18n.t("setting.unorderedLevelHeadingsDesc"))
       .addText((text) =>
         text
           .setValue(this.plugin.settings[settingsType].unorderedLevelHeadings)
@@ -518,14 +543,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
 
     if (settingsType === "sourceSettings") {
-      new Setting(containerEl).setName("Other").setHeading();
+      new Setting(containerEl)
+        .setName(this.plugin.i18n.t("setting.other"))
+        .setHeading();
 
       //* hideNumberSigns
       new Setting(containerEl)
-        .setName("Hide number signs on inactive lines")
-        .setDesc(
-          "Hide number signs (#) on inactive lines similar to live preview."
-        )
+        .setName(this.plugin.i18n.t("setting.hideNumberSigns"))
+        .setDesc(this.plugin.i18n.t("setting.hideNumberSignsDesc"))
         .addToggle((toggle) => {
           toggle
             .setValue(
@@ -548,17 +573,21 @@ export class HeadingSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage folder blocklist")
+      .setName(this.plugin.i18n.t("setting.folderBlacklist"))
       .setHeading()
       .addButton((button) => {
-        button.setButtonText("Back").onClick(() => {
+        button.setButtonText(this.plugin.i18n.t("button.back")).onClick(() => {
           this.display();
         });
       });
 
     this.plugin.settings.folderBlacklist.forEach((folder, index) => {
       new Setting(containerEl)
-        .setName(`Folder blocklist ${index + 1}`)
+        .setName(
+          this.plugin.i18n.t("setting.folderBlocklistIndex", {
+            index: index + 1,
+          })
+        )
         .addText((text) => {
           text.setValue(folder).onChange(async (value) => {
             this.plugin.settings.folderBlacklist[index] = value;
@@ -575,7 +604,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         })
         .addButton((button) => {
           button
-            .setButtonText("Delete")
+            .setButtonText(this.plugin.i18n.t("button.delete"))
             .setWarning()
             .onClick(async () => {
               this.plugin.settings.folderBlacklist.splice(index, 1);
@@ -587,9 +616,9 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).addButton((button) => {
       button
-        .setButtonText("Add")
+        .setButtonText(this.plugin.i18n.t("button.add"))
         .setCta()
-        .setTooltip("Add a new folder to the blocklist")
+        .setTooltip(this.plugin.i18n.t("setting.folderBlocklistAddTip"))
         .onClick(async () => {
           this.plugin.settings.folderBlacklist.push("");
           await this.plugin.saveSettings();
@@ -609,20 +638,26 @@ export class HeadingSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Manage note name regex blocklist")
+      .setName(this.plugin.i18n.t("setting.fileRegexBlacklist"))
       .setHeading()
       .addButton((button) => {
-        button.setButtonText("Back").onClick(() => {
+        button.setButtonText(this.plugin.i18n.t("button.back")).onClick(() => {
           this.display();
         });
       });
 
     this.plugin.settings.fileRegexBlacklist.forEach((regex, index) => {
       new Setting(containerEl)
-        .setName(`Note name regex blocklist ${index + 1}`)
+        .setName(
+          this.plugin.i18n.t("setting.fileRegexBlocklistIndex", {
+            index: index + 1,
+          })
+        )
         .addText((text) =>
           text
-            .setPlaceholder("e.g., /^daily.*/i")
+            .setPlaceholder(
+              this.plugin.i18n.t("setting.fileRegexBlocklistPlaceholder")
+            )
             .setValue(regex)
             .onChange(async (value) => {
               this.plugin.settings.fileRegexBlacklist[index] = value.trim();
@@ -631,7 +666,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         )
         .addButton((button) => {
           button
-            .setButtonText("Delete")
+            .setButtonText(this.plugin.i18n.t("button.delete"))
             .setWarning()
             .onClick(async () => {
               this.plugin.settings.fileRegexBlacklist.splice(index, 1);
@@ -643,9 +678,9 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     new Setting(containerEl).addButton((button) => {
       button
-        .setButtonText("Add")
+        .setButtonText(this.plugin.i18n.t("button.add"))
         .setCta()
-        .setTooltip("Add a new note name regex blocklist")
+        .setTooltip(this.plugin.i18n.t("setting.fileRegexBlocklistAddTip"))
         .onClick(async () => {
           this.plugin.settings.fileRegexBlacklist.push("");
           await this.plugin.saveSettings();

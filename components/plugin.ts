@@ -8,6 +8,7 @@ import {
   debounce,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
+import { i18n } from "../locales";
 import type { HeadingPluginSettings, HeadingPluginData } from "../common/data";
 import {
   headingsSelector,
@@ -52,6 +53,7 @@ interface RevocableProxy {
 
 export class HeadingPlugin extends Plugin {
   settings: HeadingPluginSettings;
+  i18n = i18n;
 
   private revokes: (() => void)[] = [];
 
