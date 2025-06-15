@@ -1,5 +1,7 @@
 # Heading Decorator
 
+[English](./README.md) | **简体中文** | [繁體中文](./README-zh_TW.md)
+
 ## 介绍
 
 这是一个用于 [Obsidian](https://obsidian.md) 的插件，实现根据标题的级别在标题周围显示特定内容。

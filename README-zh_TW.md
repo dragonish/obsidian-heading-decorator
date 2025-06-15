@@ -1,5 +1,7 @@
 # Heading Decorator
 
+[English](./README.md) | [简体中文](./README-zh_CN.md) | **繁體中文**
+
 ## 介紹
 
 這是一個用於 [Obsidian](https://obsidian.md) 的外掛，實現根據標題的級別在標題周圍顯示特定內容。
