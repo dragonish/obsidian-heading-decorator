@@ -142,5 +142,12 @@ describe("common/heading", function () {
     expect(heading6.handler(11, "", "+ item e")).to.equal(-1);
     expect(heading6.handler(12, "+ item e", "-")).to.equal(-1);
     expect(heading6.handler(13, "-", "")).to.equal(-1);
+
+    const heading7 = new Heading();
+    expect(heading7.handler(1, "1. item a", "-")).to.equal(-1);
+    expect(heading7.handler(2, "-", "")).to.equal(-1);
+    expect(heading7.handler(3, "", "1) item b")).to.equal(-1);
+    expect(heading7.handler(4, "1) item b", "-")).to.equal(-1);
+    expect(heading7.handler(5, "-", "")).to.equal(-1);
   });
 });
