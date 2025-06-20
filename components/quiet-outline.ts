@@ -30,6 +30,7 @@ export function quietOutlineHandler(
     orderedStyleType,
     orderedSpecifiedString,
     orderedCustomIdents,
+    orderedAlwaysIgnore,
     orderedIgnoreSingle,
     orderedIgnoreMaximum = 6,
     orderedBasedOnExisting,
@@ -40,17 +41,24 @@ export function quietOutlineHandler(
   container.classList.add(quietOutlineContainerClassName);
 
   let ignoreTopLevel = 0;
-  if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-    const queier = new Querier(orderedAllowZeroLevel);
-    for (const eleIndex in headingElements) {
-      const level = queryHeadingLevelByQuietOutlineElement(
-        headingElements[eleIndex]
-      );
-      queier.handler(level);
-      ignoreTopLevel = queier.query(orderedIgnoreSingle, orderedIgnoreMaximum);
-      if (ignoreTopLevel === 0) {
-        break;
+  if (ordered) {
+    const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
+    const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
+    if (ignoreSingle || orderedBasedOnExisting) {
+      const queier = new Querier(orderedAllowZeroLevel);
+      for (const eleIndex in headingElements) {
+        const level = queryHeadingLevelByQuietOutlineElement(
+          headingElements[eleIndex]
+        );
+        queier.handler(level);
+        ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
+        if (ignoreTopLevel <= ignoreLimit) {
+          break;
+        }
       }
+    }
+    if (ignoreTopLevel < ignoreLimit) {
+      ignoreTopLevel = ignoreLimit;
     }
   }
 

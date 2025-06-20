@@ -106,6 +106,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
         orderedTrailingDelimiter,
         orderedCustomIdents,
         orderedSpecifiedString,
+        orderedAlwaysIgnore,
         orderedIgnoreSingle,
         orderedIgnoreMaximum = 6,
         orderedBasedOnExisting,
@@ -116,29 +117,33 @@ export class HeadingEditorViewPlugin implements PluginValue {
         : pluginData.sourceSettings;
 
       let ignoreTopLevel = 0;
-      if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-        const queier = new Querier(orderedAllowZeroLevel);
-        const heading = new Heading();
-        for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
-          const line = doc.line(lineIndex);
-          const lineText = line.text;
-          const nextLineIndex = lineIndex + 1;
-          const nextLineText =
-            nextLineIndex <= doc.lines ? doc.line(nextLineIndex).text : "";
-          const level = heading.handler(lineIndex, lineText, nextLineText);
-          if (level === -1) {
-            continue;
-          }
+      if (ordered) {
+        const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
+        const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
+        if (ignoreSingle || orderedBasedOnExisting) {
+          const queier = new Querier(orderedAllowZeroLevel);
+          const heading = new Heading();
+          for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
+            const line = doc.line(lineIndex);
+            const lineText = line.text;
+            const nextLineIndex = lineIndex + 1;
+            const nextLineText =
+              nextLineIndex <= doc.lines ? doc.line(nextLineIndex).text : "";
+            const level = heading.handler(lineIndex, lineText, nextLineText);
+            if (level === -1) {
+              continue;
+            }
 
-          queier.handler(level);
+            queier.handler(level);
 
-          ignoreTopLevel = queier.query(
-            orderedIgnoreSingle,
-            orderedIgnoreMaximum
-          );
-          if (ignoreTopLevel === 0) {
-            break;
+            ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
+            if (ignoreTopLevel <= ignoreLimit) {
+              break;
+            }
           }
+        }
+        if (ignoreTopLevel < ignoreLimit) {
+          ignoreTopLevel = ignoreLimit;
         }
       }
 

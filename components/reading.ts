@@ -34,12 +34,15 @@ export function readingOrderedHandler(
     orderedCustomIdents,
     orderedIgnoreSingle,
     orderedIgnoreMaximum = 6,
+    orderedAlwaysIgnore,
     orderedBasedOnExisting,
     orderedAllowZeroLevel,
   } = settings;
 
   let ignoreTopLevel = 0;
-  if (orderedIgnoreSingle || orderedBasedOnExisting) {
+  const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
+  const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
+  if (ignoreSingle || orderedBasedOnExisting) {
     const queier = new Querier(orderedAllowZeroLevel);
     const heading = new Heading();
     for (let lineIndex = 1; lineIndex <= sourceArr.length; lineIndex++) {
@@ -54,11 +57,14 @@ export function readingOrderedHandler(
 
       queier.handler(level);
 
-      ignoreTopLevel = queier.query(orderedIgnoreSingle, orderedIgnoreMaximum);
-      if (ignoreTopLevel === 0) {
+      ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
+      if (ignoreTopLevel <= ignoreLimit) {
         break;
       }
     }
+  }
+  if (ignoreTopLevel < ignoreLimit) {
+    ignoreTopLevel = ignoreLimit;
   }
 
   const counter = new Counter({

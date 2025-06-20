@@ -495,6 +495,21 @@ export class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
+    //* orderedAlwaysIgnore
+    new Setting(containerEl)
+      .setName(this.plugin.i18n.t("setting.orderedAlwaysIgnore"))
+      .setDesc(this.plugin.i18n.t("setting.orderedAlwaysIgnoreDesc"))
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].orderedAlwaysIgnore ?? false
+          )
+          .onChange(async (value) => {
+            this.plugin.settings[settingsType].orderedAlwaysIgnore = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
     //* orderedIgnoreSingle
     new Setting(containerEl)
       .setName(this.plugin.i18n.t("setting.orderedIgnoreSingle"))
