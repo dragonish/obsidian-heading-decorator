@@ -145,19 +145,17 @@ function decorateFileHeadingElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  if (content) {
-    element.dataset.headingDecorator = content;
-    element.dataset.decoratorOpacity = `${opacity}%`;
+  element.dataset.headingDecorator = content;
+  element.dataset.decoratorOpacity = `${opacity}%`;
 
-    //? Remove potential residual class names
-    element.classList.remove(
-      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
-    );
-    element.classList.add(
-      fileExplorerHeadingDecoratorClassName,
-      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
-    );
-  }
+  //? Remove potential residual class names
+  element.classList.remove(
+    position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+  );
+  element.classList.add(
+    fileExplorerHeadingDecoratorClassName,
+    position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+  );
 }
 
 /**

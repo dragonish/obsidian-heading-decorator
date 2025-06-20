@@ -143,27 +143,21 @@ function decorateQuietOutlineElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  if (content) {
-    const nodeContent = element.querySelector<HTMLElement>(
-      ".n-tree-node-content"
-    );
-    if (nodeContent) {
-      nodeContent.dataset.headingDecorator = content;
-      nodeContent.dataset.decoratorOpacity = `${opacity}%`;
+  const nodeContent = element.querySelector<HTMLElement>(
+    ".n-tree-node-content"
+  );
+  if (nodeContent) {
+    nodeContent.dataset.headingDecorator = content;
+    nodeContent.dataset.decoratorOpacity = `${opacity}%`;
 
-      //? Remove potential residual class names
-      nodeContent.classList.remove(
-        position === "after"
-          ? beforeDecoratorClassName
-          : afterDecoratorClassName
-      );
-      nodeContent.classList.add(
-        quietOutlineHeadingDecoratorClassName,
-        position === "after"
-          ? afterDecoratorClassName
-          : beforeDecoratorClassName
-      );
-    }
+    //? Remove potential residual class names
+    nodeContent.classList.remove(
+      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+    );
+    nodeContent.classList.add(
+      quietOutlineHeadingDecoratorClassName,
+      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+    );
   }
 }
 

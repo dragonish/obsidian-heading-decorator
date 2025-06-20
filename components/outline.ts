@@ -144,27 +144,21 @@ function decorateOutlineElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  if (content) {
-    const inner = element.querySelector<HTMLElement>(
-      ".tree-item-self .tree-item-inner"
-    );
-    if (inner) {
-      inner.dataset.headingDecorator = content;
-      inner.dataset.decoratorOpacity = `${opacity}%`;
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner"
+  );
+  if (inner) {
+    inner.dataset.headingDecorator = content;
+    inner.dataset.decoratorOpacity = `${opacity}%`;
 
-      //? Remove potential residual class names
-      inner.classList.remove(
-        position === "after"
-          ? beforeDecoratorClassName
-          : afterDecoratorClassName
-      );
-      inner.classList.add(
-        outlineHeadingDecoratorClassName,
-        position === "after"
-          ? afterDecoratorClassName
-          : beforeDecoratorClassName
-      );
-    }
+    //? Remove potential residual class names
+    inner.classList.remove(
+      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+    );
+    inner.classList.add(
+      outlineHeadingDecoratorClassName,
+      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+    );
   }
 }
 
