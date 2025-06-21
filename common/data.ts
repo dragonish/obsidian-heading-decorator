@@ -54,6 +54,7 @@ export interface HeadingDecoratorSettings {
   orderedSpecifiedString: string;
   orderedAllowZeroLevel?: boolean;
   orderedBasedOnExisting?: boolean;
+  orderedAlwaysIgnore?: boolean;
   orderedIgnoreSingle: boolean;
   orderedIgnoreMaximum?: number;
 
@@ -146,8 +147,9 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
     orderedSpecifiedString: "#",
     orderedAllowZeroLevel: false,
-    orderedIgnoreSingle: false,
     orderedBasedOnExisting: false,
+    orderedAlwaysIgnore: false,
+    orderedIgnoreSingle: false,
     orderedIgnoreMaximum: 6,
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };

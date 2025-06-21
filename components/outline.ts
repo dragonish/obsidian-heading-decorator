@@ -35,6 +35,7 @@ export function outlineHandler(
     orderedStyleType,
     orderedSpecifiedString,
     orderedCustomIdents,
+    orderedAlwaysIgnore,
     orderedIgnoreSingle,
     orderedIgnoreMaximum = 6,
     orderedBasedOnExisting,
@@ -45,14 +46,21 @@ export function outlineHandler(
   container.classList.add(outlineContainerClassName);
 
   let ignoreTopLevel = 0;
-  if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-    const queier = new Querier(orderedAllowZeroLevel);
-    for (const cacheHeading of cacheHeadings) {
-      queier.handler(cacheHeading.level);
-      ignoreTopLevel = queier.query(orderedIgnoreSingle, orderedIgnoreMaximum);
-      if (ignoreTopLevel === 0) {
-        break;
+  if (ordered) {
+    const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
+    const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
+    if (ignoreSingle || orderedBasedOnExisting) {
+      const queier = new Querier(orderedAllowZeroLevel);
+      for (const cacheHeading of cacheHeadings) {
+        queier.handler(cacheHeading.level);
+        ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
+        if (ignoreTopLevel <= ignoreLimit) {
+          break;
+        }
       }
+    }
+    if (ignoreTopLevel < ignoreLimit) {
+      ignoreTopLevel = ignoreLimit;
     }
   }
 
@@ -136,27 +144,21 @@ function decorateOutlineElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  if (content) {
-    const inner = element.querySelector<HTMLElement>(
-      ".tree-item-self .tree-item-inner"
-    );
-    if (inner) {
-      inner.dataset.headingDecorator = content;
-      inner.dataset.decoratorOpacity = `${opacity}%`;
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner"
+  );
+  if (inner) {
+    inner.dataset.headingDecorator = content;
+    inner.dataset.decoratorOpacity = `${opacity}%`;
 
-      //? Remove potential residual class names
-      inner.classList.remove(
-        position === "after"
-          ? beforeDecoratorClassName
-          : afterDecoratorClassName
-      );
-      inner.classList.add(
-        outlineHeadingDecoratorClassName,
-        position === "after"
-          ? afterDecoratorClassName
-          : beforeDecoratorClassName
-      );
-    }
+    //? Remove potential residual class names
+    inner.classList.remove(
+      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+    );
+    inner.classList.add(
+      outlineHeadingDecoratorClassName,
+      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+    );
   }
 }
 

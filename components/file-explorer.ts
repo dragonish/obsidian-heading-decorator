@@ -33,6 +33,7 @@ export function fileExplorerHandler(
     orderedStyleType,
     orderedSpecifiedString,
     orderedCustomIdents,
+    orderedAlwaysIgnore,
     orderedIgnoreSingle,
     orderedIgnoreMaximum = 6,
     orderedBasedOnExisting,
@@ -43,14 +44,21 @@ export function fileExplorerHandler(
   container.classList.add(fileExplorerContainerClassName);
 
   let ignoreTopLevel = 0;
-  if (ordered && (orderedIgnoreSingle || orderedBasedOnExisting)) {
-    const queier = new Querier(orderedAllowZeroLevel);
-    for (const cacheHeading of cacheHeadings) {
-      queier.handler(cacheHeading.level);
-      ignoreTopLevel = queier.query(orderedIgnoreSingle, orderedIgnoreMaximum);
-      if (ignoreTopLevel === 0) {
-        break;
+  if (ordered) {
+    const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
+    const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
+    if (ignoreSingle || orderedBasedOnExisting) {
+      const queier = new Querier(orderedAllowZeroLevel);
+      for (const cacheHeading of cacheHeadings) {
+        queier.handler(cacheHeading.level);
+        ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
+        if (ignoreTopLevel <= ignoreLimit) {
+          break;
+        }
       }
+    }
+    if (ignoreTopLevel < ignoreLimit) {
+      ignoreTopLevel = ignoreLimit;
     }
   }
 
@@ -137,19 +145,17 @@ function decorateFileHeadingElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  if (content) {
-    element.dataset.headingDecorator = content;
-    element.dataset.decoratorOpacity = `${opacity}%`;
+  element.dataset.headingDecorator = content;
+  element.dataset.decoratorOpacity = `${opacity}%`;
 
-    //? Remove potential residual class names
-    element.classList.remove(
-      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
-    );
-    element.classList.add(
-      fileExplorerHeadingDecoratorClassName,
-      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
-    );
-  }
+  //? Remove potential residual class names
+  element.classList.remove(
+    position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+  );
+  element.classList.add(
+    fileExplorerHeadingDecoratorClassName,
+    position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+  );
 }
 
 /**
