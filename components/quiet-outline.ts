@@ -150,13 +150,14 @@ function decorateQuietOutlineElement(
     nodeContent.dataset.headingDecorator = content;
     nodeContent.dataset.decoratorOpacity = `${opacity}%`;
 
+    const isAfter = position.includes("after");
     //? Remove potential residual class names
     nodeContent.classList.remove(
-      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+      isAfter ? beforeDecoratorClassName : afterDecoratorClassName
     );
     nodeContent.classList.add(
       quietOutlineHeadingDecoratorClassName,
-      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+      isAfter ? afterDecoratorClassName : beforeDecoratorClassName
     );
   }
 }

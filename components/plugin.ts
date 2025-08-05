@@ -175,10 +175,14 @@ export class HeadingPlugin extends Plugin {
         context.frontmatter
       );
 
+      const readingSettings = this.settings.enabledReadingSettings
+        ? this.settings.readingSettings
+        : this.settings.commonSettings;
+
       if (metadataEnabled == null) {
         if (
-          this.settings.readingSettings.enabledInEachNote != undefined &&
-          !this.settings.readingSettings.enabledInEachNote
+          readingSettings.enabledInEachNote != undefined &&
+          !readingSettings.enabledInEachNote
         ) {
           return;
         }
@@ -195,7 +199,7 @@ export class HeadingPlugin extends Plugin {
         return;
       }
 
-      const { ordered } = this.settings.readingSettings;
+      const { ordered } = readingSettings;
       if (ordered) {
         const file = this.getActiveFile(context.sourcePath);
         if (!file) {
@@ -209,13 +213,13 @@ export class HeadingPlugin extends Plugin {
         }
 
         readingOrderedHandler(
-          this.settings.readingSettings,
+          readingSettings,
           context,
           headingElements,
           sourceArr
         );
       } else {
-        readingUnorderedHandler(this.settings.readingSettings, headingElements);
+        readingUnorderedHandler(readingSettings, headingElements);
       }
     });
 
@@ -293,14 +297,24 @@ export class HeadingPlugin extends Plugin {
       } else {
         this.unloadFileExplorerComponents();
       }
-    } else if (path.startsWith("outlineSettings")) {
+    } else if (
+      path === "enabledOutlineSettings" ||
+      path.startsWith("outlineSettings")
+    ) {
       this.debouncedRerenderOutlineDecorator();
-    } else if (path.startsWith("quietOutlineSettings")) {
+    } else if (
+      path === "enabledQuietOutlineSettings" ||
+      path.startsWith("quietOutlineSettings")
+    ) {
       this.debouncedRerenderQuietOutlineDecorator();
-    } else if (path.startsWith("fileExplorerSettings")) {
+    } else if (
+      path === "enabledFileExplorerSettings" ||
+      path.startsWith("fileExplorerSettings")
+    ) {
       this.debouncedRerenderFileExplorerDecorator();
     } else if (
       path === "enabledInReading" ||
+      path === "enabledReadingSettings" ||
       path.startsWith("readingSettings")
     ) {
       this.debouncedRerenderPreviewMarkdown();
@@ -313,6 +327,19 @@ export class HeadingPlugin extends Plugin {
       this.debouncedRerenderOutlineDecorator();
       this.debouncedRerenderQuietOutlineDecorator();
       this.debouncedRerenderFileExplorerDecorator();
+    } else if (path.startsWith("commonSettings")) {
+      if (!this.settings.enabledReadingSettings) {
+        this.debouncedRerenderPreviewMarkdown();
+      }
+      if (!this.settings.enabledOutlineSettings) {
+        this.debouncedRerenderOutlineDecorator();
+      }
+      if (!this.settings.enabledQuietOutlineSettings) {
+        this.debouncedRerenderQuietOutlineDecorator();
+      }
+      if (!this.settings.enabledFileExplorerSettings) {
+        this.debouncedRerenderFileExplorerDecorator();
+      }
     }
   }
 
@@ -436,7 +463,11 @@ export class HeadingPlugin extends Plugin {
             frontmatter
           );
 
-          const { enabledInEachNote } = this.settings.outlineSettings;
+          const outlineSettings = this.settings.enabledOutlineSettings
+            ? this.settings.outlineSettings
+            : this.settings.commonSettings;
+
+          const { enabledInEachNote } = outlineSettings;
 
           let enabled = true;
           if (metadataEnabled == null) {
@@ -453,7 +484,7 @@ export class HeadingPlugin extends Plugin {
 
           if (enabled) {
             outlineHandler(
-              this.settings.outlineSettings,
+              outlineSettings,
               viewContent,
               headingElements,
               cacheHeadings
@@ -530,7 +561,11 @@ export class HeadingPlugin extends Plugin {
             frontmatter
           );
 
-          const { enabledInEachNote } = this.settings.quietOutlineSettings;
+          const quietOutlineSettings = this.settings.enabledQuietOutlineSettings
+            ? this.settings.quietOutlineSettings
+            : this.settings.commonSettings;
+
+          const { enabledInEachNote } = quietOutlineSettings;
 
           let enabled = true;
           if (metadataEnabled == null) {
@@ -547,7 +582,7 @@ export class HeadingPlugin extends Plugin {
 
           if (enabled) {
             quietOutlineHandler(
-              this.settings.quietOutlineSettings,
+              quietOutlineSettings,
               containerElement,
               headingELements
             );
@@ -634,7 +669,12 @@ export class HeadingPlugin extends Plugin {
               frontmatter
             );
 
-            const { enabledInEachNote } = this.settings.fileExplorerSettings;
+            const fileExplorerSettings = this.settings
+              .enabledFileExplorerSettings
+              ? this.settings.fileExplorerSettings
+              : this.settings.commonSettings;
+
+            const { enabledInEachNote } = fileExplorerSettings;
 
             let enabled = true;
             if (metadataEnabled == null) {
@@ -651,7 +691,7 @@ export class HeadingPlugin extends Plugin {
 
             if (enabled) {
               fileExplorerHandler(
-                this.settings.fileExplorerSettings,
+                fileExplorerSettings,
                 navFile,
                 headingElements,
                 cacheHeadings
@@ -707,15 +747,25 @@ export class HeadingPlugin extends Plugin {
 
   async getPluginData(): Promise<HeadingPluginData> {
     const {
+      commonSettings,
       metadataKeyword,
       enabledInPreview: _enabledInPreview,
+      enabledPreviewSettings,
       enabledInSource: _enabledInSource,
-      previewSettings,
-      sourceSettings,
+      enabledSourceSettings,
+      sourceHideNumberSigns,
+      previewSettings: _previewSettings,
+      sourceSettings: _sourceSettings,
     } = this.settings;
 
     let enabledInPreview = _enabledInPreview;
     let enabledInSource = _enabledInSource;
+    const previewSettings = enabledPreviewSettings
+      ? _previewSettings
+      : commonSettings;
+    const sourceSettings = enabledSourceSettings
+      ? _sourceSettings
+      : commonSettings;
 
     if (metadataKeyword) {
       const file = this.getActiveFile();
@@ -742,6 +792,7 @@ export class HeadingPlugin extends Plugin {
     return {
       enabledInPreview,
       enabledInSource,
+      sourceHideNumberSigns,
       previewSettings,
       sourceSettings,
     };

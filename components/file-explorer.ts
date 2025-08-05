@@ -148,13 +148,14 @@ function decorateFileHeadingElement(
   element.dataset.headingDecorator = content;
   element.dataset.decoratorOpacity = `${opacity}%`;
 
+  const isAfter = position.includes("after");
   //? Remove potential residual class names
   element.classList.remove(
-    position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+    isAfter ? beforeDecoratorClassName : afterDecoratorClassName
   );
   element.classList.add(
     fileExplorerHeadingDecoratorClassName,
-    position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+    isAfter ? afterDecoratorClassName : beforeDecoratorClassName
   );
 }
 

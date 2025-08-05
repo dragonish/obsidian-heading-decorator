@@ -151,13 +151,14 @@ function decorateOutlineElement(
     inner.dataset.headingDecorator = content;
     inner.dataset.decoratorOpacity = `${opacity}%`;
 
+    const isAfter = position.includes("after");
     //? Remove potential residual class names
     inner.classList.remove(
-      position === "after" ? beforeDecoratorClassName : afterDecoratorClassName
+      isAfter ? beforeDecoratorClassName : afterDecoratorClassName
     );
     inner.classList.add(
       outlineHeadingDecoratorClassName,
-      position === "after" ? afterDecoratorClassName : beforeDecoratorClassName
+      isAfter ? afterDecoratorClassName : beforeDecoratorClassName
     );
   }
 }

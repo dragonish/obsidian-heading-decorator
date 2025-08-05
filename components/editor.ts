@@ -188,7 +188,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
 
           let hideDeco: Decoration | null = null;
           if (!isLivePreviwMode) {
-            const hideNumberSigns = pluginData.sourceSettings.hideNumberSigns;
+            const hideNumberSigns = pluginData.sourceHideNumberSigns;
             if (hideNumberSigns) {
               hideDeco = Decoration.mark({
                 class: hideSourceNumberSignsClassName,

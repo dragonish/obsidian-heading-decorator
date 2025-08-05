@@ -61,38 +61,44 @@ export interface HeadingDecoratorSettings {
   unorderedLevelHeadings: string;
 }
 
-interface SourceHeadingDecoratorSettngs extends HeadingDecoratorSettings {
-  hideNumberSigns?: boolean;
-}
-
 export type HeadingPluginSettings = {
   metadataKeyword: string;
   folderBlacklist: string[];
   fileRegexBlacklist: string[];
   enabledInReading: boolean;
+  enabledReadingSettings: boolean;
   enabledInPreview: boolean;
+  enabledPreviewSettings: boolean;
   enabledInSource: boolean;
+  enabledSourceSettings: boolean;
+  sourceHideNumberSigns: boolean;
   enabledInOutline: boolean;
+  enabledOutlineSettings: boolean;
   enabledInQuietOutline: boolean;
+  enabledQuietOutlineSettings: boolean;
   enabledInFileExplorer: boolean;
-} & Record<
-  Exclude<PluginDecoratorSettingsType, "sourceSettings">,
-  HeadingDecoratorSettings
-> &
-  Record<"sourceSettings", SourceHeadingDecoratorSettngs>;
+  enabledFileExplorerSettings: boolean;
+} & Record<PluginDecoratorSettingsType, HeadingDecoratorSettings>;
 
 export type HeadingPluginData = Omit<
   HeadingPluginSettings,
+  | "commonSettings"
   | "metadataKeyword"
   | "folderBlacklist"
   | "fileRegexBlacklist"
   | "enabledInReading"
+  | "enabledReadingSettings"
   | "readingSettings"
+  | "enabledPreviewSettings"
+  | "enabledSourceSettings"
   | "enabledInOutline"
   | "outlineSettings"
   | "enabledInQuietOutline"
+  | "enabledOutlineSettings"
   | "quietOutlineSettings"
+  | "enabledQuietOutlineSettings"
   | "enabledInFileExplorer"
+  | "enabledFileExplorerSettings"
   | "fileExplorerSettings"
 >;
 
@@ -156,19 +162,6 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
 }
 
 /**
- * Default source settings for source heading decorator.
- *
- * @returns default source settings for heading decorator.
- */
-export function defaultSourceHeadingDecoratorSettings(): SourceHeadingDecoratorSettngs {
-  const settings = defaultHeadingDecoratorSettings();
-  return {
-    ...settings,
-    hideNumberSigns: false,
-  };
-}
-
-/**
  * Default plugin settings.
  *
  * @returns default plugin settings.
@@ -179,17 +172,25 @@ export function defalutSettings(): HeadingPluginSettings {
     fileRegexBlacklist: [],
     folderBlacklist: [],
     enabledInReading: true,
+    enabledReadingSettings: false,
     readingSettings: defaultHeadingDecoratorSettings(),
     enabledInPreview: true,
+    enabledPreviewSettings: false,
     previewSettings: defaultHeadingDecoratorSettings(),
     enabledInSource: false,
-    sourceSettings: defaultSourceHeadingDecoratorSettings(),
+    enabledSourceSettings: false,
+    sourceSettings: defaultHeadingDecoratorSettings(),
+    sourceHideNumberSigns: false,
     enabledInOutline: false,
+    enabledOutlineSettings: false,
     outlineSettings: defaultHeadingDecoratorSettings(),
     enabledInQuietOutline: false,
+    enabledQuietOutlineSettings: false,
     quietOutlineSettings: defaultHeadingDecoratorSettings(),
     enabledInFileExplorer: false,
+    enabledFileExplorerSettings: false,
     fileExplorerSettings: defaultHeadingDecoratorSettings(),
+    commonSettings: defaultHeadingDecoratorSettings(),
   };
 }
 
