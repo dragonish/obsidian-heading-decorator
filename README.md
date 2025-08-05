@@ -37,7 +37,7 @@ The plugin supports configure heading decorator for each editor mode. You can co
 - **Enabled in "Quiet Outline" plugin**: Allow to decorate the heading under the *[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* plugin.
 - **Enabled in "Headings in Explorer" plugin**: Allow to decorate the heading under the *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* plugin.
 
-In addition, you can enable the default status of each note within the *Manage* subpage. It mainly works together with [Enabled status of notes](#enabled-status-of-notes).
+In addition, you can enable the default status of each note within the *Config* subpage. It mainly works together with [Enabled status of notes](#enabled-status-of-notes).
 
 ### Effect
 

@@ -35,7 +35,7 @@
 - **在 Quiet Outline 插件中启用**：允许装饰 *[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* 插件下的标题。
 - **在 Headings in Explorer 插件中启用**：允许装饰 *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* 插件下的标题。
 
-此外，您还可以通过*管理*子页面启用每个笔记的默认状态，它主要与[笔记的启用状态](#笔记的启用状态)协同工作。
+此外，您还可以通过*配置*子页面启用每个笔记的默认状态，它主要与[笔记的启用状态](#笔记的启用状态)协同工作。
 
 ### 效果
 

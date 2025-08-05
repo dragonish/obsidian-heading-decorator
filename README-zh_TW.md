@@ -35,7 +35,7 @@
 - **在 Quiet Outline 外掛中啟用**：允許裝飾 *[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* 外掛下的標題。
 - **在 Headings in Explorer 外掛中啟用**：允許裝飾 *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* 外掛下的標題。
 
-此外，您還可以透過*管理*子頁面啟用每個筆記的預設狀態，它主要與[筆記的啟用狀態](#筆記的啟用狀態)協同工作。
+此外，您還可以透過*配置*子頁面啟用每個筆記的預設狀態，它主要與[筆記的啟用狀態](#筆記的啟用狀態)協同工作。
 
 ### 效果
 
