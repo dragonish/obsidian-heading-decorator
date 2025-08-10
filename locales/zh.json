@@ -104,6 +104,8 @@
     "opacityDesc": "设置标题装饰器的不透明度。值是百分比的形式。",
     "position": "位置",
     "positionDesc": "设置标题装饰器的位置。",
+    "maxRecLevel": "所识别的最大级别",
+    "maxRecLevelDesc": "指定所识别标题的最大级别，不处理高于此级别的标题。",
     "before": "在标题之前",
     "after": "在标题之后",
     "beforeInside": "在标题之前 (内部)",

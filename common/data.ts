@@ -20,6 +20,7 @@ export interface BaseDecoratorOptions {
   ignoreTopLevel?: number;
   levelHeadings?: HeadingTuple;
   allowZeroLevel?: boolean;
+  maxRecLevel?: number;
 }
 
 interface OrderedDecoratorOptions {
@@ -48,6 +49,7 @@ export interface HeadingDecoratorSettings {
   ordered: boolean;
   opacity: OpacityOptions;
   position: PostionOptions;
+  maxRecLevel?: number;
 
   orderedStyleType: OrderedCounterStyleType;
   orderedDelimiter: string;
@@ -149,6 +151,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     enabledInEachNote: true,
     opacity: 20,
     position: "before",
+    maxRecLevel: 6,
     ordered: true,
     orderedDelimiter: ".",
     orderedTrailingDelimiter: false,

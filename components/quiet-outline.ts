@@ -25,6 +25,7 @@ export function quietOutlineHandler(
     opacity,
     position,
     ordered,
+    maxRecLevel,
     orderedDelimiter,
     orderedTrailingDelimiter,
     orderedCustomTrailingDelimiter,
@@ -46,7 +47,7 @@ export function quietOutlineHandler(
     const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
     const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
     if (ignoreSingle || orderedBasedOnExisting) {
-      const queier = new Querier(orderedAllowZeroLevel);
+      const queier = new Querier(orderedAllowZeroLevel, maxRecLevel);
       for (const eleIndex in headingElements) {
         const level = queryHeadingLevelByQuietOutlineElement(
           headingElements[eleIndex]
@@ -65,6 +66,7 @@ export function quietOutlineHandler(
 
   const counter = new Counter({
     ordered,
+    maxRecLevel,
     delimiter: orderedDelimiter,
     trailingDelimiter: orderedTrailingDelimiter,
     customTrailingDelimiter: orderedCustomTrailingDelimiter,

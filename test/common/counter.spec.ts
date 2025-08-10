@@ -173,6 +173,91 @@ describe("common/counter", function () {
     expect(querier4.handler(6)).to.deep.equal([2, 1, 1, 1, 1, 1]);
   });
 
+  it("Querier.handler with maxRecLevel", function () {
+    const querier1 = new Querier(false, 4);
+
+    expect(querier1.handler(-1)).to.be.empty;
+    expect(querier1.handler(0)).to.be.empty;
+    expect(querier1.handler(7)).to.be.empty;
+
+    expect(querier1.handler(1)).to.deep.equal([1]);
+    expect(querier1.handler(2)).to.deep.equal([1, 1]);
+    expect(querier1.handler(3)).to.deep.equal([1, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([1, 1, 1, 1]);
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(1)).to.deep.equal([2]);
+    expect(querier1.handler(2)).to.deep.equal([2, 1]);
+    expect(querier1.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 1, 1, 1]);
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(2)).to.deep.equal([2, 2]);
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 1]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 1, 1]);
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(3)).to.deep.equal([2, 2, 2]);
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 1]);
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(4)).to.deep.equal([2, 2, 2, 2]);
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(5)).to.be.empty;
+    expect(querier1.handler(6)).to.be.empty;
+
+    expect(querier1.handler(6)).to.be.empty;
+
+    const querier2 = new Querier(true, 4);
+
+    expect(querier2.handler(2)).to.deep.equal([0, 1]);
+    expect(querier2.handler(3)).to.deep.equal([0, 1, 1]);
+    expect(querier2.handler(4)).to.deep.equal([0, 1, 1, 1]);
+    expect(querier2.handler(5)).to.be.empty;
+    expect(querier2.handler(6)).to.be.empty;
+
+    expect(querier2.handler(2)).to.deep.equal([0, 2]);
+    expect(querier2.handler(3)).to.deep.equal([0, 2, 1]);
+    expect(querier2.handler(4)).to.deep.equal([0, 2, 1, 1]);
+    expect(querier2.handler(5)).to.be.empty;
+    expect(querier2.handler(6)).to.be.empty;
+
+    expect(querier2.handler(4)).to.deep.equal([0, 2, 1, 2]);
+    expect(querier2.handler(5)).to.be.empty;
+    expect(querier2.handler(6)).to.be.empty;
+
+    const querier3 = new Querier(true, 3);
+
+    expect(querier3.handler(6)).to.be.empty;
+    expect(querier3.handler(2)).to.deep.equal([0, 1]);
+    expect(querier3.handler(1)).to.deep.equal([1]);
+    expect(querier3.handler(6)).to.be.empty;
+
+    const querier4 = new Querier(true, 3);
+
+    expect(querier4.handler(1)).to.deep.equal([1]);
+    expect(querier4.handler(3)).to.deep.equal([1, 0, 1]);
+    expect(querier4.handler(6)).to.be.empty;
+    expect(querier4.handler(6)).to.be.empty;
+
+    expect(querier4.handler(1)).to.deep.equal([2]);
+    expect(querier4.handler(3)).to.deep.equal([2, 0, 1]);
+    expect(querier4.handler(3)).to.deep.equal([2, 0, 2]);
+    expect(querier4.handler(6)).to.be.empty;
+
+    expect(querier4.handler(2)).to.deep.equal([2, 1]);
+    expect(querier4.handler(3)).to.deep.equal([2, 1, 1]);
+    expect(querier4.handler(4)).to.be.empty;
+    expect(querier4.handler(5)).to.be.empty;
+    expect(querier4.handler(6)).to.be.empty;
+  });
+
   it("Querier.query()", function () {
     const querier1 = new Querier();
     expect(querier1.query()).to.equal(5);
@@ -1000,5 +1085,95 @@ describe("common/counter", function () {
     expect(counter4.decorator(6)).to.equal("2.1.1.1.");
     expect(counter4.decorator(3)).to.equal("3.");
     expect(counter4.decorator(6)).to.equal("3.0.0.1.");
+  });
+
+  it("Counter.decorator with maxRecLevel", function () {
+    const counter = new Counter({
+      ordered: false,
+      levelHeadings: ["H1", "H2", "H3", "H4", "H5", "H6"],
+      maxRecLevel: 4,
+    });
+    expect(counter.decorator(-1)).to.be.empty;
+    expect(counter.decorator(0)).to.empty;
+    expect(counter.decorator(1)).to.equal("H1");
+    expect(counter.decorator(2)).to.equal("H2");
+    expect(counter.decorator(3)).to.equal("H3");
+    expect(counter.decorator(4)).to.equal("H4");
+    expect(counter.decorator(5)).to.be.empty;
+    expect(counter.decorator(6)).to.be.empty;
+    expect(counter.decorator(7)).to.empty;
+
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      maxRecLevel: 4,
+    });
+    expect(counter1.decorator(1)).to.equal("1");
+    expect(counter1.decorator(2)).to.equal("1.1");
+    expect(counter1.decorator(3)).to.equal("1.1.1");
+    expect(counter1.decorator(4)).to.equal("1.1.1.1");
+    expect(counter1.decorator(5)).to.be.empty;
+    expect(counter1.decorator(6)).to.be.empty;
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("1.2");
+    expect(counter1.decorator(3)).to.equal("1.2.1");
+    expect(counter1.decorator(4)).to.equal("1.2.1.1");
+    expect(counter1.decorator(5)).to.be.empty;
+    expect(counter1.decorator(6)).to.be.empty;
+    expect(counter1.decorator(7)).to.be.empty;
+    expect(counter1.decorator(2)).to.equal("1.3");
+    expect(counter1.decorator(6)).to.be.empty;
+
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+      maxRecLevel: 4,
+    });
+    expect(counter2.decorator(1)).to.be.empty;
+    expect(counter2.decorator(2)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("1");
+    expect(counter2.decorator(4)).to.equal("1.1");
+    expect(counter2.decorator(5)).to.be.empty;
+    expect(counter2.decorator(6)).to.be.empty;
+    expect(counter2.decorator(7)).to.be.empty;
+    expect(counter2.decorator(3)).to.equal("2");
+    expect(counter2.decorator(6)).to.be.empty;
+
+    const counter3 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+      maxRecLevel: 3,
+    });
+    expect(counter3.decorator(3)).to.equal("1");
+    expect(counter3.decorator(4)).to.be.empty;
+    expect(counter3.decorator(5)).to.be.empty;
+    expect(counter3.decorator(6)).to.be.empty;
+    expect(counter3.decorator(3)).to.equal("2");
+    expect(counter3.decorator(6)).to.be.empty;
+
+    const counter4 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      trailingDelimiter: true,
+      allowZeroLevel: true,
+      ignoreTopLevel: 2,
+      maxRecLevel: 4,
+    });
+    expect(counter4.decorator(1)).to.be.empty;
+    expect(counter4.decorator(2)).to.be.empty;
+    expect(counter4.decorator(3)).to.equal("1.");
+    expect(counter4.decorator(4)).to.equal("1.1.");
+    expect(counter4.decorator(5)).to.be.empty;
+    expect(counter4.decorator(6)).to.be.empty;
+    expect(counter4.decorator(3)).to.equal("2.");
+    expect(counter4.decorator(4)).to.equal("2.1.");
+    expect(counter4.decorator(5)).to.be.empty;
+    expect(counter4.decorator(6)).to.be.empty;
+    expect(counter4.decorator(3)).to.equal("3.");
+    expect(counter4.decorator(6)).to.be.empty;
   });
 });

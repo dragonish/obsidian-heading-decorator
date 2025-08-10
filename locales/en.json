@@ -104,6 +104,8 @@
     "opacityDesc": "Set the opacity of the heading decorator. The value is the form of percentage.",
     "position": "Position",
     "positionDesc": "Set the position of the heading decorator.",
+    "maxRecLevel": "Maximum level recognized",
+    "maxRecLevelDesc": "Specify the maximum level of headings to be recognized, ignoring headings above this level.",
     "before": "Before the heading",
     "after": "After the heading",
     "beforeInside": "Before the heading (inside)",

@@ -104,6 +104,8 @@
     "opacityDesc": "設定標題裝飾器的不透明度。值是百分比的形式。",
     "position": "位置",
     "positionDesc": "設定標題裝飾器的位置。",
+    "maxRecLevel": "所識別的最大級別",
+    "maxRecLevelDesc": "指定所識別標題的最大級別，不處理高於此級別的標題。",
     "before": "在標題之前",
     "after": "在標題之後",
     "beforeInside": "在標題之前 (內部)",

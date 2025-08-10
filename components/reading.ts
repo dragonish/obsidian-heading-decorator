@@ -27,6 +27,7 @@ export function readingOrderedHandler(
   const {
     opacity,
     position,
+    maxRecLevel,
     orderedDelimiter,
     orderedTrailingDelimiter,
     orderedCustomTrailingDelimiter,
@@ -44,7 +45,7 @@ export function readingOrderedHandler(
   const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
   const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
   if (ignoreSingle || orderedBasedOnExisting) {
-    const queier = new Querier(orderedAllowZeroLevel);
+    const queier = new Querier(orderedAllowZeroLevel, maxRecLevel);
     const heading = new Heading();
     for (let lineIndex = 1; lineIndex <= sourceArr.length; lineIndex++) {
       const lineText = sourceArr[lineIndex - 1];
@@ -70,6 +71,7 @@ export function readingOrderedHandler(
 
   const counter = new Counter({
     ordered: true,
+    maxRecLevel,
     delimiter: orderedDelimiter,
     trailingDelimiter: orderedTrailingDelimiter,
     customTrailingDelimiter: orderedCustomTrailingDelimiter,
@@ -133,10 +135,11 @@ export function readingUnorderedHandler(
   settings: HeadingDecoratorSettings,
   headingElements: HTMLElement[]
 ): void {
-  const { opacity, position, unorderedLevelHeadings } = settings;
+  const { opacity, position, maxRecLevel, unorderedLevelHeadings } = settings;
 
   const counter = new Counter({
     ordered: false,
+    maxRecLevel,
     levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
   });
 

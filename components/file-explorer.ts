@@ -28,6 +28,7 @@ export function fileExplorerHandler(
     opacity,
     position,
     ordered,
+    maxRecLevel,
     orderedDelimiter,
     orderedTrailingDelimiter,
     orderedCustomTrailingDelimiter,
@@ -49,7 +50,7 @@ export function fileExplorerHandler(
     const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
     const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
     if (ignoreSingle || orderedBasedOnExisting) {
-      const queier = new Querier(orderedAllowZeroLevel);
+      const queier = new Querier(orderedAllowZeroLevel, maxRecLevel);
       for (const cacheHeading of cacheHeadings) {
         queier.handler(cacheHeading.level);
         ignoreTopLevel = queier.query(ignoreSingle, orderedIgnoreMaximum);
@@ -65,6 +66,7 @@ export function fileExplorerHandler(
 
   const counter = new Counter({
     ordered,
+    maxRecLevel,
     delimiter: orderedDelimiter,
     trailingDelimiter: orderedTrailingDelimiter,
     customTrailingDelimiter: orderedCustomTrailingDelimiter,

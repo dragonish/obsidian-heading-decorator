@@ -101,6 +101,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
         ordered,
         position,
         opacity,
+        maxRecLevel,
         orderedStyleType,
         orderedDelimiter,
         orderedTrailingDelimiter,
@@ -122,7 +123,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
         const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
         const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
         if (ignoreSingle || orderedBasedOnExisting) {
-          const queier = new Querier(orderedAllowZeroLevel);
+          const queier = new Querier(orderedAllowZeroLevel, maxRecLevel);
           const heading = new Heading();
           for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {
             const line = doc.line(lineIndex);
@@ -150,6 +151,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
 
       const counter = new Counter({
         ordered,
+        maxRecLevel,
         styleType: orderedStyleType,
         delimiter: orderedDelimiter,
         trailingDelimiter: orderedTrailingDelimiter,

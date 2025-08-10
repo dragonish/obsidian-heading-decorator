@@ -3,22 +3,24 @@ import { defaultHeadingTuple } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 
 export class Querier {
+  protected maxRecLevel: number;
   private allowZeroLevel?: boolean;
   private levels: LevelTuple = [0, 0, 0, 0, 0, 0];
   private baseLevels?: LevelTuple;
   private highestLevel: number;
 
-  constructor(allowZeroLevel?: boolean) {
+  constructor(allowZeroLevel?: boolean, maxRecLevel = 6) {
     this.allowZeroLevel = allowZeroLevel;
-    this.highestLevel = 6;
+    this.maxRecLevel = maxRecLevel;
+    this.highestLevel = this.maxRecLevel;
   }
 
   handler(level: number): number[] {
-    if (level < 1 || level > 6) {
+    if (level < 1 || level > this.maxRecLevel) {
       return [];
     }
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= this.maxRecLevel; i++) {
       if (i < level && !this.allowZeroLevel && this.levels[i - 1] === 0) {
         this.levels[i - 1] = 1;
       } else if (i > level) {
@@ -29,7 +31,7 @@ export class Querier {
 
     if (this.baseLevels == undefined) {
       this.baseLevels = [...this.levels];
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= this.maxRecLevel; i++) {
         if (i > level) {
           this.baseLevels[i - 1] = 1;
         }
@@ -71,7 +73,7 @@ export class Counter extends Querier {
   private decoratorOptions: DecoratorOptions;
 
   constructor(decoratorOptions?: BaseDecoratorOptions) {
-    super(decoratorOptions?.allowZeroLevel);
+    super(decoratorOptions?.allowZeroLevel, decoratorOptions?.maxRecLevel);
 
     if (decoratorOptions) {
       if (decoratorOptions.ordered) {
@@ -109,7 +111,7 @@ export class Counter extends Querier {
 
   decorator(level: number): string {
     let result = "";
-    if (level < 1 || level > 6) {
+    if (level < 1 || level > this.maxRecLevel) {
       return result;
     }
 

@@ -492,6 +492,21 @@ export class HeadingSettingTab extends PluginSettingTab {
           });
       });
 
+    //* maxRecLevel
+    new Setting(containerEl)
+      .setName(i18n.t("setting.maxRecLevel"))
+      .setDesc(i18n.t("setting.maxRecLevelDesc"))
+      .addSlider((slider) => {
+        slider
+          .setLimits(1, 6, 1)
+          .setValue(this.plugin.settings[settingsType].maxRecLevel ?? 6)
+          .onChange((value) => {
+            this.plugin.settings[settingsType].maxRecLevel = value;
+            this.plugin.saveSettings();
+          })
+          .setDynamicTooltip();
+      });
+
     new Setting(containerEl).setName(i18n.t("setting.ordered")).setHeading();
 
     //* orderedStyleType
