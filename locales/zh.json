@@ -114,6 +114,8 @@
     "orderedDelimiterDesc": "设置有序列表的分隔符。",
     "orderedTrailingDelimiter": "尾随分隔符",
     "orderedTrailingDelimiterDesc": "设置是否为有序列表添加尾随分隔符。",
+    "orderedCustomTrailingDelimiter": "自定义尾随分隔符",
+    "orderedCustomTrailingDelimiterDesc": "忽略有序列表的分隔符，自定义一个其他的尾随分隔符。",
     "orderedCustomIdents": "自定义列表样式",
     "orderedCustomIdentsDesc": "针对\"自定义列表样式\"选项。为有序列表设置自定义列表样式。使用空格分隔条目。",
     "orderedSpecifiedString": "指定字符串",

@@ -535,6 +535,23 @@ export class HeadingSettingTab extends PluginSettingTab {
           })
       );
 
+    //* orderedCustomTrailingDelimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
+      .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
+      .addText((text) => {
+        text
+          .setValue(
+            this.plugin.settings[settingsType].orderedCustomTrailingDelimiter ||
+              ""
+          )
+          .onChange((value) => {
+            this.plugin.settings[settingsType].orderedCustomTrailingDelimiter =
+              value;
+            this.plugin.saveSettings();
+          });
+      });
+
     //* orderedCustomIdents
     new Setting(containerEl)
       .setName(i18n.t("setting.orderedCustomIdents"))

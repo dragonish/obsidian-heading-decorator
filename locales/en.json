@@ -114,6 +114,8 @@
     "orderedDelimiterDesc": "Set the delimiter for ordered list.",
     "orderedTrailingDelimiter": "Trailing delimiter",
     "orderedTrailingDelimiterDesc": "Set whether to add a trailing delimiter for ordered list.",
+    "orderedCustomTrailingDelimiter": "Custom trailing delimiter",
+    "orderedCustomTrailingDelimiterDesc": "Ignore the delimiter of the ordered list, customize another trailing delimiter.",
     "orderedCustomIdents": "Custom list styles",
     "orderedCustomIdentsDesc": "For the \"Custom list styles\" option. Set custom list styles for ordered list. Use spaces to separate entries.",
     "orderedSpecifiedString": "Specified string",

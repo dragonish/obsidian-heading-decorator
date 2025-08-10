@@ -14,6 +14,7 @@ export interface BaseDecoratorOptions {
   styleType?: OrderedCounterStyleType;
   delimiter?: string;
   trailingDelimiter?: boolean;
+  customTrailingDelimiter?: string;
   customIdents?: string[];
   specifiedString?: string;
   ignoreTopLevel?: number;
@@ -26,6 +27,7 @@ interface OrderedDecoratorOptions {
   styleType: OrderedCounterStyleType;
   delimiter?: string;
   trailingDelimiter?: boolean;
+  customTrailingDelimiter?: string;
   customIdents?: string[];
   specifiedString?: string;
   ignoreTopLevel?: number;
@@ -50,6 +52,7 @@ export interface HeadingDecoratorSettings {
   orderedStyleType: OrderedCounterStyleType;
   orderedDelimiter: string;
   orderedTrailingDelimiter: boolean;
+  orderedCustomTrailingDelimiter?: string;
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
   orderedAllowZeroLevel?: boolean;
@@ -149,6 +152,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     ordered: true,
     orderedDelimiter: ".",
     orderedTrailingDelimiter: false,
+    orderedCustomTrailingDelimiter: "",
     orderedStyleType: "decimal",
     orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
     orderedSpecifiedString: "#",

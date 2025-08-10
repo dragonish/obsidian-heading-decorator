@@ -79,6 +79,7 @@ export class Counter extends Querier {
           styleType,
           delimiter,
           trailingDelimiter,
+          customTrailingDelimiter,
           customIdents,
           specifiedString,
           ignoreTopLevel,
@@ -88,6 +89,7 @@ export class Counter extends Querier {
           styleType: styleType || "decimal",
           delimiter,
           trailingDelimiter,
+          customTrailingDelimiter,
           customIdents,
           specifiedString,
           ignoreTopLevel,
@@ -117,6 +119,7 @@ export class Counter extends Querier {
         styleType,
         delimiter = ".",
         trailingDelimiter = false,
+        customTrailingDelimiter = "",
         specifiedString = "#",
         customIdents = [],
         ignoreTopLevel = 0,
@@ -141,7 +144,10 @@ export class Counter extends Querier {
       }
 
       result = results.join(delimiter);
-      result += result.length > 0 && trailingDelimiter ? delimiter : "";
+      result +=
+        result.length > 0 && trailingDelimiter
+          ? customTrailingDelimiter || delimiter
+          : "";
     } else {
       result = this.decoratorOptions.levelHeadings[level - 1];
     }
