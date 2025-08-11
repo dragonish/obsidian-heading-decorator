@@ -46,12 +46,19 @@ Control the display effect of the decorator.
 - **Ordered**: Toggle this setting to enable the decoration of headings as an [ordered](#ordered) or [unordered](#unordered) list.
 - **Opacity**: Set the opacity of the heading decorator. The value is the form of percentage.
 - **Position**: Set the position of the heading decorator. You can configure the content to appear before or after the heading.
+- **Maximum level recognized**: Specify the maximum level of headings to be recognized, ignoring headings above this level.
 
 Here are some examples of the differences between different positions:
 
 | Before the heading | Before the heading (inside) | After the heading |
 | :----------------: | :-------------------------: | :---------------: |
 | ![before](images/before.jpg) | ![before-inside](images/before-inside.jpg) | ![after](images/after.jpg) |
+
+Here are examples of different recognized maximum levels:
+
+| The maximum level recognized is `6` | The maximum level recognized is `4` |
+| :---------------------------------: | :---------------------------------: |
+| ![max-6](images/max-6.jpg) | ![max4](images/max-4.jpg) |
 
 ### Ordered
 
