@@ -567,6 +567,38 @@ export class HeadingSettingTab extends PluginSettingTab {
           });
       });
 
+    //* orderedLeadingDelimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedLeadingDelimiter"))
+      .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
+      .addToggle((toggle) =>
+        toggle
+          .setValue(
+            this.plugin.settings[settingsType].orderedLeadingDelimiter || false
+          )
+          .onChange((value) => {
+            this.plugin.settings[settingsType].orderedLeadingDelimiter = value;
+            this.plugin.saveSettings();
+          })
+      );
+
+    //* orderedCustomLeadingDelimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
+      .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
+      .addText((text) => {
+        text
+          .setValue(
+            this.plugin.settings[settingsType].orderedCustomLeadingDelimiter ||
+              ""
+          )
+          .onChange((value) => {
+            this.plugin.settings[settingsType].orderedCustomLeadingDelimiter =
+              value;
+            this.plugin.saveSettings();
+          });
+      });
+
     //* orderedCustomIdents
     new Setting(containerEl)
       .setName(i18n.t("setting.orderedCustomIdents"))

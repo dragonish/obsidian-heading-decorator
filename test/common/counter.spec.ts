@@ -905,6 +905,58 @@ describe("common/counter", function () {
     expect(counter2.decorator(2)).to.equal("1.1|");
   });
 
+  it("Counter.decorator with custom leading delimiter", function () {
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      delimiter: ".",
+      customLeadingDelimiter: "",
+      leadingDelimiter: true,
+    });
+
+    expect(counter1.decorator(1)).to.equal(".1");
+    expect(counter1.decorator(2)).to.equal(".1.1");
+
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      delimiter: ".",
+      customLeadingDelimiter: "|",
+      leadingDelimiter: true,
+    });
+
+    expect(counter2.decorator(1)).to.equal("|1");
+    expect(counter2.decorator(2)).to.equal("|1.1");
+  });
+
+  it("Counter.decorator with custom leading delimiter and trailing delimiter", function () {
+    const counter1 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      delimiter: ".",
+      customTrailingDelimiter: "",
+      trailingDelimiter: true,
+      customLeadingDelimiter: "",
+      leadingDelimiter: true,
+    });
+
+    expect(counter1.decorator(1)).to.equal(".1.");
+    expect(counter1.decorator(2)).to.equal(".1.1.");
+
+    const counter2 = new Counter({
+      ordered: true,
+      styleType: "decimal",
+      delimiter: ".",
+      customTrailingDelimiter: ")",
+      trailingDelimiter: true,
+      customLeadingDelimiter: "(",
+      leadingDelimiter: true,
+    });
+
+    expect(counter2.decorator(1)).to.equal("(1)");
+    expect(counter2.decorator(2)).to.equal("(1.1)");
+  });
+
   it("Counter.decorator with ignoreTopLevel", function () {
     const counter1 = new Counter({
       ordered: true,
