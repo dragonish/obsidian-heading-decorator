@@ -728,7 +728,14 @@ export class HeadingPlugin extends Plugin {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
       if (!file || file === view.file) {
+        const oldScroll = view.previewMode.getScroll();
         view.previewMode.rerender(true);
+        const newScroll = view.previewMode.getScroll();
+        if (newScroll !== oldScroll) {
+          window.setTimeout(() => {
+            view.previewMode.applyScroll(oldScroll);
+          }, 200);
+        }
       }
     }
   }
