@@ -78,6 +78,7 @@ export type HeadingPluginSettings = {
   fileRegexBlacklist: string[];
   enabledInReading: boolean;
   enabledReadingSettings: boolean;
+  readingRenderPolicy: RenderPolicy;
   enabledInPreview: boolean;
   enabledPreviewSettings: boolean;
   enabledInSource: boolean;
@@ -99,6 +100,7 @@ export type HeadingPluginData = Omit<
   | "fileRegexBlacklist"
   | "enabledInReading"
   | "enabledReadingSettings"
+  | "readingRenderPolicy"
   | "readingSettings"
   | "enabledPreviewSettings"
   | "enabledSourceSettings"
@@ -189,6 +191,7 @@ export function defalutSettings(): HeadingPluginSettings {
     enabledInReading: true,
     enabledReadingSettings: false,
     readingSettings: defaultHeadingDecoratorSettings(),
+    readingRenderPolicy: "partial",
     enabledInPreview: true,
     enabledPreviewSettings: false,
     previewSettings: defaultHeadingDecoratorSettings(),

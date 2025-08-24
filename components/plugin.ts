@@ -24,7 +24,12 @@ import {
   updateEditorMode,
 } from "./editor";
 import { ViewChildComponent } from "./child";
-import { readingOrderedHandler, readingUnorderedHandler } from "./reading";
+import { ReadingChild } from "./reading-child";
+import {
+  readingOrderedHandler,
+  readingUnorderedHandler,
+  cancelHTMLDecorator,
+} from "./reading";
 import { outlineHandler, cancelOutlineDecoration } from "./outline";
 import {
   quietOutlineHandler,
@@ -56,6 +61,8 @@ export class HeadingPlugin extends Plugin {
   i18n = i18n;
 
   private revokes: (() => void)[] = [];
+
+  private readingComponents: ReadingChild[] = [];
 
   private outlineIdSet: Set<string> = new Set();
   private outlineComponents: ViewChildComponent[] = [];
@@ -165,62 +172,99 @@ export class HeadingPlugin extends Plugin {
     ]);
 
     // Register markdown post processor
-    this.registerMarkdownPostProcessor(async (element, context) => {
+    this.registerMarkdownPostProcessor((element, context) => {
       if (!this.settings.enabledInReading) {
         return;
       }
 
-      const metadataEnabled = this.getEnabledFromFrontmatter(
-        "reading",
-        context.frontmatter
-      );
-
-      const readingSettings = this.settings.enabledReadingSettings
-        ? this.settings.readingSettings
-        : this.settings.commonSettings;
-
-      if (metadataEnabled == null) {
-        if (
-          readingSettings.enabledInEachNote != undefined &&
-          !readingSettings.enabledInEachNote
-        ) {
-          return;
-        }
-
-        if (this.getEnabledFromBlacklist(context.sourcePath)) {
-          return;
-        }
-      } else if (!metadataEnabled) {
-        return;
-      }
-
-      const headingElements = element.findAll(headingsSelector);
-      if (headingElements.length === 0) {
-        return;
-      }
-
-      const { ordered } = readingSettings;
-      if (ordered) {
-        const file = this.getActiveFile(context.sourcePath);
-        if (!file) {
-          return;
-        }
-
-        const sourceContent = await this.app.vault.cachedRead(file);
-        const sourceArr = sourceContent.split("\n");
-        if (sourceArr.length === 0) {
-          return;
-        }
-
-        readingOrderedHandler(
-          readingSettings,
+      let child = this.readingComponents.find((ch) => ch.equal(element));
+      if (!child) {
+        child = new ReadingChild(
+          element,
           context,
-          headingElements,
-          sourceArr
+          async (container, cxt, fileData) => {
+            const metadataEnabled = this.getEnabledFromFrontmatter(
+              "reading",
+              cxt.frontmatter
+            );
+
+            const readingSettings = this.settings.enabledReadingSettings
+              ? this.settings.readingSettings
+              : this.settings.commonSettings;
+
+            const { enabledInEachNote } = readingSettings;
+
+            let enabled = true;
+            if (metadataEnabled == null) {
+              if (enabledInEachNote != undefined && !enabledInEachNote) {
+                enabled = false;
+              }
+
+              if (this.getEnabledFromBlacklist(cxt.sourcePath)) {
+                enabled = false;
+              }
+            } else if (!metadataEnabled) {
+              enabled = false;
+            }
+
+            if (enabled) {
+              const headingElements = container.findAll(headingsSelector);
+              if (headingElements.length === 0) {
+                cancelHTMLDecorator(container);
+                return;
+              }
+
+              const { ordered } = readingSettings;
+              if (ordered) {
+                let sourceContent = fileData;
+                if (!sourceContent) {
+                  const file = this.getActiveFile(cxt.sourcePath);
+                  if (!file) {
+                    cancelHTMLDecorator(container);
+                    return;
+                  }
+                  sourceContent = await this.app.vault.cachedRead(file);
+                }
+
+                const sourceArr = sourceContent.split("\n");
+                if (sourceArr.length === 0) {
+                  cancelHTMLDecorator(container);
+                  return;
+                }
+
+                readingOrderedHandler(
+                  readingSettings,
+                  cxt,
+                  headingElements,
+                  sourceArr
+                );
+              } else {
+                readingUnorderedHandler(readingSettings, headingElements);
+              }
+            } else {
+              cancelHTMLDecorator(container);
+            }
+          },
+          (container) => {
+            cancelHTMLDecorator(container);
+          }
         );
-      } else {
-        readingUnorderedHandler(readingSettings, headingElements);
+        this.readingComponents.push(child);
+        context.addChild(child);
+        child.register(() => {
+          this.readingComponents = this.readingComponents.filter(
+            (item) => !item.equal(child)
+          );
+        });
       }
+      child.render();
+
+      const currentPath = context.sourcePath;
+      this.readingComponents.forEach((rc) => {
+        if (rc.isSamePath(currentPath)) {
+          rc.updateContext(context);
+        }
+      });
     });
 
     // Listen for metadata changes
@@ -228,10 +272,10 @@ export class HeadingPlugin extends Plugin {
       this.app.metadataCache.on(
         "changed",
         debounce(
-          (file) => {
+          (file, data) => {
             //! Delay trigger rerender
             if (file && file.path === this.getActiveFile()?.path) {
-              this.rerenderPreviewMarkdown(file);
+              this.rerenderReadingDecorator(file, data);
             }
           },
           250,
@@ -266,6 +310,7 @@ export class HeadingPlugin extends Plugin {
   }
 
   onunload(): void {
+    this.unloadReadingComponents();
     this.unloadOutlineComponents();
     this.unloadQuietOutlineComponents();
     this.unloadFileExplorerComponents();
@@ -279,7 +324,13 @@ export class HeadingPlugin extends Plugin {
   }
 
   private settingsChanged(path: string, value: unknown) {
-    if (path === "enabledInOutline") {
+    if (path === "enabledInReading") {
+      if (value) {
+        this.debouncedRerenderPreviewMarkdown();
+      } else {
+        this.unloadReadingComponents();
+      }
+    } else if (path === "enabledInOutline") {
       if (value) {
         this.loadOutlineComponents();
       } else {
@@ -313,7 +364,6 @@ export class HeadingPlugin extends Plugin {
     ) {
       this.debouncedRerenderFileExplorerDecorator();
     } else if (
-      path === "enabledInReading" ||
       path === "enabledReadingSettings" ||
       path.startsWith("readingSettings")
     ) {
@@ -341,6 +391,11 @@ export class HeadingPlugin extends Plugin {
         this.debouncedRerenderFileExplorerDecorator();
       }
     }
+  }
+
+  private unloadReadingComponents() {
+    this.readingComponents.forEach((child) => child.detach());
+    this.readingComponents = [];
   }
 
   private loadOutlineComponents() {
@@ -725,16 +780,45 @@ export class HeadingPlugin extends Plugin {
    * @param file
    */
   private rerenderPreviewMarkdown(file?: TFile) {
+    const leaves = this.app.workspace.getLeavesOfType("markdown");
+    leaves.forEach((leaf) => {
+      if (leaf.view instanceof MarkdownView) {
+        const view = leaf.view;
+        if (!file || file === view.file) {
+          const oldScroll = view.previewMode.getScroll();
+          view.previewMode.rerender(true);
+          const newScroll = view.previewMode.getScroll();
+          if (newScroll !== oldScroll) {
+            window.setTimeout(() => {
+              view.previewMode.applyScroll(oldScroll);
+            }, 200);
+          }
+        }
+      }
+    });
+  }
+
+  private rerenderReadingDecorator(file: TFile, fileData: string) {
     const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (view) {
-      if (!file || file === view.file) {
-        const oldScroll = view.previewMode.getScroll();
-        view.previewMode.rerender(true);
-        const newScroll = view.previewMode.getScroll();
-        if (newScroll !== oldScroll) {
-          window.setTimeout(() => {
-            view.previewMode.applyScroll(oldScroll);
-          }, 200);
+      //? "source" for editing view (Live Preview & Source mode),
+      //? "preview" for reading view.
+      const isReadingView = view.getMode() === "preview";
+      if (isReadingView) {
+        this.readingComponents.forEach((rc) => {
+          if (rc.isSamePath(file.path)) {
+            rc.render(fileData);
+          }
+        });
+      } else if (file === view.file) {
+        if (this.settings.readingRenderPolicy === "full") {
+          view.previewMode.rerender(true);
+        } else {
+          this.readingComponents.forEach((rc) => {
+            if (rc.isSamePath(file.path)) {
+              rc.render(fileData);
+            }
+          });
         }
       }
     }

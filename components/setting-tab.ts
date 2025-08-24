@@ -99,6 +99,27 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setDisabled(!this.plugin.settings.enabledReadingSettings);
       });
 
+    //* readingRenderPolicy
+    new Setting(containerEl)
+      .setName(i18n.t("setting.renderPolicy"))
+      .setDesc(i18n.t("setting.renderPolicyDesc"))
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOptions({
+            partial: i18n.t("setting.partial"),
+            full: i18n.t("setting.full"),
+          })
+          .setValue(this.plugin.settings.readingRenderPolicy)
+          .onChange((value) => {
+            this.plugin.settings.readingRenderPolicy = this.isRenderPolicy(
+              value
+            )
+              ? value
+              : "partial";
+            this.plugin.saveSettings();
+          });
+      });
+
     new Setting(containerEl)
       .setName(i18n.t("setting.livePreview"))
       .setHeading();
@@ -364,6 +385,10 @@ export class HeadingSettingTab extends PluginSettingTab {
 
   private isPositionValue(value: string): value is PostionOptions {
     return ["before", "after", "before-inside", "after-inside"].includes(value);
+  }
+
+  private isRenderPolicy(value: string): value is RenderPolicy {
+    return ["partial", "full"].includes(value);
   }
 
   private manageHeadingDecoratorSettings(

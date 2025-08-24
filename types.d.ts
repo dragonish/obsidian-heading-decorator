@@ -12,6 +12,7 @@ type HeadingTuple = TupleOf<string, 6>;
 
 type OpacityOptions = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 type PostionOptions = "before" | "before-inside" | "after" | "after-inside";
+type RenderPolicy = "partial" | "full";
 
 type PluginDecoratorSettingsType =
   | "commonSettings"

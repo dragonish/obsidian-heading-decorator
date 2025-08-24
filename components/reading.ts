@@ -193,7 +193,21 @@ function decorateHTMLElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
+  const decoratorEle = element.find(`.${readingHeadingDecoratorClassName}`);
+
   if (content) {
+    const positionClassName = getPositionClassName(position);
+
+    if (decoratorEle) {
+      if (decoratorEle.classList.contains(positionClassName)) {
+        decoratorEle.textContent = content;
+        decoratorEle.dataset.decoratorOpacity = `${opacity}%`;
+        return;
+      } else {
+        decoratorEle.remove();
+      }
+    }
+
     const span = element.createSpan({
       cls: [
         headingDecoratorClassName,
@@ -230,5 +244,17 @@ function decorateHTMLElement(
     } else {
       element.appendChild(span);
     }
+  } else {
+    decoratorEle && decoratorEle.remove();
   }
+}
+
+/**
+ * Cancel a decorator from an HTML element.
+ *
+ * @param element The HTML element to cancel the decorator.
+ */
+export function cancelHTMLDecorator(element: HTMLElement): void {
+  const decoratorEle = element.find(`.${readingHeadingDecoratorClassName}`);
+  decoratorEle && decoratorEle.remove();
 }
