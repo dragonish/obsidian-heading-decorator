@@ -6,7 +6,7 @@
 
 這是一個用於 [Obsidian](https://obsidian.md) 的外掛，實現根據標題的級別在標題周圍顯示特定內容。
 
-此外掛可選地支援為閱讀、編輯檢視（*實際預覽*和*原始碼模式*）、*[大綱](https://help.obsidian.md/plugins/outline)*、*[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* 和 *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* 外掛提供裝飾。這個外掛不修改任何筆記內容，只根據現有的筆記內容裝飾標題部分。
+此外掛可選地支援為閱讀、編輯（*實際預覽*和*原始碼模式*）、*[大綱](https://help.obsidian.md/plugins/outline)*、*[Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline)* 和 *[Headings in Explorer](https://github.com/patrickchiang/obsidian-headings-in-explorer)* 外掛提供裝飾。這個外掛不修改任何筆記內容，只根據現有的筆記內容裝飾標題部分。
 
 ## 預覽
 
@@ -112,6 +112,15 @@
 | 有序列表 (十進位制數字) | 無序列表 (使用 `H1 H2 H3 H4 H5 H6`) |
 | :---------------: | :-------------------------------: |
 | ![有序列表](images/ordered.jpg) | ![無序列表](images/unordered.jpg) |
+
+### 閱讀的其他設定
+
+#### 閱讀的渲染策略
+
+在編輯筆記內容時閱讀裡標題裝飾器的渲染策略：
+
+- **部分渲染**：在更新後只重新渲染活動標題裝飾器。
+- **全部渲染**：在更新後重新渲染所有標題裝飾器。
 
 ### 原始碼模式的其他設定
 

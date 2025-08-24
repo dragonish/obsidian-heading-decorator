@@ -115,6 +115,15 @@ Directly decorate the heading according to the level. For example:
 | :-----: | :--------------: |
 | ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
+### Other settings for reading view
+
+#### Render policy for reading view
+
+When editing note content, the render policy used by the heading decorator in the reading view.
+
+- **Partial**: Rerender active heading decorator after the update.
+- **Full**: Rerender all heading decorators after the update.
+
 ### Other settings for source mode
 
 #### Hide number signs on inactive lines
