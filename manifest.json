@@ -1,7 +1,7 @@
 {
   "id": "heading-decorator",
   "name": "Heading Decorator",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "minAppVersion": "0.15.0",
   "description": "Implement displaying specific content around headings based on their levels.",
   "author": "dragonish",
