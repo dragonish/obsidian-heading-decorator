@@ -865,17 +865,21 @@ export class HeadingPlugin extends Plugin {
           this.app.metadataCache.getFileCache(file)?.frontmatter;
 
         if (_enabledInPreview) {
+          const previewEnabledInEachNote =
+            previewSettings.enabledInEachNote ?? true;
           enabledInPreview =
             this.getEnabledFromFrontmatter("preview", frontmatter) ??
-            previewSettings.enabledInEachNote ??
-            !this.getEnabledFromBlacklist(file.path);
+            (previewEnabledInEachNote &&
+              !this.getEnabledFromBlacklist(file.path));
         }
 
         if (_enabledInSource) {
+          const sourceEnabledInEachNote =
+            sourceSettings.enabledInEachNote ?? true;
           enabledInSource =
             this.getEnabledFromFrontmatter("source", frontmatter) ??
-            sourceSettings.enabledInEachNote ??
-            !this.getEnabledFromBlacklist(file.path);
+            (sourceEnabledInEachNote &&
+              !this.getEnabledFromBlacklist(file.path));
         }
       }
     }
