@@ -839,7 +839,6 @@ export class HeadingPlugin extends Plugin {
   async getPluginData(): Promise<HeadingPluginData> {
     const {
       commonSettings,
-      metadataKeyword,
       enabledInPreview: _enabledInPreview,
       enabledPreviewSettings,
       enabledInSource: _enabledInSource,
@@ -858,29 +857,26 @@ export class HeadingPlugin extends Plugin {
       ? _sourceSettings
       : commonSettings;
 
-    if (metadataKeyword) {
-      const file = this.getActiveFile();
-      if (file) {
-        const frontmatter =
-          this.app.metadataCache.getFileCache(file)?.frontmatter;
+    const file = this.getActiveFile();
+    if (file) {
+      const frontmatter =
+        this.app.metadataCache.getFileCache(file)?.frontmatter;
 
-        if (_enabledInPreview) {
-          const previewEnabledInEachNote =
-            previewSettings.enabledInEachNote ?? true;
-          enabledInPreview =
-            this.getEnabledFromFrontmatter("preview", frontmatter) ??
-            (previewEnabledInEachNote &&
-              !this.getEnabledFromBlacklist(file.path));
-        }
+      if (_enabledInPreview) {
+        const previewEnabledInEachNote =
+          previewSettings.enabledInEachNote ?? true;
+        enabledInPreview =
+          this.getEnabledFromFrontmatter("preview", frontmatter) ??
+          (previewEnabledInEachNote &&
+            !this.getEnabledFromBlacklist(file.path));
+      }
 
-        if (_enabledInSource) {
-          const sourceEnabledInEachNote =
-            sourceSettings.enabledInEachNote ?? true;
-          enabledInSource =
-            this.getEnabledFromFrontmatter("source", frontmatter) ??
-            (sourceEnabledInEachNote &&
-              !this.getEnabledFromBlacklist(file.path));
-        }
+      if (_enabledInSource) {
+        const sourceEnabledInEachNote =
+          sourceSettings.enabledInEachNote ?? true;
+        enabledInSource =
+          this.getEnabledFromFrontmatter("source", frontmatter) ??
+          (sourceEnabledInEachNote && !this.getEnabledFromBlacklist(file.path));
       }
     }
 
