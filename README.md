@@ -96,7 +96,7 @@ For the *Based on the existing highest level* setting, use the highest level of 
 Exclude the top-level heading when building ordered lists. controlled by the *Maximum number of ignored levels* option. For example:
 
 | Default | Enabled (Maximum number of ignored levels set to `2`) |
-| :-----: | :----------------------------------------------------:|
+| :-----: | :---------------------------------------------------: |
 | ![Default](images/default.jpg) | ![Always ignore the top-level headings](images/always.jpg) |
 
 #### Ignore the single heading at the top-level
