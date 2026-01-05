@@ -1,9 +1,6 @@
 import type { HeadingDecoratorSettings } from "../common/data";
 import {
-  quietOutlineHeadingDecoratorClassName,
-  quietOutlineContainerClassName,
-  beforeDecoratorClassName,
-  afterDecoratorClassName,
+  className,
   getOrderedCustomIdents,
   getUnorderedLevelHeadings,
 } from "../common/data";
@@ -42,7 +39,7 @@ export function quietOutlineHandler(
     unorderedLevelHeadings,
   } = settings;
 
-  container.classList.add(quietOutlineContainerClassName);
+  container.classList.add(className.quietOutlineContainer);
 
   let ignoreTopLevel = 0;
   if (ordered) {
@@ -100,8 +97,8 @@ export function quietOutlineHandler(
  * @param container The container element that contains the headings.
  */
 export function cancelQuietOutlineDecoration(container: HTMLElement): void {
-  if (container.classList.contains(quietOutlineContainerClassName)) {
-    container.classList.remove(quietOutlineContainerClassName);
+  if (container.classList.contains(className.quietOutlineContainer)) {
+    container.classList.remove(className.quietOutlineContainer);
 
     const headingElements =
       container.querySelectorAll<HTMLElement>(".n-tree-node");
@@ -160,12 +157,10 @@ function decorateQuietOutlineElement(
 
     const isAfter = position.includes("after");
     //? Remove potential residual class names
-    nodeContent.classList.remove(
-      isAfter ? beforeDecoratorClassName : afterDecoratorClassName
-    );
+    nodeContent.classList.remove(isAfter ? className.before : className.after);
     nodeContent.classList.add(
-      quietOutlineHeadingDecoratorClassName,
-      isAfter ? afterDecoratorClassName : beforeDecoratorClassName
+      className.quietOutline,
+      isAfter ? className.after : className.before
     );
   }
 }
@@ -183,9 +178,9 @@ function cancelQuietOutlineDecorator(element: HTMLElement): void {
     delete nodeContent.dataset.headingDecorator;
     delete nodeContent.dataset.decoratorOpacity;
     nodeContent.classList.remove(
-      quietOutlineHeadingDecoratorClassName,
-      beforeDecoratorClassName,
-      afterDecoratorClassName
+      className.quietOutline,
+      className.before,
+      className.after
     );
   }
 }

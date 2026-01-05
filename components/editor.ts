@@ -10,10 +10,10 @@ import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { HeadingWidget } from "./weight";
 import type { HeadingPluginData } from "../common/data";
 import {
+  className,
   getUnorderedLevelHeadings,
   getOrderedCustomIdents,
   findFirstCharacterIndex,
-  hideSourceNumberSignsClassName,
 } from "../common/data";
 import { Counter, Querier } from "../common/counter";
 import { Heading } from "../common/heading";
@@ -199,7 +199,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
             const hideNumberSigns = pluginData.sourceHideNumberSigns;
             if (hideNumberSigns) {
               hideDeco = Decoration.mark({
-                class: hideSourceNumberSignsClassName,
+                class: className.hideSourceNumberSigns,
               });
             }
           }

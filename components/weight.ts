@@ -1,10 +1,5 @@
 import { EditorView, WidgetType } from "@codemirror/view";
-import {
-  headingDecoratorClassName,
-  previewHeadingDecoratorClassName,
-  sourceHeadingDecoratorClassName,
-  getPositionClassName,
-} from "../common/data";
+import { className, getPositionClassName } from "../common/data";
 
 export class HeadingWidget extends WidgetType {
   readonly isLivePreviwMode: boolean;
@@ -27,12 +22,12 @@ export class HeadingWidget extends WidgetType {
 
   toDOM(view: EditorView): HTMLElement {
     const headingClassName = this.isLivePreviwMode
-      ? previewHeadingDecoratorClassName
-      : sourceHeadingDecoratorClassName;
+      ? className.preview
+      : className.source;
 
     const span = view.dom.createSpan({
       cls: [
-        headingDecoratorClassName,
+        className.heading,
         headingClassName,
         getPositionClassName(this.position),
       ],

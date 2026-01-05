@@ -115,29 +115,24 @@ export type HeadingPluginData = Omit<
   | "fileExplorerSettings"
 >;
 
-export const headingDecoratorClassName = "custom-heading-decorator";
-export const readingHeadingDecoratorClassName =
-  "reading-custom-heading-decorator";
-export const previewHeadingDecoratorClassName =
-  "preview-custom-heading-decorator";
-export const sourceHeadingDecoratorClassName =
-  "source-custom-heading-decorator";
-export const outlineHeadingDecoratorClassName =
-  "outline-custom-heading-decorator";
-export const outlineContainerClassName = "outline-custom-heading-container";
-export const quietOutlineHeadingDecoratorClassName =
-  "quiet-outline-custom-heading-decorator";
-export const quietOutlineContainerClassName =
-  "quiet-outline-custom-heading-container";
-export const fileExplorerHeadingDecoratorClassName =
-  "file-explorer-custom-heading-decorator";
-export const fileExplorerContainerClassName =
-  "file-explorer-custom-heading-container";
-export const beforeDecoratorClassName = "before-heading-decorator";
-export const beforeInsideDecoratorClassName = "before-inside-heading-decorator";
-export const afterDecoratorClassName = "after-heading-decorator";
-export const afterInsideDecoratorClassName = "after-inside-heading-decorator";
-export const hideSourceNumberSignsClassName = "hide-source-number-signs";
+export const className = {
+  heading: "custom-heading-decorator",
+  reading: "reading-custom-heading-decorator",
+  preview: "preview-custom-heading-decorator",
+  source: "source-custom-heading-decorator",
+  outline: "outline-custom-heading-decorator",
+  outlineContainer: "outline-custom-heading-container",
+  quietOutline: "quiet-outline-custom-heading-decorator",
+  quietOutlineContainer: "quiet-outline-custom-heading-container",
+  fileExplorer: "file-explorer-custom-heading-decorator",
+  fileExplorerContainer: "file-explorer-custom-heading-container",
+  before: "before-heading-decorator",
+  beforeInside: "before-inside-heading-decorator",
+  after: "after-heading-decorator",
+  afterInside: "after-inside-heading-decorator",
+  hideSourceNumberSigns: "hide-source-number-signs",
+};
+
 export const headingsSelector =
   ".el-h1 h1, .el-h2 h2, .el-h3 h3, .el-h4 h4, .el-h5 h5, .el-h6 h6";
 export const defaultHeadingTuple: HeadingTuple = [
@@ -249,17 +244,13 @@ export function getPositionClassName(
 ): string {
   switch (position) {
     case "before":
-      return beforeDecoratorClassName;
+      return className.before;
     case "after":
-      return afterDecoratorClassName;
+      return className.after;
     case "before-inside":
-      return ignoreInsideFlag
-        ? beforeDecoratorClassName
-        : beforeInsideDecoratorClassName;
+      return ignoreInsideFlag ? className.before : className.beforeInside;
     case "after-inside":
-      return ignoreInsideFlag
-        ? afterDecoratorClassName
-        : afterInsideDecoratorClassName;
+      return ignoreInsideFlag ? className.after : className.afterInside;
     default:
       return "";
   }

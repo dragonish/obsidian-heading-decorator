@@ -1,10 +1,7 @@
 import { HeadingCache } from "obsidian";
 import type { HeadingDecoratorSettings } from "../common/data";
 import {
-  fileExplorerHeadingDecoratorClassName,
-  fileExplorerContainerClassName,
-  beforeDecoratorClassName,
-  afterDecoratorClassName,
+  className,
   getOrderedCustomIdents,
   getUnorderedLevelHeadings,
 } from "../common/data";
@@ -45,7 +42,7 @@ export function fileExplorerHandler(
     unorderedLevelHeadings,
   } = settings;
 
-  container.classList.add(fileExplorerContainerClassName);
+  container.classList.add(className.fileExplorerContainer);
 
   let ignoreTopLevel = 0;
   if (ordered) {
@@ -126,8 +123,8 @@ export function fileExplorerHandler(
  * @param container The container element containing the file headings.
  */
 export function cancelFileExplorerDecoration(container: HTMLElement): void {
-  if (container.classList.contains(fileExplorerContainerClassName)) {
-    container.classList.remove(fileExplorerContainerClassName);
+  if (container.classList.contains(className.fileExplorerContainer)) {
+    container.classList.remove(className.fileExplorerContainer);
 
     const headingElements = container.querySelectorAll<HTMLElement>(
       ".file-heading-container .clickable-heading"
@@ -158,12 +155,10 @@ function decorateFileHeadingElement(
 
   const isAfter = position.includes("after");
   //? Remove potential residual class names
-  element.classList.remove(
-    isAfter ? beforeDecoratorClassName : afterDecoratorClassName
-  );
+  element.classList.remove(isAfter ? className.before : className.after);
   element.classList.add(
-    fileExplorerHeadingDecoratorClassName,
-    isAfter ? afterDecoratorClassName : beforeDecoratorClassName
+    className.fileExplorer,
+    isAfter ? className.after : className.before
   );
 }
 
@@ -176,9 +171,9 @@ function cancelFileHeadingDecorator(element: HTMLElement): void {
   delete element.dataset.headingDecorator;
   delete element.dataset.decoratorOpacity;
   element.classList.remove(
-    fileExplorerHeadingDecoratorClassName,
-    beforeDecoratorClassName,
-    afterDecoratorClassName
+    className.fileExplorer,
+    className.before,
+    className.after
   );
 }
 

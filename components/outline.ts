@@ -1,10 +1,7 @@
 import { HeadingCache, htmlToMarkdown } from "obsidian";
 import type { HeadingDecoratorSettings } from "../common/data";
 import {
-  outlineHeadingDecoratorClassName,
-  outlineContainerClassName,
-  beforeDecoratorClassName,
-  afterDecoratorClassName,
+  className,
   getOrderedCustomIdents,
   getUnorderedLevelHeadings,
   diffLevel,
@@ -47,7 +44,7 @@ export function outlineHandler(
     unorderedLevelHeadings,
   } = settings;
 
-  container.classList.add(outlineContainerClassName);
+  container.classList.add(className.outlineContainer);
 
   let ignoreTopLevel = 0;
   if (ordered) {
@@ -126,8 +123,8 @@ export function outlineHandler(
  * @param container The container element that holds the outline elements.
  */
 export function cancelOutlineDecoration(container: HTMLElement): void {
-  if (container.classList.contains(outlineContainerClassName)) {
-    container.classList.remove(outlineContainerClassName);
+  if (container.classList.contains(className.outlineContainer)) {
+    container.classList.remove(className.outlineContainer);
 
     const headingElements =
       container.querySelectorAll<HTMLElement>(".tree-item");
@@ -161,12 +158,10 @@ function decorateOutlineElement(
 
     const isAfter = position.includes("after");
     //? Remove potential residual class names
-    inner.classList.remove(
-      isAfter ? beforeDecoratorClassName : afterDecoratorClassName
-    );
+    inner.classList.remove(isAfter ? className.before : className.after);
     inner.classList.add(
-      outlineHeadingDecoratorClassName,
-      isAfter ? afterDecoratorClassName : beforeDecoratorClassName
+      className.outline,
+      isAfter ? className.after : className.before
     );
   }
 }
@@ -184,9 +179,9 @@ function cancelOutlineDecorator(element: HTMLElement): void {
     delete inner.dataset.headingDecorator;
     delete inner.dataset.decoratorOpacity;
     inner.classList.remove(
-      outlineHeadingDecoratorClassName,
-      beforeDecoratorClassName,
-      afterDecoratorClassName
+      className.outline,
+      className.before,
+      className.after
     );
   }
 }

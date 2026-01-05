@@ -1,8 +1,7 @@
 import { MarkdownPostProcessorContext } from "obsidian";
 import type { HeadingDecoratorSettings } from "../common/data";
 import {
-  headingDecoratorClassName,
-  readingHeadingDecoratorClassName,
+  className,
   getOrderedCustomIdents,
   getPositionClassName,
   getUnorderedLevelHeadings,
@@ -193,7 +192,7 @@ function decorateHTMLElement(
   opacity: OpacityOptions,
   position: PostionOptions
 ): void {
-  const decoratorEle = element.find(`.${readingHeadingDecoratorClassName}`);
+  const decoratorEle = element.find(`.${className.reading}`);
 
   if (content) {
     const positionClassName = getPositionClassName(position);
@@ -210,8 +209,8 @@ function decorateHTMLElement(
 
     const span = element.createSpan({
       cls: [
-        headingDecoratorClassName,
-        readingHeadingDecoratorClassName,
+        className.heading,
+        className.reading,
         getPositionClassName(position),
       ],
       text: content,
@@ -255,6 +254,6 @@ function decorateHTMLElement(
  * @param element The HTML element to cancel the decorator.
  */
 export function cancelHTMLDecorator(element: HTMLElement): void {
-  const decoratorEle = element.find(`.${readingHeadingDecoratorClassName}`);
+  const decoratorEle = element.find(`.${className.reading}`);
   decoratorEle && decoratorEle.remove();
 }
