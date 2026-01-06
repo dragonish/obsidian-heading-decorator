@@ -6,18 +6,21 @@ export class HeadingWidget extends WidgetType {
   readonly content: string;
   readonly opacity: OpacityOptions;
   readonly position: PostionOptions;
+  readonly level: number;
 
   constructor(
     isLivePreviwMode: boolean,
     content: string,
     opacity: OpacityOptions,
-    position: PostionOptions
+    position: PostionOptions,
+    level: number
   ) {
     super();
     this.isLivePreviwMode = isLivePreviwMode;
     this.content = content;
     this.opacity = opacity;
     this.position = position;
+    this.level = level;
   }
 
   toDOM(view: EditorView): HTMLElement {
@@ -34,6 +37,7 @@ export class HeadingWidget extends WidgetType {
       text: this.content,
       attr: {
         "data-decorator-opacity": `${this.opacity}%`,
+        "data-decorator-level": this.level.toString(),
       },
     });
 
@@ -45,7 +49,8 @@ export class HeadingWidget extends WidgetType {
       widget.isLivePreviwMode === this.isLivePreviwMode &&
       widget.content === this.content &&
       widget.opacity === this.opacity &&
-      widget.position === this.position
+      widget.position === this.position &&
+      widget.level === this.level
     );
   }
 

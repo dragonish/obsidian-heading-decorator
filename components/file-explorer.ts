@@ -112,7 +112,8 @@ export function fileExplorerHandler(
       headingElements[i],
       decoratorContent,
       opacity,
-      position
+      position,
+      cacheLevel
     );
   }
 }
@@ -143,15 +144,18 @@ export function cancelFileExplorerDecoration(container: HTMLElement): void {
  * @param content The content to decorate with.
  * @param opacity The opacity of the decorator.
  * @param position The position of the decorator.
+ * @param level The level of the heading.
  */
 function decorateFileHeadingElement(
   element: HTMLElement,
   content: string,
   opacity: OpacityOptions,
-  position: PostionOptions
+  position: PostionOptions,
+  level: number
 ): void {
   element.dataset.headingDecorator = content;
   element.dataset.decoratorOpacity = `${opacity}%`;
+  element.dataset.decoratorLevel = level.toString();
 
   const isAfter = position.includes("after");
   //? Remove potential residual class names
@@ -170,6 +174,7 @@ function decorateFileHeadingElement(
 function cancelFileHeadingDecorator(element: HTMLElement): void {
   delete element.dataset.headingDecorator;
   delete element.dataset.decoratorOpacity;
+  delete element.dataset.decoratorLevel;
   element.classList.remove(
     className.fileExplorer,
     className.before,

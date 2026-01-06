@@ -86,7 +86,8 @@ export function quietOutlineHandler(
       headingEle,
       decoratorContent,
       opacity,
-      position
+      position,
+      level
     );
   });
 }
@@ -141,12 +142,14 @@ function queryHeadingLevelByQuietOutlineElement(element: HTMLElement): number {
  * @param content The content to decorate with.
  * @param opacity The opacity of the decorator.
  * @param position The position of the decorator.
+ * @param level The level of the heading.
  */
 function decorateQuietOutlineElement(
   element: HTMLElement,
   content: string,
   opacity: OpacityOptions,
-  position: PostionOptions
+  position: PostionOptions,
+  level: number
 ): void {
   const nodeContent = element.querySelector<HTMLElement>(
     ".n-tree-node-content"
@@ -154,6 +157,7 @@ function decorateQuietOutlineElement(
   if (nodeContent) {
     nodeContent.dataset.headingDecorator = content;
     nodeContent.dataset.decoratorOpacity = `${opacity}%`;
+    nodeContent.dataset.decoratorLevel = level.toString();
 
     const isAfter = position.includes("after");
     //? Remove potential residual class names
@@ -177,6 +181,7 @@ function cancelQuietOutlineDecorator(element: HTMLElement): void {
   if (nodeContent) {
     delete nodeContent.dataset.headingDecorator;
     delete nodeContent.dataset.decoratorOpacity;
+    delete nodeContent.dataset.decoratorLevel;
     nodeContent.classList.remove(
       className.quietOutline,
       className.before,

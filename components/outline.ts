@@ -109,7 +109,8 @@ export function outlineHandler(
       headingElements[i],
       decoratorContent,
       opacity,
-      position
+      position,
+      cacheLevel
     );
 
     lastCacheLevel = cacheLevel;
@@ -142,12 +143,14 @@ export function cancelOutlineDecoration(container: HTMLElement): void {
  * @param content The content to decorate with.
  * @param opacity The opacity of the decorator.
  * @param position The position of the decorator.
+ * @param level The level of the heading.
  */
 function decorateOutlineElement(
   element: HTMLElement,
   content: string,
   opacity: OpacityOptions,
-  position: PostionOptions
+  position: PostionOptions,
+  level: number
 ): void {
   const inner = element.querySelector<HTMLElement>(
     ".tree-item-self .tree-item-inner"
@@ -155,6 +158,7 @@ function decorateOutlineElement(
   if (inner) {
     inner.dataset.headingDecorator = content;
     inner.dataset.decoratorOpacity = `${opacity}%`;
+    inner.dataset.decoratorLevel = level.toString();
 
     const isAfter = position.includes("after");
     //? Remove potential residual class names
@@ -178,6 +182,7 @@ function cancelOutlineDecorator(element: HTMLElement): void {
   if (inner) {
     delete inner.dataset.headingDecorator;
     delete inner.dataset.decoratorOpacity;
+    delete inner.dataset.decoratorLevel;
     inner.classList.remove(
       className.outline,
       className.before,

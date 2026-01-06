@@ -186,7 +186,8 @@ export class HeadingEditorViewPlugin implements PluginValue {
             isLivePreviwMode,
             content,
             opacity,
-            position
+            position,
+            level
           );
           const deco = Decoration.widget({
             widget,

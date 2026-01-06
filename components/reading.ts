@@ -116,7 +116,8 @@ export function readingOrderedHandler(
             headingElement,
             decoratorContent,
             opacity,
-            position
+            position,
+            level
           );
         }
 
@@ -149,7 +150,13 @@ export function readingUnorderedHandler(
   headingElements.forEach((headingElement) => {
     const level = queryHeadingLevelByElement(headingElement);
     const decoratorContent = counter.decorator(level);
-    decorateHTMLElement(headingElement, decoratorContent, opacity, position);
+    decorateHTMLElement(
+      headingElement,
+      decoratorContent,
+      opacity,
+      position,
+      level
+    );
   });
 }
 
@@ -185,12 +192,14 @@ function queryHeadingLevelByElement(element: HTMLElement): number {
  * @param content The content to decorate with.
  * @param opacity The opacity of the decorator.
  * @param position The position of the decorator.
+ * @param level The level of the heading.
  */
 function decorateHTMLElement(
   element: HTMLElement,
   content: string,
   opacity: OpacityOptions,
-  position: PostionOptions
+  position: PostionOptions,
+  level: number
 ): void {
   const decoratorEle = element.find(`.${className.reading}`);
 
@@ -201,6 +210,7 @@ function decorateHTMLElement(
       if (decoratorEle.classList.contains(positionClassName)) {
         decoratorEle.textContent = content;
         decoratorEle.dataset.decoratorOpacity = `${opacity}%`;
+        decoratorEle.dataset.decoratorLevel = level.toString();
         return;
       } else {
         decoratorEle.remove();
@@ -216,6 +226,7 @@ function decorateHTMLElement(
       text: content,
       attr: {
         "data-decorator-opacity": `${opacity}%`,
+        "data-decorator-level": level.toString(),
       },
     });
 
