@@ -208,6 +208,8 @@ For decorators in other plugins, it is necessary to combine pseudo-element keywo
 - Quiet Outline: `.quiet-outline-custom-heading-decorator::before` or `.quiet-outline-custom-heading-decorator::after`.
 - Headings in Explorer: `.file-explorer-custom-heading-decorator::before` or `.file-explorer-custom-heading-decorator::after`.
 
+Each decorator element has an attribute `[data-decorator-level="n"]` associated with the current heading level (*`n` is the heading level*).
+
 For example, make all the decorators display in green:
 
 ```css

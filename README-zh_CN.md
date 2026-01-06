@@ -206,6 +206,8 @@ cssclasses:
 - Quiet Outline: `.quiet-outline-custom-heading-decorator::before` 或 `.quiet-outline-custom-heading-decorator::after`
 - Headings in Explorer: `.file-explorer-custom-heading-decorator::before` 或 `.file-explorer-custom-heading-decorator::after`
 
+每个装饰元素都有一个与当前标题级别相关联的属性 `[data-decorator-level="n"]` (*`n` 为标题级别*)。
+
 例如，使所有装饰器显示为绿色：
 
 ```css
