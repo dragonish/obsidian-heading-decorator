@@ -178,7 +178,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
  *
  * @returns default plugin settings.
  */
-export function defalutSettings(): HeadingPluginSettings {
+export function defaultSettings(): HeadingPluginSettings {
   return {
     metadataKeyword: "heading",
     fileRegexBlacklist: [],

@@ -15,7 +15,7 @@ import {
   getBoolean,
   checkEnabledCSS,
   stringToRegex,
-  defalutSettings,
+  defaultSettings,
 } from "../common/data";
 import {
   HeadingEditorViewPlugin,
@@ -145,7 +145,7 @@ export class HeadingPlugin extends Plugin {
 
   private async loadSettings() {
     const rawSettings = Object.assign<HeadingPluginSettings, unknown>(
-      defalutSettings(),
+      defaultSettings(),
       await this.loadData()
     );
 
