@@ -1,11 +1,15 @@
 import "mocha";
 import { expect } from "chai";
-import type { IndependentDecoratorSettings } from "../../common/data";
+import type {
+  IndependentDecoratorSettings,
+  SpliceDecoratorSettings,
+} from "../../common/data";
 import {
   Querier,
   UnorderedCounter,
   OrderedCounter,
   IndependentCounter,
+  SpliceCounter,
 } from "../../common/counter";
 
 describe("common/counter", function () {
@@ -1444,6 +1448,398 @@ describe("common/counter", function () {
       expect(counter3.decorator(7)).to.be.empty;
       expect(counter3.decorator(3)).to.equal("2.");
       expect(counter3.decorator(6)).to.equal("2.1.1.1.");
+    });
+  });
+
+  describe("SpliceCounter", function () {
+    const h1: Partial<SpliceDecoratorSettings> = {
+      styleType: "upperAlpha",
+    };
+    const h2: Partial<SpliceDecoratorSettings> = {
+      styleType: "lowerAlpha",
+    };
+    const h3: Partial<SpliceDecoratorSettings> = {
+      styleType: "upperRoman",
+    };
+    const h4: Partial<SpliceDecoratorSettings> = {
+      styleType: "lowerRoman",
+    };
+    const h5: Partial<SpliceDecoratorSettings> = {
+      styleType: "decimal",
+    };
+    const h6: Partial<SpliceDecoratorSettings> = {
+      styleType: "decimalLeadingZero",
+    };
+
+    it("SpliceCounter.decorator", function () {
+      const counter1 = new SpliceCounter({});
+      expect(counter1.decorator(-1)).to.be.empty;
+      expect(counter1.decorator(0)).to.be.empty;
+      expect(counter1.decorator(1)).to.equal("1");
+      expect(counter1.decorator(2)).to.equal("1.1");
+      expect(counter1.decorator(2)).to.equal("1.2");
+      expect(counter1.decorator(2)).to.equal("1.3");
+      expect(counter1.decorator(2)).to.equal("1.4");
+      expect(counter1.decorator(2)).to.equal("1.5");
+      expect(counter1.decorator(2)).to.equal("1.6");
+      expect(counter1.decorator(2)).to.equal("1.7");
+      expect(counter1.decorator(2)).to.equal("1.8");
+      expect(counter1.decorator(2)).to.equal("1.9");
+      expect(counter1.decorator(2)).to.equal("1.10");
+      expect(counter1.decorator(2)).to.equal("1.11");
+      expect(counter1.decorator(1)).to.equal("2");
+      expect(counter1.decorator(7)).to.be.empty;
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+      });
+      expect(counter2.decorator(-1)).to.be.empty;
+      expect(counter2.decorator(0)).to.be.empty;
+      expect(counter2.decorator(1)).to.equal("A");
+      expect(counter2.decorator(2)).to.equal("A.a");
+      expect(counter2.decorator(2)).to.equal("A.b");
+      expect(counter2.decorator(2)).to.equal("A.c");
+      expect(counter2.decorator(2)).to.equal("A.d");
+      expect(counter2.decorator(2)).to.equal("A.e");
+      expect(counter2.decorator(3)).to.equal("A.e.I");
+      expect(counter2.decorator(4)).to.equal("A.e.I.i");
+      expect(counter2.decorator(5)).to.equal("A.e.I.i.1");
+      expect(counter2.decorator(6)).to.equal("A.e.I.i.1.01");
+      expect(counter2.decorator(1)).to.equal("B");
+      expect(counter2.decorator(2)).to.equal("B.a");
+      expect(counter2.decorator(3)).to.equal("B.a.I");
+      expect(counter2.decorator(2)).to.equal("B.b");
+    });
+
+    it("SpliceCounter.decorator with custom delimiter", function () {
+      const counter = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ",",
+      });
+
+      expect(counter.decorator(-1)).to.be.empty;
+      expect(counter.decorator(0)).to.be.empty;
+      expect(counter.decorator(1)).to.equal("A");
+      expect(counter.decorator(2)).to.equal("A,a");
+      expect(counter.decorator(2)).to.equal("A,b");
+      expect(counter.decorator(2)).to.equal("A,c");
+      expect(counter.decorator(2)).to.equal("A,d");
+      expect(counter.decorator(2)).to.equal("A,e");
+      expect(counter.decorator(3)).to.equal("A,e,I");
+      expect(counter.decorator(4)).to.equal("A,e,I,i");
+      expect(counter.decorator(5)).to.equal("A,e,I,i,1");
+      expect(counter.decorator(6)).to.equal("A,e,I,i,1,01");
+      expect(counter.decorator(1)).to.equal("B");
+      expect(counter.decorator(2)).to.equal("B,a");
+      expect(counter.decorator(3)).to.equal("B,a,I");
+      expect(counter.decorator(2)).to.equal("B,b");
+    });
+
+    it("SpliceCounter.decorator with trailing delimiter", function () {
+      const counter1 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        trailingDelimiter: true,
+      });
+      expect(counter1.decorator(-1)).to.be.empty;
+      expect(counter1.decorator(0)).to.be.empty;
+      expect(counter1.decorator(1)).to.equal("A.");
+      expect(counter1.decorator(2)).to.equal("A.a.");
+      expect(counter1.decorator(2)).to.equal("A.b.");
+      expect(counter1.decorator(2)).to.equal("A.c.");
+      expect(counter1.decorator(2)).to.equal("A.d.");
+      expect(counter1.decorator(2)).to.equal("A.e.");
+      expect(counter1.decorator(3)).to.equal("A.e.I.");
+      expect(counter1.decorator(4)).to.equal("A.e.I.i.");
+      expect(counter1.decorator(5)).to.equal("A.e.I.i.1.");
+      expect(counter1.decorator(6)).to.equal("A.e.I.i.1.01.");
+      expect(counter1.decorator(1)).to.equal("B.");
+      expect(counter1.decorator(2)).to.equal("B.a.");
+      expect(counter1.decorator(3)).to.equal("B.a.I.");
+      expect(counter1.decorator(2)).to.equal("B.b.");
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        trailingDelimiter: true,
+        customTrailingDelimiter: ",",
+      });
+      expect(counter2.decorator(-1)).to.be.empty;
+      expect(counter2.decorator(0)).to.be.empty;
+      expect(counter2.decorator(1)).to.equal("A,");
+      expect(counter2.decorator(2)).to.equal("A.a,");
+      expect(counter2.decorator(2)).to.equal("A.b,");
+      expect(counter2.decorator(2)).to.equal("A.c,");
+      expect(counter2.decorator(2)).to.equal("A.d,");
+      expect(counter2.decorator(2)).to.equal("A.e,");
+      expect(counter2.decorator(3)).to.equal("A.e.I,");
+      expect(counter2.decorator(4)).to.equal("A.e.I.i,");
+      expect(counter2.decorator(5)).to.equal("A.e.I.i.1,");
+      expect(counter2.decorator(6)).to.equal("A.e.I.i.1.01,");
+      expect(counter2.decorator(1)).to.equal("B,");
+      expect(counter2.decorator(2)).to.equal("B.a,");
+      expect(counter2.decorator(3)).to.equal("B.a.I,");
+      expect(counter2.decorator(2)).to.equal("B.b,");
+    });
+
+    it("SpliceCounter.decorator with leading delimiter", function () {
+      const counter1 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        leadingDelimiter: true,
+      });
+      expect(counter1.decorator(-1)).to.be.empty;
+      expect(counter1.decorator(0)).to.be.empty;
+      expect(counter1.decorator(1)).to.equal(".A");
+      expect(counter1.decorator(2)).to.equal(".A.a");
+      expect(counter1.decorator(2)).to.equal(".A.b");
+      expect(counter1.decorator(2)).to.equal(".A.c");
+      expect(counter1.decorator(2)).to.equal(".A.d");
+      expect(counter1.decorator(2)).to.equal(".A.e");
+      expect(counter1.decorator(3)).to.equal(".A.e.I");
+      expect(counter1.decorator(4)).to.equal(".A.e.I.i");
+      expect(counter1.decorator(5)).to.equal(".A.e.I.i.1");
+      expect(counter1.decorator(6)).to.equal(".A.e.I.i.1.01");
+      expect(counter1.decorator(1)).to.equal(".B");
+      expect(counter1.decorator(2)).to.equal(".B.a");
+      expect(counter1.decorator(3)).to.equal(".B.a.I");
+      expect(counter1.decorator(2)).to.equal(".B.b");
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        leadingDelimiter: true,
+        customLeadingDelimiter: "> ",
+      });
+      expect(counter2.decorator(-1)).to.be.empty;
+      expect(counter2.decorator(0)).to.be.empty;
+      expect(counter2.decorator(1)).to.equal("> A");
+      expect(counter2.decorator(2)).to.equal("> A.a");
+      expect(counter2.decorator(2)).to.equal("> A.b");
+      expect(counter2.decorator(2)).to.equal("> A.c");
+      expect(counter2.decorator(2)).to.equal("> A.d");
+      expect(counter2.decorator(2)).to.equal("> A.e");
+      expect(counter2.decorator(3)).to.equal("> A.e.I");
+      expect(counter2.decorator(4)).to.equal("> A.e.I.i");
+      expect(counter2.decorator(5)).to.equal("> A.e.I.i.1");
+      expect(counter2.decorator(6)).to.equal("> A.e.I.i.1.01");
+      expect(counter2.decorator(1)).to.equal("> B");
+      expect(counter2.decorator(2)).to.equal("> B.a");
+      expect(counter2.decorator(3)).to.equal("> B.a.I");
+      expect(counter2.decorator(2)).to.equal("> B.b");
+    });
+
+    it("SpliceCounter.decorator with custom leading delimiter and trailing delimiter", function () {
+      const counter1 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        trailingDelimiter: true,
+        leadingDelimiter: true,
+      });
+      expect(counter1.decorator(-1)).to.be.empty;
+      expect(counter1.decorator(0)).to.be.empty;
+      expect(counter1.decorator(1)).to.equal(".A.");
+      expect(counter1.decorator(2)).to.equal(".A.a.");
+      expect(counter1.decorator(2)).to.equal(".A.b.");
+      expect(counter1.decorator(2)).to.equal(".A.c.");
+      expect(counter1.decorator(2)).to.equal(".A.d.");
+      expect(counter1.decorator(2)).to.equal(".A.e.");
+      expect(counter1.decorator(3)).to.equal(".A.e.I.");
+      expect(counter1.decorator(4)).to.equal(".A.e.I.i.");
+      expect(counter1.decorator(5)).to.equal(".A.e.I.i.1.");
+      expect(counter1.decorator(6)).to.equal(".A.e.I.i.1.01.");
+      expect(counter1.decorator(1)).to.equal(".B.");
+      expect(counter1.decorator(2)).to.equal(".B.a.");
+      expect(counter1.decorator(3)).to.equal(".B.a.I.");
+      expect(counter1.decorator(2)).to.equal(".B.b.");
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        delimiter: ".",
+        trailingDelimiter: true,
+        customTrailingDelimiter: ")",
+        leadingDelimiter: true,
+        customLeadingDelimiter: "(",
+      });
+      expect(counter2.decorator(-1)).to.be.empty;
+      expect(counter2.decorator(0)).to.be.empty;
+      expect(counter2.decorator(1)).to.equal("(A)");
+      expect(counter2.decorator(2)).to.equal("(A.a)");
+      expect(counter2.decorator(2)).to.equal("(A.b)");
+      expect(counter2.decorator(2)).to.equal("(A.c)");
+      expect(counter2.decorator(2)).to.equal("(A.d)");
+      expect(counter2.decorator(2)).to.equal("(A.e)");
+      expect(counter2.decorator(3)).to.equal("(A.e.I)");
+      expect(counter2.decorator(4)).to.equal("(A.e.I.i)");
+      expect(counter2.decorator(5)).to.equal("(A.e.I.i.1)");
+      expect(counter2.decorator(6)).to.equal("(A.e.I.i.1.01)");
+      expect(counter2.decorator(1)).to.equal("(B)");
+      expect(counter2.decorator(2)).to.equal("(B.a)");
+      expect(counter2.decorator(3)).to.equal("(B.a.I)");
+      expect(counter2.decorator(2)).to.equal("(B.b)");
+    });
+
+    it("SpliceCounter.decorator with ignoreTopLevel", function () {
+      const counter1 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        ignoreTopLevel: 1,
+      });
+
+      expect(counter1.decorator(1)).to.be.empty;
+      expect(counter1.decorator(2)).to.equal("a");
+      expect(counter1.decorator(3)).to.equal("a.I");
+      expect(counter1.decorator(4)).to.equal("a.I.i");
+      expect(counter1.decorator(5)).to.equal("a.I.i.1");
+      expect(counter1.decorator(6)).to.equal("a.I.i.1.01");
+      expect(counter1.decorator(7)).to.be.empty;
+      expect(counter1.decorator(2)).to.equal("b");
+      expect(counter1.decorator(3)).to.equal("b.I");
+      expect(counter1.decorator(4)).to.equal("b.I.i");
+      expect(counter1.decorator(5)).to.equal("b.I.i.1");
+      expect(counter1.decorator(6)).to.equal("b.I.i.1.01");
+      expect(counter1.decorator(7)).to.be.empty;
+      expect(counter1.decorator(2)).to.equal("c");
+      expect(counter1.decorator(6)).to.equal("c.I.i.1.01");
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        ignoreTopLevel: 2,
+      });
+
+      expect(counter2.decorator(1)).to.be.empty;
+      expect(counter2.decorator(2)).to.be.empty;
+      expect(counter2.decorator(3)).to.equal("I");
+      expect(counter2.decorator(4)).to.equal("I.i");
+      expect(counter2.decorator(5)).to.equal("I.i.1");
+      expect(counter2.decorator(6)).to.equal("I.i.1.01");
+      expect(counter2.decorator(7)).to.be.empty;
+      expect(counter2.decorator(3)).to.equal("II");
+      expect(counter2.decorator(6)).to.equal("II.i.1.01");
+    });
+
+    it("SpliceCounter.decorator with allowZeroLevel", function () {
+      const counter = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        allowZeroLevel: true,
+      });
+
+      expect(counter.decorator(3)).to.equal("0.0.I");
+      expect(counter.decorator(4)).to.equal("0.0.I.i");
+      expect(counter.decorator(5)).to.equal("0.0.I.i.1");
+      expect(counter.decorator(6)).to.equal("0.0.I.i.1.01");
+
+      expect(counter.decorator(3)).to.equal("0.0.II");
+      expect(counter.decorator(4)).to.equal("0.0.II.i");
+      expect(counter.decorator(5)).to.equal("0.0.II.i.1");
+      expect(counter.decorator(6)).to.equal("0.0.II.i.1.01");
+
+      expect(counter.decorator(2)).to.equal("0.a");
+      expect(counter.decorator(5)).to.equal("0.a.0.0.1");
+      expect(counter.decorator(6)).to.equal("0.a.0.0.1.01");
+    });
+
+    it("SpliceCounter.decorator with maxRecLevel", function () {
+      const counter1 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        maxRecLevel: 4,
+      });
+
+      expect(counter1.decorator(1)).to.equal("A");
+      expect(counter1.decorator(2)).to.equal("A.a");
+      expect(counter1.decorator(3)).to.equal("A.a.I");
+      expect(counter1.decorator(4)).to.equal("A.a.I.i");
+      expect(counter1.decorator(5)).to.be.empty;
+      expect(counter1.decorator(6)).to.be.empty;
+      expect(counter1.decorator(7)).to.be.empty;
+      expect(counter1.decorator(2)).to.equal("A.b");
+      expect(counter1.decorator(3)).to.equal("A.b.I");
+      expect(counter1.decorator(4)).to.equal("A.b.I.i");
+      expect(counter1.decorator(5)).to.be.empty;
+      expect(counter1.decorator(6)).to.be.empty;
+      expect(counter1.decorator(2)).to.equal("A.c");
+      expect(counter1.decorator(6)).to.be.empty;
+
+      const counter2 = new SpliceCounter({
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        maxRecLevel: 4,
+        ignoreTopLevel: 2,
+      });
+
+      expect(counter2.decorator(1)).to.be.empty;
+      expect(counter2.decorator(2)).to.be.empty;
+      expect(counter2.decorator(3)).to.equal("I");
+      expect(counter2.decorator(4)).to.equal("I.i");
+      expect(counter2.decorator(5)).to.be.empty;
+      expect(counter2.decorator(6)).to.be.empty;
+      expect(counter2.decorator(7)).to.be.empty;
+      expect(counter2.decorator(3)).to.equal("II");
+      expect(counter2.decorator(4)).to.equal("II.i");
+      expect(counter2.decorator(6)).to.be.empty;
     });
   });
 });

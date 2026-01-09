@@ -4,9 +4,15 @@ import type {
   OrderedCounterStyleType,
   HeadingDecoratorSettings,
   IndependentDecoratorSettings,
+  SpliceDecoratorSettings,
   IndependentSettings,
+  SpliceSettings,
 } from "../common/data";
-import { className, defaultIndependentSettings } from "../common/data";
+import {
+  className,
+  defaultIndependentSettings,
+  defaultSpliceSettings,
+} from "../common/data";
 import { getStyleTypeOptions } from "../common/options";
 import { FolderSuggest } from "./suggest";
 
@@ -435,7 +441,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   }
 
   private isDecoratorModeValue(value: string): value is DecoratorMode {
-    return ["orderd", "independent", "unordered"].includes(value);
+    return ["orderd", "independent", "splice", "unordered"].includes(value);
   }
 
   private isPositionValue(value: string): value is PostionOptions {
@@ -513,6 +519,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         const options: Record<DecoratorMode, string> = {
           orderd: i18n.t("setting.ordered"),
           independent: i18n.t("setting.independent"),
+          splice: i18n.t("setting.splice"),
           unordered: i18n.t("setting.unordered"),
         };
         dropdown
@@ -530,18 +537,28 @@ export class HeadingSettingTab extends PluginSettingTab {
                 orderedContainerEl.show();
                 logicContainerEl.show();
                 independentContainerEl.hide();
+                spliceContainerEl.hide();
                 unorderedContainerEl.hide();
                 break;
               case "independent":
                 independentContainerEl.show();
                 logicContainerEl.show();
                 orderedContainerEl.hide();
+                spliceContainerEl.hide();
+                unorderedContainerEl.hide();
+                break;
+              case "splice":
+                spliceContainerEl.show();
+                logicContainerEl.show();
+                orderedContainerEl.hide();
+                independentContainerEl.hide();
                 unorderedContainerEl.hide();
                 break;
               case "unordered":
                 unorderedContainerEl.show();
                 orderedContainerEl.hide();
                 independentContainerEl.hide();
+                spliceContainerEl.hide();
                 logicContainerEl.hide();
                 break;
             }
@@ -636,6 +653,18 @@ export class HeadingSettingTab extends PluginSettingTab {
     );
     if (settings[settingsType].decoratorMode !== "independent") {
       independentContainerEl.hide();
+    }
+
+    const spliceContainerEl = containerEl.createDiv(className.settingContainer);
+    if (!settings[settingsType].spliceSettings) {
+      settings[settingsType].spliceSettings = defaultSpliceSettings();
+    }
+    this.spliceSettings(
+      spliceContainerEl,
+      settings[settingsType].spliceSettings
+    );
+    if (settings[settingsType].decoratorMode !== "splice") {
+      spliceContainerEl.hide();
     }
 
     const unorderedContainerEl = containerEl.createDiv(
@@ -966,6 +995,121 @@ export class HeadingSettingTab extends PluginSettingTab {
       );
   }
 
+  private spliceSettings(containerEl: HTMLElement, settings: SpliceSettings) {
+    const {
+      plugin: { i18n },
+    } = this;
+
+    new Setting(containerEl).setName(i18n.t("setting.splice")).setHeading();
+
+    //* delimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedDelimiter"))
+      .setDesc(i18n.t("setting.orderedDelimiterDesc"))
+      .addText((text) =>
+        text.setValue(settings.delimiter).onChange((value) => {
+          settings.delimiter = value;
+          this.plugin.saveSettings();
+        })
+      );
+
+    //* trailingDelimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedTrailingDelimiter"))
+      .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
+      .addToggle((toggle) =>
+        toggle.setValue(settings.trailingDelimiter).onChange((value) => {
+          settings.trailingDelimiter = value;
+          value
+            ? customTrailingDelimiterContainerEl.show()
+            : customTrailingDelimiterContainerEl.hide();
+          this.plugin.saveSettings();
+        })
+      );
+
+    const customTrailingDelimiterContainerEl = containerEl.createDiv(
+      className.settingItem
+    );
+
+    //* customTrailingDelimiter
+    new Setting(customTrailingDelimiterContainerEl)
+      .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
+      .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
+      .addText((text) => {
+        text
+          .setValue(settings.customTrailingDelimiter || "")
+          .onChange((value) => {
+            settings.customTrailingDelimiter = value;
+            this.plugin.saveSettings();
+          });
+      });
+
+    if (!settings.trailingDelimiter) {
+      customTrailingDelimiterContainerEl.hide();
+    }
+
+    //* leadingDelimiter
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedLeadingDelimiter"))
+      .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
+      .addToggle((toggle) =>
+        toggle
+          .setValue(settings.leadingDelimiter || false)
+          .onChange((value) => {
+            settings.leadingDelimiter = value;
+            value
+              ? customLeadingDelimiterContainerEl.show()
+              : customLeadingDelimiterContainerEl.hide();
+            this.plugin.saveSettings();
+          })
+      );
+
+    const customLeadingDelimiterContainerEl = containerEl.createDiv(
+      className.settingItem
+    );
+
+    //* customLeadingDelimiter
+    new Setting(customLeadingDelimiterContainerEl)
+      .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
+      .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
+      .addText((text) => {
+        text
+          .setValue(settings.customLeadingDelimiter || "")
+          .onChange((value) => {
+            settings.customLeadingDelimiter = value;
+            this.plugin.saveSettings();
+          });
+      });
+
+    if (!settings.leadingDelimiter) {
+      customLeadingDelimiterContainerEl.hide();
+    }
+
+    //* h1
+    new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h1);
+
+    //* h2
+    new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h2);
+
+    //* h3
+    new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h3);
+
+    //* h4
+    new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h4);
+
+    //* h5
+    new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h5);
+
+    //* h6
+    new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading();
+    this.spliceDecoratorSettings(containerEl, settings.h6);
+  }
+
   private manageFolderBlacklist(scrollToTop = false) {
     const {
       containerEl,
@@ -1215,6 +1359,81 @@ export class HeadingSettingTab extends PluginSettingTab {
     if (!settings.leadingDelimiter) {
       customLeadingDelimiterContainerEl.hide();
     }
+
+    const customIdentsContainerEl = containerEl.createDiv(
+      className.settingItem
+    );
+
+    //* customIdents
+    new Setting(customIdentsContainerEl)
+      .setName(i18n.t("setting.orderedCustomIdents"))
+      .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
+      .addText((text) =>
+        text.setValue(settings.customIdents).onChange((value) => {
+          settings.customIdents = value;
+          this.plugin.saveSettings();
+        })
+      );
+
+    if (settings.styleType !== "customIdent") {
+      customIdentsContainerEl.hide();
+    }
+
+    const specifiedStringContainerEl = containerEl.createDiv(
+      className.settingItem
+    );
+
+    //* specifiedString
+    new Setting(specifiedStringContainerEl)
+      .setName(i18n.t("setting.orderedSpecifiedString"))
+      .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
+      .addText((text) =>
+        text.setValue(settings.specifiedString).onChange((value) => {
+          settings.specifiedString = value;
+          this.plugin.saveSettings();
+        })
+      );
+
+    if (settings.styleType !== "string") {
+      specifiedStringContainerEl.hide();
+    }
+  }
+
+  private spliceDecoratorSettings(
+    containerEl: HTMLElement,
+    settings: SpliceDecoratorSettings
+  ) {
+    const {
+      plugin: { i18n },
+    } = this;
+
+    //* styleType
+    new Setting(containerEl)
+      .setName(i18n.t("setting.orderedStyleType"))
+      .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOptions(this.styleTypeOptions)
+          .setValue(settings.styleType)
+          .onChange((value: OrderedCounterStyleType) => {
+            settings.styleType = value;
+            switch (value) {
+              case "customIdent":
+                customIdentsContainerEl.show();
+                specifiedStringContainerEl.hide();
+                break;
+              case "string":
+                specifiedStringContainerEl.show();
+                customIdentsContainerEl.hide();
+                break;
+              default:
+                customIdentsContainerEl.hide();
+                specifiedStringContainerEl.hide();
+                break;
+            }
+            this.plugin.saveSettings();
+          })
+      );
 
     const customIdentsContainerEl = containerEl.createDiv(
       className.settingItem

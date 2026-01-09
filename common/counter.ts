@@ -2,6 +2,8 @@ import type {
   OrderedDecoratorOptions,
   IndependentDecoratorOptions,
   IndependentDecoratorSettings,
+  SpliceDecoratorOptions,
+  SpliceDecoratorSettings,
 } from "./data";
 import { getOrderedCustomIdents } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
@@ -209,6 +211,89 @@ export class IndependentCounter extends Querier implements Counter {
         results = levels.map((l) => presets[styleType].renderCounter(l));
         break;
     }
+
+    result = results.join(delimiter);
+    if (result.length > 0) {
+      result =
+        (leadingDelimiter ? customLeadingDelimiter || delimiter : "") +
+        result +
+        (trailingDelimiter ? customTrailingDelimiter || delimiter : "");
+    }
+
+    return result;
+  }
+}
+
+export class SpliceCounter extends Querier implements Counter {
+  constructor(private decoratorOptions: SpliceDecoratorOptions) {
+    super(decoratorOptions?.allowZeroLevel, decoratorOptions?.maxRecLevel);
+  }
+
+  decorator(level: number): string {
+    let result = "";
+    if (level < 1 || level > this.maxRecLevel) {
+      return result;
+    }
+    const {
+      delimiter = ".",
+      trailingDelimiter = false,
+      customTrailingDelimiter = "",
+      leadingDelimiter = false,
+      customLeadingDelimiter = "",
+      h1 = {},
+      h2 = {},
+      h3 = {},
+      h4 = {},
+      h5 = {},
+      h6 = {},
+      ignoreTopLevel = 0,
+    } = this.decoratorOptions;
+    const levels = this.handler(level).slice(ignoreTopLevel);
+
+    const results = levels.map((l, i) => {
+      let r = "";
+      let used: Partial<SpliceDecoratorSettings>;
+      switch (i + ignoreTopLevel + 1) {
+        case 6:
+          used = h6;
+          break;
+        case 5:
+          used = h5;
+          break;
+        case 4:
+          used = h4;
+          break;
+        case 3:
+          used = h3;
+          break;
+        case 2:
+          used = h2;
+          break;
+        case 1:
+        default:
+          used = h1;
+          break;
+      }
+
+      const {
+        styleType = "decimal",
+        customIdents = "",
+        specifiedString = "#",
+      } = used;
+
+      switch (styleType) {
+        case "customIdent":
+          r = l > customIdents.length ? l.toString() : customIdents[l - 1];
+          break;
+        case "string":
+          r = specifiedString.trim() || "#";
+          break;
+        default:
+          r = presets[styleType].renderCounter(l);
+          break;
+      }
+      return r;
+    });
 
     result = results.join(delimiter);
     if (result.length > 0) {

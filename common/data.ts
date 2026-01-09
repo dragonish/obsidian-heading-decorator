@@ -34,6 +34,12 @@ export interface IndependentDecoratorSettings {
   specifiedString: string;
 }
 
+export interface SpliceDecoratorSettings {
+  styleType: OrderedCounterStyleType;
+  customIdents: string;
+  specifiedString: string;
+}
+
 export interface IndependentDecoratorOptions {
   maxRecLevel?: number;
   allowZeroLevel?: boolean;
@@ -57,6 +63,40 @@ export interface IndependentSettings {
   h4: IndependentDecoratorSettings;
   h5: IndependentDecoratorSettings;
   h6: IndependentDecoratorSettings;
+}
+
+export interface SpliceDecoratorOptions {
+  maxRecLevel?: number;
+  allowZeroLevel?: boolean;
+  ignoreTopLevel?: number;
+
+  delimiter?: string;
+  trailingDelimiter?: boolean;
+  customTrailingDelimiter?: string;
+  leadingDelimiter?: boolean;
+  customLeadingDelimiter?: string;
+
+  h1?: Partial<SpliceDecoratorSettings>;
+  h2?: Partial<SpliceDecoratorSettings>;
+  h3?: Partial<SpliceDecoratorSettings>;
+  h4?: Partial<SpliceDecoratorSettings>;
+  h5?: Partial<SpliceDecoratorSettings>;
+  h6?: Partial<SpliceDecoratorSettings>;
+}
+
+export interface SpliceSettings {
+  delimiter: string;
+  trailingDelimiter: boolean;
+  customTrailingDelimiter: string;
+  leadingDelimiter: boolean;
+  customLeadingDelimiter: string;
+
+  h1: SpliceDecoratorSettings;
+  h2: SpliceDecoratorSettings;
+  h3: SpliceDecoratorSettings;
+  h4: SpliceDecoratorSettings;
+  h5: SpliceDecoratorSettings;
+  h6: SpliceDecoratorSettings;
 }
 
 export interface HeadingDecoratorSettings {
@@ -83,6 +123,7 @@ export interface HeadingDecoratorSettings {
   orderedSpecifiedString: string;
 
   independentSettings?: IndependentSettings;
+  spliceSettings?: SpliceSettings;
 
   unorderedLevelHeadings: string;
 }
@@ -176,6 +217,14 @@ function defaultIndependentDecoratorSettings(): IndependentDecoratorSettings {
   };
 }
 
+function defaultSpliceDecoratorSettings(): SpliceDecoratorSettings {
+  return {
+    styleType: "decimal",
+    customIdents: defaultCustomidents,
+    specifiedString: "#",
+  };
+}
+
 /**
  * Defaults independent settings
  *
@@ -190,6 +239,27 @@ export function defaultIndependentSettings(): IndependentSettings {
     h4: defaultIndependentDecoratorSettings(),
     h5: defaultIndependentDecoratorSettings(),
     h6: defaultIndependentDecoratorSettings(),
+  };
+}
+
+/**
+ * Defaults splice settings
+ *
+ * @returns splice settings
+ */
+export function defaultSpliceSettings(): SpliceSettings {
+  return {
+    delimiter: ".",
+    trailingDelimiter: false,
+    customTrailingDelimiter: "",
+    leadingDelimiter: false,
+    customLeadingDelimiter: "",
+    h1: defaultSpliceDecoratorSettings(),
+    h2: defaultSpliceDecoratorSettings(),
+    h3: defaultSpliceDecoratorSettings(),
+    h4: defaultSpliceDecoratorSettings(),
+    h5: defaultSpliceDecoratorSettings(),
+    h6: defaultSpliceDecoratorSettings(),
   };
 }
 
@@ -219,6 +289,7 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     orderedIgnoreSingle: false,
     orderedIgnoreMaximum: 6,
     independentSettings: defaultIndependentSettings(),
+    spliceSettings: defaultSpliceSettings(),
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };
 }

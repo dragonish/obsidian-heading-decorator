@@ -12,6 +12,7 @@ import {
   UnorderedCounter,
   OrderedCounter,
   IndependentCounter,
+  SpliceCounter,
 } from "../common/counter";
 
 /**
@@ -47,6 +48,7 @@ export function readingOrderedHandler(
     orderedBasedOnExisting,
     orderedAllowZeroLevel,
     independentSettings,
+    spliceSettings,
   } = settings;
 
   let ignoreTopLevel = 0;
@@ -90,6 +92,23 @@ export function readingOrderedHandler(
       h4: independentSettings?.h4,
       h5: independentSettings?.h5,
       h6: independentSettings?.h6,
+    });
+  } else if (decoratorMode === "splice") {
+    counter = new SpliceCounter({
+      maxRecLevel,
+      ignoreTopLevel,
+      allowZeroLevel: orderedAllowZeroLevel,
+      delimiter: spliceSettings?.delimiter,
+      trailingDelimiter: spliceSettings?.trailingDelimiter,
+      customTrailingDelimiter: spliceSettings?.customTrailingDelimiter,
+      leadingDelimiter: spliceSettings?.leadingDelimiter,
+      customLeadingDelimiter: spliceSettings?.customLeadingDelimiter,
+      h1: spliceSettings?.h1,
+      h2: spliceSettings?.h2,
+      h3: spliceSettings?.h3,
+      h4: spliceSettings?.h4,
+      h5: spliceSettings?.h5,
+      h6: spliceSettings?.h6,
     });
   } else {
     counter = new OrderedCounter({
