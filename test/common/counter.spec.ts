@@ -1260,12 +1260,12 @@ describe("common/counter", function () {
     it("IndependentCounter.decorator with ignoreTopLevel", function () {
       const counter1 = new IndependentCounter({
         ignoreTopLevel: 1,
-        h1: h1,
-        h2: h2,
-        h3: h3,
-        h4: h4,
-        h5: h5,
-        h6: h6,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
       });
 
       expect(counter1.decorator(1)).to.be.empty;
