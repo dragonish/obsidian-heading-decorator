@@ -1,8 +1,9 @@
 import { i18n } from "../locales";
 import type { OrderedCounterStyleType } from "./data";
+import * as presets from "@jsamr/counter-style/presets";
 
-export const orderedStyleTypeOptions: Record<OrderedCounterStyleType, string> =
-  {
+export function getStyleTypeOptions(): Record<OrderedCounterStyleType, string> {
+  const styleTypeOptions: Record<OrderedCounterStyleType, string> = {
     decimal: i18n.t("style.decimal"),
     lowerAlpha: i18n.t("style.lowerAlpha"),
     upperAlpha: i18n.t("style.upperAlpha"),
@@ -50,3 +51,16 @@ export const orderedStyleTypeOptions: Record<OrderedCounterStyleType, string> =
     customIdent: i18n.t("style.customIdent"),
     string: i18n.t("style.string"),
   };
+
+  const styleTypes = Object.keys(styleTypeOptions) as OrderedCounterStyleType[];
+  for (const t of styleTypes) {
+    if (t !== "customIdent" && t !== "string") {
+      const style = presets[t];
+      styleTypeOptions[t] = `${styleTypeOptions[t]} (${style.renderCounter(
+        1
+      )} ${style.renderCounter(2)} ${style.renderCounter(3)})`;
+    }
+  }
+
+  return styleTypeOptions;
+}

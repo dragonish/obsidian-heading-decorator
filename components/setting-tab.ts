@@ -6,13 +6,14 @@ import type {
   IndependentDecoratorSettings,
 } from "../common/data";
 import { className, defaultIndependentSettings } from "../common/data";
-import { orderedStyleTypeOptions } from "../common/options";
+import { getStyleTypeOptions } from "../common/options";
 import { FolderSuggest } from "./suggest";
 
 type ButtonOrUndefined = ButtonComponent | undefined;
 
 export class HeadingSettingTab extends PluginSettingTab {
   plugin: HeadingPlugin;
+  private readonly styleTypeOptions = getStyleTypeOptions();
 
   constructor(app: App, plugin: HeadingPlugin) {
     super(app, plugin);
@@ -664,7 +665,7 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
       .addDropdown((dropdown) =>
         dropdown
-          .addOptions(orderedStyleTypeOptions)
+          .addOptions(this.styleTypeOptions)
           .setValue(settings.orderedStyleType)
           .onChange((value: OrderedCounterStyleType) => {
             settings.orderedStyleType = value;
@@ -1125,7 +1126,7 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
       .addDropdown((dropdown) =>
         dropdown
-          .addOptions(orderedStyleTypeOptions)
+          .addOptions(this.styleTypeOptions)
           .setValue(settings.styleType)
           .onChange((value: OrderedCounterStyleType) => {
             settings.styleType = value;
