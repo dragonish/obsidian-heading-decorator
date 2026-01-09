@@ -43,12 +43,21 @@ In addition, you can enable the default status of each note within the *Config* 
 
 Control the display effect of the decorator.
 
-- **Ordered**: Toggle this setting to enable the decoration of headings as an [ordered](#ordered) or [unordered](#unordered) list.
+- **Mode**: Toggle this setting to decorate headings as ordered, independent, or unordered.
+  - **Ordered**: Connect the current heading level with the top-level heading level using a separator in the decorator style to build the result, similar to the effect shown in [Preview](#preview).
+  - **Independent**: By default, build the result of the current heading level according to the decorator style of each level.
+  - **Unordered**: Build the current heading level directly as a fixed string.
 - **Opacity**: Set the opacity of the heading decorator. The value is the form of percentage.
 - **Position**: Set the position of the heading decorator. You can configure the content to appear before or after the heading.
 - **Maximum level recognized**: Specify the maximum level of headings to be recognized, ignoring headings above this level.
 
-Here are some examples of the differences between different positions:
+Examples of differences between different decorator modes:
+
+| Ordered (Decimal numbers) | Independent | Unordered (using `H1 H2 H3 H4 H5 H6`) |
+| :-----------------------: | :---------: | :-----------------------------------: |
+| ![Ordered](images/ordered.jpg) | ![Independent](images/independent.jpg) | ![Unordered](images/unordered.jpg) |
+
+Examples of differences between different decorator positions:
 
 | Before the heading | Before the heading (inside) | After the heading |
 | :----------------: | :-------------------------: | :---------------: |
@@ -60,20 +69,32 @@ Here are examples of different recognized maximum levels:
 | :---------------------------------: | :---------------------------------: |
 | ![max-6](images/max-6.jpg) | ![max4](images/max-4.jpg) |
 
-### Ordered
+#### Special settings for independent
 
-Similar to the effect displayed in the [Preview](#preview).
+##### Level using ordered list
+
+When the heading level exceeds the specified level, build it as an ordered list. For example:
+
+| Default (*setting is `6`*) | Setting is `4` |
+| :------------------------: | :------------: |
+| ![Default](images/independent.jpg) | ![Setting is 4](images/independent-4.jpg) |
+
+### Decorator Style
 
 You can control the counter style type and delimiter. There are two special types of counter styles:
 
-- **Custom list styles**: Set custom list styles for ordered list. Using spaces to separate entries.
-- **Specified string**: Set a specified string for ordered list.
+- **Custom list styles**: Set custom list styles for decorator. Using spaces to separate entries.
+- **Specified string**: Set a specified string for decorator.
 
 For example:
 
 | Decimal numbers | Custom List Styles (using `Ⓐ Ⓑ Ⓒ`) | Specified String (using `#` with empty delimiter) |
 | :-------------: | :----------------------------------: | :-----------------------------------------------: |
 | ![Decimal numbers](images/decimal.jpg) | ![Custom list styles](images/custom-list-styles.jpg) | ![Specified string](images/specified-string.jpg) |
+
+### Logic
+
+When you set the decorator mode to ordered or independent, you can control the rendering logic of headings to adjust rendering results, or ignore heading levels you don't want to handle.
 
 #### Allow zero level
 
@@ -85,7 +106,7 @@ For the *Allow zero level* setting, if the next heading is more than one level h
 
 #### Based on the existing highest level
 
-For the *Based on the existing highest level* setting, use the highest level of headings in the note as the base for ordered list. For example:
+For the *Based on the existing highest level* setting, use the highest level of headings in the note as the base for building decorators. For example:
 
 | Default | Based on the existing highest level |
 | :-----: | :----------------------------------: |
@@ -93,7 +114,7 @@ For the *Based on the existing highest level* setting, use the highest level of 
 
 #### Always ignore the top-level headings
 
-Exclude the top-level heading when building ordered lists. controlled by the *Maximum number of ignored levels* option. For example:
+Exclude the top-level heading when building decorators. controlled by the *Maximum number of ignored levels* option. For example:
 
 | Default | Enabled (Maximum number of ignored levels set to `2`) |
 | :-----: | :---------------------------------------------------: |
@@ -101,19 +122,11 @@ Exclude the top-level heading when building ordered lists. controlled by the *Ma
 
 #### Ignore the single heading at the top-level
 
-For the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building an ordered list. controlled by the *Maximum number of ignored levels* option. This setting contains *Based on the existing highest level*, but it deals with more "aggressive". For example:
+For the *Ignore the single heading at the top-level* setting, if the top-level has only a single heading, exclude it when building decorators. controlled by the *Maximum number of ignored levels* option. This setting contains *Based on the existing highest level*, but it deals with more "aggressive". For example:
 
 | Default | Enabled (Maximum ignored levels: `1`) | Enabled  (Maximum ignored levels: `6`) |
 | :-----: | :-----------------------------------: | :------------------------------------: |
 | ![Default](images/no-ignore.jpg) | ![Ignore the single heading at the top-level](images/ignore-with-number-1.jpg) | ![The maximum number of ignored is 1](images/ignore-with-number-6.jpg) |
-
-### Unordered
-
-Directly decorate the heading according to the level. For example:
-
-| Ordered (Decimal numbers) | Unordered (using `H1 H2 H3 H4 H5 H6`) |
-| :-----: | :--------------: |
-| ![Ordered](images/ordered.jpg) | ![Unordered](images/unordered.jpg) |
 
 ### Other settings for reading view
 
