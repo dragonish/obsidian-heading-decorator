@@ -7,7 +7,12 @@ import {
   getUnorderedLevelHeadings,
 } from "../common/data";
 import { Heading } from "../common/heading";
-import { Querier, Counter } from "../common/counter";
+import {
+  Querier,
+  UnorderedCounter,
+  OrderedCounter,
+  IndependentCounter,
+} from "../common/counter";
 
 /**
  * Handles ordered headings of reading view.
@@ -24,6 +29,7 @@ export function readingOrderedHandler(
   sourceArr: string[]
 ): void {
   const {
+    decoratorMode = "orderd",
     opacity,
     position,
     maxRecLevel,
@@ -40,6 +46,7 @@ export function readingOrderedHandler(
     orderedAlwaysIgnore,
     orderedBasedOnExisting,
     orderedAllowZeroLevel,
+    independentSettings,
   } = settings;
 
   let ignoreTopLevel = 0;
@@ -70,20 +77,36 @@ export function readingOrderedHandler(
     ignoreTopLevel = ignoreLimit;
   }
 
-  const counter = new Counter({
-    ordered: true,
-    maxRecLevel,
-    delimiter: orderedDelimiter,
-    trailingDelimiter: orderedTrailingDelimiter,
-    customTrailingDelimiter: orderedCustomTrailingDelimiter,
-    leadingDelimiter: orderedLeadingDelimiter,
-    customLeadingDelimiter: orderedCustomLeadingDelimiter,
-    styleType: orderedStyleType,
-    customIdents: getOrderedCustomIdents(orderedCustomIdents),
-    specifiedString: orderedSpecifiedString,
-    ignoreTopLevel,
-    allowZeroLevel: orderedAllowZeroLevel,
-  });
+  let counter: Counter;
+  if (decoratorMode === "independent") {
+    counter = new IndependentCounter({
+      maxRecLevel,
+      ignoreTopLevel,
+      allowZeroLevel: orderedAllowZeroLevel,
+      orderedRecLevel: independentSettings?.orderedRecLevel,
+      h1: independentSettings?.h1,
+      h2: independentSettings?.h2,
+      h3: independentSettings?.h3,
+      h4: independentSettings?.h4,
+      h5: independentSettings?.h5,
+      h6: independentSettings?.h6,
+    });
+  } else {
+    counter = new OrderedCounter({
+      maxRecLevel,
+      ignoreTopLevel,
+      allowZeroLevel: orderedAllowZeroLevel,
+      delimiter: orderedDelimiter,
+      trailingDelimiter: orderedTrailingDelimiter,
+      customTrailingDelimiter: orderedCustomTrailingDelimiter,
+      leadingDelimiter: orderedLeadingDelimiter,
+      customLeadingDelimiter: orderedCustomLeadingDelimiter,
+      styleType: orderedStyleType,
+      customIdents: getOrderedCustomIdents(orderedCustomIdents),
+      specifiedString: orderedSpecifiedString,
+    });
+  }
+
   const heading = new Heading();
   let headingIndex = 1;
 
@@ -141,11 +164,10 @@ export function readingUnorderedHandler(
 ): void {
   const { opacity, position, maxRecLevel, unorderedLevelHeadings } = settings;
 
-  const counter = new Counter({
-    ordered: false,
-    maxRecLevel,
-    levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-  });
+  const counter = new UnorderedCounter(
+    getUnorderedLevelHeadings(unorderedLevelHeadings),
+    maxRecLevel
+  );
 
   headingElements.forEach((headingElement) => {
     const level = queryHeadingLevelByElement(headingElement);

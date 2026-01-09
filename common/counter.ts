@@ -1,5 +1,9 @@
-import type { BaseDecoratorOptions, DecoratorOptions } from "./data";
-import { defaultHeadingTuple } from "./data";
+import type {
+  OrderedDecoratorOptions,
+  IndependentDecoratorOptions,
+  IndependentDecoratorSettings,
+} from "./data";
+import { getOrderedCustomIdents } from "./data";
 import * as presets from "@jsamr/counter-style/presets";
 
 export class Querier {
@@ -69,47 +73,12 @@ export class Querier {
   }
 }
 
-export class Counter extends Querier {
-  private decoratorOptions: DecoratorOptions;
-
-  constructor(decoratorOptions?: BaseDecoratorOptions) {
+export class OrderedCounter extends Querier implements Counter {
+  constructor(private decoratorOptions: OrderedDecoratorOptions) {
     super(decoratorOptions?.allowZeroLevel, decoratorOptions?.maxRecLevel);
 
-    if (decoratorOptions) {
-      if (decoratorOptions.ordered) {
-        const {
-          styleType,
-          delimiter,
-          trailingDelimiter,
-          customTrailingDelimiter,
-          leadingDelimiter,
-          customLeadingDelimiter,
-          customIdents,
-          specifiedString,
-          ignoreTopLevel,
-        } = decoratorOptions;
-        this.decoratorOptions = {
-          ordered: true,
-          styleType: styleType || "decimal",
-          delimiter,
-          trailingDelimiter,
-          customTrailingDelimiter,
-          leadingDelimiter,
-          customLeadingDelimiter,
-          customIdents,
-          specifiedString,
-          ignoreTopLevel,
-        };
-      } else {
-        this.decoratorOptions = {
-          ordered: false,
-          levelHeadings: decoratorOptions.levelHeadings || [
-            ...defaultHeadingTuple,
-          ],
-        };
-      }
-    } else {
-      this.decoratorOptions = { ordered: true, styleType: "decimal" }; // Default to ordered if no options are provided
+    if (!decoratorOptions.styleType) {
+      this.decoratorOptions.styleType = "decimal"; // Default to ordered if no options are provided
     }
   }
 
@@ -119,49 +88,160 @@ export class Counter extends Querier {
       return result;
     }
 
-    if (this.decoratorOptions.ordered) {
-      let results: string[] = [];
-      const {
-        styleType,
-        delimiter = ".",
-        trailingDelimiter = false,
-        customTrailingDelimiter = "",
-        leadingDelimiter = false,
-        customLeadingDelimiter = "",
-        specifiedString = "#",
-        customIdents = [],
-        ignoreTopLevel = 0,
-      } = this.decoratorOptions;
-      const levels = this.handler(level).slice(ignoreTopLevel);
+    let results: string[] = [];
+    const {
+      styleType = "decimal",
+      delimiter = ".",
+      trailingDelimiter = false,
+      customTrailingDelimiter = "",
+      leadingDelimiter = false,
+      customLeadingDelimiter = "",
+      specifiedString = "#",
+      customIdents = [],
+      ignoreTopLevel = 0,
+    } = this.decoratorOptions;
+    const levels = this.handler(level).slice(ignoreTopLevel);
 
-      switch (styleType) {
-        case "customIdent":
-          results = levels.map((level) =>
-            level > customIdents.length
-              ? level.toString()
-              : customIdents[level - 1]
-          );
-          break;
-        case "string":
-          results = levels.map(() => specifiedString.trim() || "#");
-          break;
-        default:
-          results = levels.map((level) =>
-            presets[styleType].renderCounter(level)
-          );
-      }
+    switch (styleType) {
+      case "customIdent":
+        results = levels.map((level) =>
+          level > customIdents.length
+            ? level.toString()
+            : customIdents[level - 1]
+        );
+        break;
+      case "string":
+        results = levels.map(() => specifiedString.trim() || "#");
+        break;
+      default:
+        results = levels.map((level) =>
+          presets[styleType].renderCounter(level)
+        );
+    }
 
-      result = results.join(delimiter);
-      if (result.length > 0) {
-        result =
-          (leadingDelimiter ? customLeadingDelimiter || delimiter : "") +
-          result +
-          (trailingDelimiter ? customTrailingDelimiter || delimiter : "");
-      }
-    } else {
-      result = this.decoratorOptions.levelHeadings[level - 1];
+    result = results.join(delimiter);
+    if (result.length > 0) {
+      result =
+        (leadingDelimiter ? customLeadingDelimiter || delimiter : "") +
+        result +
+        (trailingDelimiter ? customTrailingDelimiter || delimiter : "");
     }
 
     return result;
+  }
+}
+
+export class IndependentCounter extends Querier implements Counter {
+  constructor(private decoratorOptions: IndependentDecoratorOptions) {
+    super(decoratorOptions?.allowZeroLevel, decoratorOptions?.maxRecLevel);
+  }
+
+  decorator(level: number): string {
+    let result = "";
+    if (level < 1 || level > this.maxRecLevel) {
+      return result;
+    }
+
+    let results: string[] = [];
+    let used: Partial<IndependentDecoratorSettings>;
+    const {
+      h1 = {},
+      h2 = {},
+      h3 = {},
+      h4 = {},
+      h5 = {},
+      h6 = {},
+      orderedRecLevel = 6,
+      ignoreTopLevel = 0,
+    } = this.decoratorOptions;
+    let levels = this.handler(level).slice(ignoreTopLevel);
+
+    if (levels.length === 0) {
+      return result;
+    }
+
+    const current = Math.min(level, orderedRecLevel);
+    switch (current) {
+      case 6:
+        used = h6;
+        break;
+      case 5:
+        used = h5;
+        break;
+      case 4:
+        used = h4;
+        break;
+      case 3:
+        used = h3;
+        break;
+      case 2:
+        used = h2;
+        break;
+      case 1:
+      default:
+        used = h1;
+        break;
+    }
+    if (level <= current) {
+      levels = levels.slice(-1);
+    } else {
+      levels = levels.slice(current - ignoreTopLevel - 1);
+    }
+
+    const {
+      styleType = "decimal",
+      delimiter = ".",
+      trailingDelimiter = false,
+      customTrailingDelimiter = "",
+      leadingDelimiter = false,
+      customLeadingDelimiter = "",
+      customIdents = "",
+      specifiedString = "#",
+    } = used;
+
+    switch (styleType) {
+      case "customIdent":
+        results = levels.map((level) => {
+          const ci = getOrderedCustomIdents(customIdents);
+          return level > ci.length ? level.toString() : ci[level - 1];
+        });
+        break;
+      case "string":
+        results = levels.map(() => specifiedString.trim() || "#");
+        break;
+      default:
+        results = levels.map((level) =>
+          presets[styleType].renderCounter(level)
+        );
+        break;
+    }
+
+    result = results.join(delimiter);
+    if (result.length > 0) {
+      result =
+        (leadingDelimiter ? customLeadingDelimiter || delimiter : "") +
+        result +
+        (trailingDelimiter ? customTrailingDelimiter || delimiter : "");
+    }
+
+    return result;
+  }
+}
+
+export class UnorderedCounter implements Counter {
+  constructor(private levelHeadings: HeadingTuple, private maxRecLevel = 6) {}
+
+  decorator(level: number): string {
+    let result = "";
+    if (level < 1 || level > this.maxRecLevel) {
+      return result;
+    }
+
+    result = this.levelHeadings[level - 1];
+    return result;
+  }
+
+  handler(): void {
+    //* do nothing.
   }
 }

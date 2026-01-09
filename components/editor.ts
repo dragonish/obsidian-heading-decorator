@@ -15,7 +15,12 @@ import {
   getOrderedCustomIdents,
   findFirstCharacterIndex,
 } from "../common/data";
-import { Counter, Querier } from "../common/counter";
+import {
+  Querier,
+  UnorderedCounter,
+  OrderedCounter,
+  IndependentCounter,
+} from "../common/counter";
 import { Heading } from "../common/heading";
 
 /** A StateEffect for updating decorations */
@@ -98,7 +103,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
       const doc = view.state.doc;
 
       const {
-        ordered,
+        decoratorMode = "orderd",
         position,
         opacity,
         maxRecLevel,
@@ -116,12 +121,19 @@ export class HeadingEditorViewPlugin implements PluginValue {
         orderedBasedOnExisting,
         orderedAllowZeroLevel,
         unorderedLevelHeadings,
+        independentSettings,
       } = isLivePreviwMode
         ? pluginData.previewSettings
         : pluginData.sourceSettings;
 
-      let ignoreTopLevel = 0;
-      if (ordered) {
+      let counter: Counter;
+      if (decoratorMode === "unordered") {
+        counter = new UnorderedCounter(
+          getUnorderedLevelHeadings(unorderedLevelHeadings),
+          maxRecLevel
+        );
+      } else {
+        let ignoreTopLevel = 0;
         const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
         const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
         if (ignoreSingle || orderedBasedOnExisting) {
@@ -149,23 +161,36 @@ export class HeadingEditorViewPlugin implements PluginValue {
         if (ignoreTopLevel < ignoreLimit) {
           ignoreTopLevel = ignoreLimit;
         }
-      }
 
-      const counter = new Counter({
-        ordered,
-        maxRecLevel,
-        styleType: orderedStyleType,
-        delimiter: orderedDelimiter,
-        trailingDelimiter: orderedTrailingDelimiter,
-        customTrailingDelimiter: orderedCustomTrailingDelimiter,
-        leadingDelimiter: orderedLeadingDelimiter,
-        customLeadingDelimiter: orderedCustomLeadingDelimiter,
-        customIdents: getOrderedCustomIdents(orderedCustomIdents),
-        specifiedString: orderedSpecifiedString,
-        ignoreTopLevel,
-        allowZeroLevel: orderedAllowZeroLevel,
-        levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-      });
+        if (decoratorMode === "independent") {
+          counter = new IndependentCounter({
+            maxRecLevel,
+            ignoreTopLevel,
+            allowZeroLevel: orderedAllowZeroLevel,
+            orderedRecLevel: independentSettings?.orderedRecLevel,
+            h1: independentSettings?.h1,
+            h2: independentSettings?.h2,
+            h3: independentSettings?.h3,
+            h4: independentSettings?.h4,
+            h5: independentSettings?.h5,
+            h6: independentSettings?.h6,
+          });
+        } else {
+          counter = new OrderedCounter({
+            maxRecLevel,
+            ignoreTopLevel,
+            allowZeroLevel: orderedAllowZeroLevel,
+            styleType: orderedStyleType,
+            delimiter: orderedDelimiter,
+            trailingDelimiter: orderedTrailingDelimiter,
+            customTrailingDelimiter: orderedCustomTrailingDelimiter,
+            leadingDelimiter: orderedLeadingDelimiter,
+            customLeadingDelimiter: orderedCustomLeadingDelimiter,
+            customIdents: getOrderedCustomIdents(orderedCustomIdents),
+            specifiedString: orderedSpecifiedString,
+          });
+        }
+      }
 
       const heading = new Heading();
       for (let lineIndex = 1; lineIndex <= doc.lines; lineIndex++) {

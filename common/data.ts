@@ -9,8 +9,7 @@ export type OrderedCounterStyleType =
   | "customIdent"
   | "string";
 
-export interface BaseDecoratorOptions {
-  ordered: boolean;
+export interface OrderedDecoratorOptions {
   styleType?: OrderedCounterStyleType;
   delimiter?: string;
   trailingDelimiter?: boolean;
@@ -20,40 +19,59 @@ export interface BaseDecoratorOptions {
   customIdents?: string[];
   specifiedString?: string;
   ignoreTopLevel?: number;
-  levelHeadings?: HeadingTuple;
   allowZeroLevel?: boolean;
   maxRecLevel?: number;
 }
 
-interface OrderedDecoratorOptions {
-  ordered: true;
+export interface IndependentDecoratorSettings {
   styleType: OrderedCounterStyleType;
-  delimiter?: string;
-  trailingDelimiter?: boolean;
-  customTrailingDelimiter?: string;
-  leadingDelimiter?: boolean;
-  customLeadingDelimiter?: string;
-  customIdents?: string[];
-  specifiedString?: string;
+  delimiter: string;
+  trailingDelimiter: boolean;
+  customTrailingDelimiter: string;
+  leadingDelimiter: boolean;
+  customLeadingDelimiter: string;
+  customIdents: string;
+  specifiedString: string;
+}
+
+export interface IndependentDecoratorOptions {
+  maxRecLevel?: number;
+  allowZeroLevel?: boolean;
   ignoreTopLevel?: number;
+  orderedRecLevel?: number;
+
+  h1?: Partial<IndependentDecoratorSettings>;
+  h2?: Partial<IndependentDecoratorSettings>;
+  h3?: Partial<IndependentDecoratorSettings>;
+  h4?: Partial<IndependentDecoratorSettings>;
+  h5?: Partial<IndependentDecoratorSettings>;
+  h6?: Partial<IndependentDecoratorSettings>;
 }
 
-interface UnorderedDecoratorOptions {
-  ordered: false;
-  levelHeadings: HeadingTuple;
-}
+interface IndependentSettings {
+  orderedRecLevel: number;
 
-export type DecoratorOptions =
-  | OrderedDecoratorOptions
-  | UnorderedDecoratorOptions;
+  h1: IndependentDecoratorSettings;
+  h2: IndependentDecoratorSettings;
+  h3: IndependentDecoratorSettings;
+  h4: IndependentDecoratorSettings;
+  h5: IndependentDecoratorSettings;
+  h6: IndependentDecoratorSettings;
+}
 
 export interface HeadingDecoratorSettings {
   enabledInEachNote?: boolean;
 
-  ordered: boolean;
+  decoratorMode?: DecoratorMode;
   opacity: OpacityOptions;
   position: PostionOptions;
   maxRecLevel?: number;
+
+  orderedAllowZeroLevel?: boolean;
+  orderedBasedOnExisting?: boolean;
+  orderedAlwaysIgnore?: boolean;
+  orderedIgnoreMaximum?: number;
+  orderedIgnoreSingle: boolean;
 
   orderedStyleType: OrderedCounterStyleType;
   orderedDelimiter: string;
@@ -63,11 +81,8 @@ export interface HeadingDecoratorSettings {
   orderedCustomLeadingDelimiter?: string;
   orderedCustomIdents: string;
   orderedSpecifiedString: string;
-  orderedAllowZeroLevel?: boolean;
-  orderedBasedOnExisting?: boolean;
-  orderedAlwaysIgnore?: boolean;
-  orderedIgnoreSingle: boolean;
-  orderedIgnoreMaximum?: number;
+
+  independentSettings?: IndependentSettings;
 
   unorderedLevelHeadings: string;
 }
@@ -131,6 +146,8 @@ export const className = {
   after: "after-heading-decorator",
   afterInside: "after-inside-heading-decorator",
   hideSourceNumberSigns: "hide-source-number-signs",
+  settingContainer: "heading-decorator-setting-container",
+  settingItem: "heading-decorator-setting-item",
 };
 
 export const headingsSelector =
@@ -143,6 +160,38 @@ export const defaultHeadingTuple: HeadingTuple = [
   "H5",
   "H6",
 ];
+const defaultCustomidents =
+  "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ";
+
+function defaultIndependentDecoratorSettings(): IndependentDecoratorSettings {
+  return {
+    styleType: "decimal",
+    delimiter: ".",
+    trailingDelimiter: false,
+    customTrailingDelimiter: "",
+    leadingDelimiter: false,
+    customLeadingDelimiter: "",
+    customIdents: defaultCustomidents,
+    specifiedString: "#",
+  };
+}
+
+/**
+ * Defaults independent settings
+ *
+ * @returns independent settings
+ */
+export function defaultIndependentSettings(): IndependentSettings {
+  return {
+    orderedRecLevel: 6,
+    h1: defaultIndependentDecoratorSettings(),
+    h2: defaultIndependentDecoratorSettings(),
+    h3: defaultIndependentDecoratorSettings(),
+    h4: defaultIndependentDecoratorSettings(),
+    h5: defaultIndependentDecoratorSettings(),
+    h6: defaultIndependentDecoratorSettings(),
+  };
+}
 
 /**
  * Default settings for heading decorator.
@@ -155,20 +204,21 @@ export function defaultHeadingDecoratorSettings(): HeadingDecoratorSettings {
     opacity: 20,
     position: "before",
     maxRecLevel: 6,
-    ordered: true,
+    decoratorMode: "orderd",
     orderedDelimiter: ".",
     orderedTrailingDelimiter: false,
     orderedCustomTrailingDelimiter: "",
     orderedLeadingDelimiter: false,
     orderedCustomLeadingDelimiter: "",
     orderedStyleType: "decimal",
-    orderedCustomIdents: "Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ",
+    orderedCustomIdents: defaultCustomidents,
     orderedSpecifiedString: "#",
     orderedAllowZeroLevel: false,
     orderedBasedOnExisting: false,
     orderedAlwaysIgnore: false,
     orderedIgnoreSingle: false,
     orderedIgnoreMaximum: 6,
+    independentSettings: defaultIndependentSettings(),
     unorderedLevelHeadings: defaultHeadingTuple.join(" "),
   };
 }

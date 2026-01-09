@@ -214,8 +214,10 @@ export class HeadingPlugin extends Plugin {
                 return;
               }
 
-              const { ordered } = readingSettings;
-              if (ordered) {
+              const { decoratorMode = "orderd" } = readingSettings;
+              if (decoratorMode === "unordered") {
+                readingUnorderedHandler(readingSettings, headingElements);
+              } else {
                 let sourceContent = fileData;
                 if (!sourceContent) {
                   const file = this.getActiveFile(cxt.sourcePath);
@@ -238,8 +240,6 @@ export class HeadingPlugin extends Plugin {
                   headingElements,
                   sourceArr
                 );
-              } else {
-                readingUnorderedHandler(readingSettings, headingElements);
               }
             } else {
               cancelHTMLDecorator(container);

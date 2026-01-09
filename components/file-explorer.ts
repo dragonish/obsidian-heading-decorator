@@ -5,7 +5,12 @@ import {
   getOrderedCustomIdents,
   getUnorderedLevelHeadings,
 } from "../common/data";
-import { Querier, Counter } from "../common/counter";
+import {
+  Querier,
+  UnorderedCounter,
+  OrderedCounter,
+  IndependentCounter,
+} from "../common/counter";
 
 /**
  * File Explorer Heading Decorator.
@@ -22,9 +27,9 @@ export function fileExplorerHandler(
   cacheHeadings: HeadingCache[]
 ): void {
   const {
+    decoratorMode = "orderd",
     opacity,
     position,
-    ordered,
     maxRecLevel,
     orderedDelimiter,
     orderedTrailingDelimiter,
@@ -40,12 +45,19 @@ export function fileExplorerHandler(
     orderedBasedOnExisting,
     orderedAllowZeroLevel,
     unorderedLevelHeadings,
+    independentSettings,
   } = settings;
 
   container.classList.add(className.fileExplorerContainer);
 
-  let ignoreTopLevel = 0;
-  if (ordered) {
+  let counter: Counter;
+  if (decoratorMode === "unordered") {
+    counter = new UnorderedCounter(
+      getUnorderedLevelHeadings(unorderedLevelHeadings),
+      maxRecLevel
+    );
+  } else {
+    let ignoreTopLevel = 0;
     const ignoreSingle = !orderedAlwaysIgnore && orderedIgnoreSingle;
     const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
     if (ignoreSingle || orderedBasedOnExisting) {
@@ -61,23 +73,36 @@ export function fileExplorerHandler(
     if (ignoreTopLevel < ignoreLimit) {
       ignoreTopLevel = ignoreLimit;
     }
-  }
 
-  const counter = new Counter({
-    ordered,
-    maxRecLevel,
-    delimiter: orderedDelimiter,
-    trailingDelimiter: orderedTrailingDelimiter,
-    customTrailingDelimiter: orderedCustomTrailingDelimiter,
-    leadingDelimiter: orderedLeadingDelimiter,
-    customLeadingDelimiter: orderedCustomLeadingDelimiter,
-    styleType: orderedStyleType,
-    customIdents: getOrderedCustomIdents(orderedCustomIdents),
-    specifiedString: orderedSpecifiedString,
-    ignoreTopLevel,
-    allowZeroLevel: orderedAllowZeroLevel,
-    levelHeadings: getUnorderedLevelHeadings(unorderedLevelHeadings),
-  });
+    if (decoratorMode === "independent") {
+      counter = new IndependentCounter({
+        maxRecLevel,
+        ignoreTopLevel,
+        allowZeroLevel: orderedAllowZeroLevel,
+        orderedRecLevel: independentSettings?.orderedRecLevel,
+        h1: independentSettings?.h1,
+        h2: independentSettings?.h2,
+        h3: independentSettings?.h3,
+        h4: independentSettings?.h4,
+        h5: independentSettings?.h5,
+        h6: independentSettings?.h6,
+      });
+    } else {
+      counter = new OrderedCounter({
+        maxRecLevel,
+        ignoreTopLevel,
+        allowZeroLevel: orderedAllowZeroLevel,
+        delimiter: orderedDelimiter,
+        trailingDelimiter: orderedTrailingDelimiter,
+        customTrailingDelimiter: orderedCustomTrailingDelimiter,
+        leadingDelimiter: orderedLeadingDelimiter,
+        customLeadingDelimiter: orderedCustomLeadingDelimiter,
+        styleType: orderedStyleType,
+        customIdents: getOrderedCustomIdents(orderedCustomIdents),
+        specifiedString: orderedSpecifiedString,
+      });
+    }
+  }
 
   const marginMultiplier =
     parseInt(
