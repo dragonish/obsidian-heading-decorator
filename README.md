@@ -43,9 +43,10 @@ In addition, you can enable the default status of each note within the *Config* 
 
 Control the display effect of the decorator.
 
-- **Mode**: Toggle this setting to decorate headings as ordered, independent, or unordered.
+- **Mode**: Toggle this setting to decorate headings as ordered, independent, splice or unordered.
   - **Ordered**: Connect the current heading level with the top-level heading level using a separator in the decorator style to build the result, similar to the effect shown in [Preview](#preview).
   - **Independent**: By default, build the result of the current heading level according to the decorator style of each level.
+  - **Splice**: The result is builded by connecting the current heading level with the top-level heading level using a separator, following the respective level decorator style.
   - **Unordered**: Build the current heading level directly as a fixed string.
 - **Opacity**: Set the opacity of the heading decorator. The value is the form of percentage.
 - **Position**: Set the position of the heading decorator. You can configure the content to appear before or after the heading.
@@ -53,9 +54,9 @@ Control the display effect of the decorator.
 
 Examples of differences between different decorator modes:
 
-| Ordered (Decimal numbers) | Independent | Unordered (using `H1 H2 H3 H4 H5 H6`) |
-| :-----------------------: | :---------: | :-----------------------------------: |
-| ![Ordered](images/ordered.jpg) | ![Independent](images/independent.jpg) | ![Unordered](images/unordered.jpg) |
+| Ordered (Decimal numbers) | Independent | Splice | Unordered (using `H1 H2 H3 H4 H5 H6`) |
+| :-----------------------: | :---------: | :----: | :-----------------------------------: |
+| ![Ordered](images/ordered.jpg) | ![Independent](images/independent.jpg) | ![Splice](images/splice.jpg) | ![Unordered](images/unordered.jpg) |
 
 Examples of differences between different decorator positions:
 
@@ -94,7 +95,7 @@ For example:
 
 ### Logic
 
-When you set the decorator mode to ordered or independent, you can control the rendering logic of headings to adjust rendering results, or ignore heading levels you don't want to handle.
+When you set the decorator mode to ordered, independent or splice, you can control the rendering logic of headings to adjust rendering results, or ignore heading levels you don't want to handle.
 
 #### Allow zero level
 
