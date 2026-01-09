@@ -104,19 +104,15 @@ export class OrderedCounter extends Querier implements Counter {
 
     switch (styleType) {
       case "customIdent":
-        results = levels.map((level) =>
-          level > customIdents.length
-            ? level.toString()
-            : customIdents[level - 1]
+        results = levels.map((l) =>
+          l > customIdents.length ? l.toString() : customIdents[l - 1]
         );
         break;
       case "string":
         results = levels.map(() => specifiedString.trim() || "#");
         break;
       default:
-        results = levels.map((level) =>
-          presets[styleType].renderCounter(level)
-        );
+        results = levels.map((l) => presets[styleType].renderCounter(l));
     }
 
     result = results.join(delimiter);
@@ -201,18 +197,16 @@ export class IndependentCounter extends Querier implements Counter {
 
     switch (styleType) {
       case "customIdent":
-        results = levels.map((level) => {
+        results = levels.map((l) => {
           const ci = getOrderedCustomIdents(customIdents);
-          return level > ci.length ? level.toString() : ci[level - 1];
+          return l > ci.length ? l.toString() : ci[l - 1];
         });
         break;
       case "string":
         results = levels.map(() => specifiedString.trim() || "#");
         break;
       default:
-        results = levels.map((level) =>
-          presets[styleType].renderCounter(level)
-        );
+        results = levels.map((l) => presets[styleType].renderCounter(l));
         break;
     }
 
