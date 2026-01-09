@@ -4,6 +4,7 @@ import type {
   OrderedCounterStyleType,
   HeadingDecoratorSettings,
   IndependentDecoratorSettings,
+  IndependentSettings,
 } from "../common/data";
 import { className, defaultIndependentSettings } from "../common/data";
 import { getStyleTypeOptions } from "../common/options";
@@ -626,7 +627,13 @@ export class HeadingSettingTab extends PluginSettingTab {
     const independentContainerEl = containerEl.createDiv(
       className.settingContainer
     );
-    this.independentSettings(independentContainerEl, settings[settingsType]);
+    if (!settings[settingsType].independentSettings) {
+      settings[settingsType].independentSettings = defaultIndependentSettings();
+    }
+    this.independentSettings(
+      independentContainerEl,
+      settings[settingsType].independentSettings
+    );
     if (settings[settingsType].decoratorMode !== "independent") {
       independentContainerEl.hide();
     }
@@ -811,15 +818,11 @@ export class HeadingSettingTab extends PluginSettingTab {
 
   private independentSettings(
     containerEl: HTMLElement,
-    settings: HeadingDecoratorSettings
+    settings: IndependentSettings
   ) {
     const {
       plugin: { i18n },
     } = this;
-
-    if (!settings.independentSettings) {
-      settings.independentSettings = defaultIndependentSettings();
-    }
 
     new Setting(containerEl)
       .setName(i18n.t("setting.independent"))
@@ -832,9 +835,9 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addSlider((slider) => {
         slider
           .setLimits(2, 6, 1)
-          .setValue(settings.independentSettings!.orderedRecLevel)
+          .setValue(settings.orderedRecLevel)
           .onChange((value) => {
-            settings.independentSettings!.orderedRecLevel = value;
+            settings.orderedRecLevel = value;
             this.plugin.saveSettings();
           })
           .setDynamicTooltip();
@@ -842,45 +845,27 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* h1
     new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h1
-    );
+    this.independentDecoratorSettings(containerEl, settings.h1);
 
     //* h2
     new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h2
-    );
+    this.independentDecoratorSettings(containerEl, settings.h2);
 
     //* h3
     new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h3
-    );
+    this.independentDecoratorSettings(containerEl, settings.h3);
 
     //* h4
     new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h4
-    );
+    this.independentDecoratorSettings(containerEl, settings.h4);
 
     //* h5
     new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h5
-    );
+    this.independentDecoratorSettings(containerEl, settings.h5);
 
     //* h6
     new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading();
-    this.independentDecoratorSettings(
-      containerEl,
-      settings.independentSettings!.h6
-    );
+    this.independentDecoratorSettings(containerEl, settings.h6);
   }
 
   private unorderedSettings(

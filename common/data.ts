@@ -48,7 +48,7 @@ export interface IndependentDecoratorOptions {
   h6?: Partial<IndependentDecoratorSettings>;
 }
 
-interface IndependentSettings {
+export interface IndependentSettings {
   orderedRecLevel: number;
 
   h1: IndependentDecoratorSettings;
