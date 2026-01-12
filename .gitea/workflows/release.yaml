@@ -69,7 +69,7 @@ jobs:
 
             See: [${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }}](/compare/${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }})
       - name: Send notification
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && secrets.GOTIFY_URL != '' && secrets.GOTIFY_TOKEN != '' }}
         uses: dragonish/send-to-gotify@v1
         with:
           url: ${{ secrets.GOTIFY_URL }}
