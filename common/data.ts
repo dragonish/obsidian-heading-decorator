@@ -187,8 +187,6 @@ export const className = {
   after: "after-heading-decorator",
   afterInside: "after-inside-heading-decorator",
   hideSourceNumberSigns: "hide-source-number-signs",
-  settingContainer: "heading-decorator-setting-container",
-  settingItem: "heading-decorator-setting-item",
 };
 
 export const headingsSelector =

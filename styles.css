@@ -443,19 +443,3 @@ body {
   opacity: 100%;
 }
 /* file-explorer start */
-
-/* setting start */
-body .heading-decorator-setting-container,
-.heading-decorator-setting-item + .setting-item-heading {
-  margin-top: 0.75em;
-}
-
-body .heading-decorator-setting-container .setting-item-heading:first-child {
-  padding-top: 0.75em;
-}
-
-body .heading-decorator-setting-item {
-  padding-top: 0.75em;
-  border-top: 1px solid var(--background-modifier-border);
-}
-/* setting end */

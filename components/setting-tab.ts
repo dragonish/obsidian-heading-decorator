@@ -9,12 +9,12 @@ import type {
   SpliceSettings,
 } from "../common/data";
 import {
-  className,
   defaultIndependentSettings,
   defaultSpliceSettings,
 } from "../common/data";
 import { getStyleTypeOptions } from "../common/options";
 import { FolderSuggest } from "./suggest";
+import { SettingDisplayManager } from "./setting";
 
 type ButtonOrUndefined = ButtonComponent | undefined;
 
@@ -83,59 +83,59 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle.setValue(settings.enabledInReading).onChange((value) => {
           settings.enabledInReading = value;
-          value
-            ? readingConfigContainerEl.show()
-            : readingConfigContainerEl.hide();
+          value ? readingConfigManager.show() : readingConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
 
-    const readingConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const readingConfigManager = new SettingDisplayManager();
 
     let readingConfigBtn: ButtonOrUndefined;
-    new Setting(readingConfigContainerEl)
-      .setName(i18n.t("setting.enabledInReadingConfig"))
-      .setDesc(i18n.t("setting.enabledInReadingConfigDesc"))
-      .addToggle((toggle) => {
-        toggle.setValue(settings.enabledReadingSettings).onChange((value) => {
-          settings.enabledReadingSettings = value;
-          readingConfigBtn?.setDisabled(!value);
-          this.plugin.saveSettings();
-        });
-      })
-      .addButton((button) => {
-        readingConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("readingSettings");
-          })
-          .setDisabled(!settings.enabledReadingSettings);
-      });
-
-    //* readingRenderPolicy
-    new Setting(readingConfigContainerEl)
-      .setName(i18n.t("setting.renderPolicy"))
-      .setDesc(i18n.t("setting.renderPolicyDesc"))
-      .addDropdown((dropdown) => {
-        dropdown
-          .addOptions({
-            partial: i18n.t("setting.partial"),
-            full: i18n.t("setting.full"),
-          })
-          .setValue(settings.readingRenderPolicy)
-          .onChange((value) => {
-            settings.readingRenderPolicy = this.isRenderPolicy(value)
-              ? value
-              : "partial";
+    readingConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInReadingConfig"))
+        .setDesc(i18n.t("setting.enabledInReadingConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledReadingSettings).onChange((value) => {
+            settings.enabledReadingSettings = value;
+            readingConfigBtn?.setDisabled(!value);
             this.plugin.saveSettings();
           });
-      });
+        })
+        .addButton((button) => {
+          readingConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("readingSettings");
+            })
+            .setDisabled(!settings.enabledReadingSettings);
+        })
+    );
+
+    //* readingRenderPolicy
+    readingConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.renderPolicy"))
+        .setDesc(i18n.t("setting.renderPolicyDesc"))
+        .addDropdown((dropdown) => {
+          dropdown
+            .addOptions({
+              partial: i18n.t("setting.partial"),
+              full: i18n.t("setting.full"),
+            })
+            .setValue(settings.readingRenderPolicy)
+            .onChange((value) => {
+              settings.readingRenderPolicy = this.isRenderPolicy(value)
+                ? value
+                : "partial";
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.enabledInReading) {
-      readingConfigContainerEl.hide();
+      readingConfigManager.hide();
     }
 
     new Setting(containerEl)
@@ -149,40 +149,38 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle.setValue(settings.enabledInPreview).onChange((value) => {
           settings.enabledInPreview = value;
-          value
-            ? previewConfigContainerEl.show()
-            : previewConfigContainerEl.hide();
+          value ? previewConfigManager.show() : previewConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
 
-    const previewConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const previewConfigManager = new SettingDisplayManager();
 
     let previewConfigBtn: ButtonOrUndefined;
-    new Setting(previewConfigContainerEl)
-      .setName(i18n.t("setting.enabledInPreviewConfig"))
-      .setDesc(i18n.t("setting.enabledInPreviewConfigDesc"))
-      .addToggle((toggle) => {
-        toggle.setValue(settings.enabledPreviewSettings).onChange((value) => {
-          settings.enabledPreviewSettings = value;
-          previewConfigBtn?.setDisabled(!value);
-          this.plugin.saveSettings();
-        });
-      })
-      .addButton((button) => {
-        previewConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("previewSettings");
-          })
-          .setDisabled(!settings.enabledPreviewSettings);
-      });
+    previewConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInPreviewConfig"))
+        .setDesc(i18n.t("setting.enabledInPreviewConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledPreviewSettings).onChange((value) => {
+            settings.enabledPreviewSettings = value;
+            previewConfigBtn?.setDisabled(!value);
+            this.plugin.saveSettings();
+          });
+        })
+        .addButton((button) => {
+          previewConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("previewSettings");
+            })
+            .setDisabled(!settings.enabledPreviewSettings);
+        })
+    );
 
     if (!settings.enabledInPreview) {
-      previewConfigContainerEl.hide();
+      previewConfigManager.hide();
     }
 
     new Setting(containerEl).setName(i18n.t("setting.sourceMode")).setHeading();
@@ -194,53 +192,53 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle.setValue(settings.enabledInSource).onChange((value) => {
           settings.enabledInSource = value;
-          value
-            ? sourceConfigContainerEl.show()
-            : sourceConfigContainerEl.hide();
+          value ? sourceConfigManager.show() : sourceConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
 
-    const sourceConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const sourceConfigManager = new SettingDisplayManager();
 
     let sourceConfigBtn: ButtonOrUndefined;
-    new Setting(sourceConfigContainerEl)
-      .setName(i18n.t("setting.enabledInSourceConfig"))
-      .setDesc(i18n.t("setting.enabledInSourceConfigDesc"))
-      .addToggle((toggle) => {
-        toggle.setValue(settings.enabledSourceSettings).onChange((value) => {
-          settings.enabledSourceSettings = value;
-          sourceConfigBtn?.setDisabled(!value);
-          this.plugin.saveSettings();
-        });
-      })
-      .addButton((button) => {
-        sourceConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("sourceSettings");
-          })
-          .setDisabled(!settings.enabledSourceSettings);
-      });
-
-    //* sourceHideNumberSigns
-    new Setting(sourceConfigContainerEl)
-      .setName(i18n.t("setting.hideNumberSigns"))
-      .setDesc(i18n.t("setting.hideNumberSignsDesc"))
-      .addToggle((toggle) => {
-        toggle
-          .setValue(settings.sourceHideNumberSigns ?? false)
-          .onChange((value) => {
-            settings.sourceHideNumberSigns = value;
+    sourceConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInSourceConfig"))
+        .setDesc(i18n.t("setting.enabledInSourceConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledSourceSettings).onChange((value) => {
+            settings.enabledSourceSettings = value;
+            sourceConfigBtn?.setDisabled(!value);
             this.plugin.saveSettings();
           });
-      });
+        })
+        .addButton((button) => {
+          sourceConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("sourceSettings");
+            })
+            .setDisabled(!settings.enabledSourceSettings);
+        })
+    );
+
+    //* sourceHideNumberSigns
+    sourceConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.hideNumberSigns"))
+        .setDesc(i18n.t("setting.hideNumberSignsDesc"))
+        .addToggle((toggle) => {
+          toggle
+            .setValue(settings.sourceHideNumberSigns ?? false)
+            .onChange((value) => {
+              settings.sourceHideNumberSigns = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.enabledInSource) {
-      sourceConfigContainerEl.hide();
+      sourceConfigManager.hide();
     }
 
     new Setting(containerEl).setName(i18n.t("setting.outline")).setHeading();
@@ -252,40 +250,38 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle.setValue(settings.enabledInOutline).onChange((value) => {
           settings.enabledInOutline = value;
-          value
-            ? outlineConfigContainerEl.show()
-            : outlineConfigContainerEl.hide();
+          value ? outlineConfigManager.show() : outlineConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
 
-    const outlineConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const outlineConfigManager = new SettingDisplayManager();
 
     let outlineConfigBtn: ButtonOrUndefined;
-    new Setting(outlineConfigContainerEl)
-      .setName(i18n.t("setting.enabledInOutlineConfig"))
-      .setDesc(i18n.t("setting.enabledInOutlineConfigDesc"))
-      .addToggle((toggle) => {
-        toggle.setValue(settings.enabledOutlineSettings).onChange((value) => {
-          settings.enabledOutlineSettings = value;
-          outlineConfigBtn?.setDisabled(!value);
-          this.plugin.saveSettings();
-        });
-      })
-      .addButton((button) => {
-        outlineConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("outlineSettings");
-          })
-          .setDisabled(!settings.enabledOutlineSettings);
-      });
+    outlineConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInOutlineConfig"))
+        .setDesc(i18n.t("setting.enabledInOutlineConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledOutlineSettings).onChange((value) => {
+            settings.enabledOutlineSettings = value;
+            outlineConfigBtn?.setDisabled(!value);
+            this.plugin.saveSettings();
+          });
+        })
+        .addButton((button) => {
+          outlineConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("outlineSettings");
+            })
+            .setDisabled(!settings.enabledOutlineSettings);
+        })
+    );
 
     if (!settings.enabledInOutline) {
-      outlineConfigContainerEl.hide();
+      outlineConfigManager.hide();
     }
 
     new Setting(containerEl)
@@ -299,8 +295,8 @@ export class HeadingSettingTab extends PluginSettingTab {
         toggle.setValue(settings.enabledInQuietOutline).onChange((value) => {
           settings.enabledInQuietOutline = value;
           value
-            ? quietOutlineConfigContainerEl.show()
-            : quietOutlineConfigContainerEl.hide();
+            ? quietOutlineConfigManager.show()
+            : quietOutlineConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
@@ -319,35 +315,35 @@ export class HeadingSettingTab extends PluginSettingTab {
     );
     enabledInQuietOutlineSetting.descEl.appendChild(enabledInQuietOutlineDesc);
 
-    const quietOutlineConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const quietOutlineConfigManager = new SettingDisplayManager();
 
     let quietOutlineConfigBtn: ButtonOrUndefined;
-    new Setting(quietOutlineConfigContainerEl)
-      .setName(i18n.t("setting.enabledInQuietOutlineConfig"))
-      .setDesc(i18n.t("setting.enabledInQuietOutlineConfigDesc"))
-      .addToggle((toggle) => {
-        toggle
-          .setValue(settings.enabledQuietOutlineSettings)
-          .onChange((value) => {
-            settings.enabledQuietOutlineSettings = value;
-            quietOutlineConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
-      })
-      .addButton((button) => {
-        quietOutlineConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("quietOutlineSettings");
-          })
-          .setDisabled(!settings.enabledQuietOutlineSettings);
-      });
+    quietOutlineConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInQuietOutlineConfig"))
+        .setDesc(i18n.t("setting.enabledInQuietOutlineConfigDesc"))
+        .addToggle((toggle) => {
+          toggle
+            .setValue(settings.enabledQuietOutlineSettings)
+            .onChange((value) => {
+              settings.enabledQuietOutlineSettings = value;
+              quietOutlineConfigBtn?.setDisabled(!value);
+              this.plugin.saveSettings();
+            });
+        })
+        .addButton((button) => {
+          quietOutlineConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("quietOutlineSettings");
+            })
+            .setDisabled(!settings.enabledQuietOutlineSettings);
+        })
+    );
 
     if (!settings.enabledInQuietOutline) {
-      quietOutlineConfigContainerEl.hide();
+      quietOutlineConfigManager.hide();
     }
 
     new Setting(containerEl)
@@ -361,8 +357,8 @@ export class HeadingSettingTab extends PluginSettingTab {
         toggle.setValue(settings.enabledInFileExplorer).onChange((value) => {
           settings.enabledInFileExplorer = value;
           value
-            ? fileExplorerConfigContainerEl.show()
-            : fileExplorerConfigContainerEl.hide();
+            ? fileExplorerConfigManager.show()
+            : fileExplorerConfigManager.hide();
           this.plugin.saveSettings();
         })
       );
@@ -381,35 +377,35 @@ export class HeadingSettingTab extends PluginSettingTab {
     );
     enabledInFileExplorerSetting.descEl.appendChild(enabledInFileExplorerDesc);
 
-    const fileExplorerConfigContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const fileExplorerConfigManager = new SettingDisplayManager();
 
     let fileExplorerConfigBtn: ButtonOrUndefined;
-    new Setting(fileExplorerConfigContainerEl)
-      .setName(i18n.t("setting.enabledInFileExplorerConfig"))
-      .setDesc(i18n.t("setting.enabledInFileExplorerConfigDesc"))
-      .addToggle((toggle) => {
-        toggle
-          .setValue(settings.enabledFileExplorerSettings)
-          .onChange((value) => {
-            settings.enabledFileExplorerSettings = value;
-            fileExplorerConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
-      })
-      .addButton((button) => {
-        fileExplorerConfigBtn = button;
-        button
-          .setButtonText(i18n.t("button.config"))
-          .onClick(() => {
-            this.manageHeadingDecoratorSettings("fileExplorerSettings");
-          })
-          .setDisabled(!settings.enabledFileExplorerSettings);
-      });
+    fileExplorerConfigManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInFileExplorerConfig"))
+        .setDesc(i18n.t("setting.enabledInFileExplorerConfigDesc"))
+        .addToggle((toggle) => {
+          toggle
+            .setValue(settings.enabledFileExplorerSettings)
+            .onChange((value) => {
+              settings.enabledFileExplorerSettings = value;
+              fileExplorerConfigBtn?.setDisabled(!value);
+              this.plugin.saveSettings();
+            });
+        })
+        .addButton((button) => {
+          fileExplorerConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("fileExplorerSettings");
+            })
+            .setDisabled(!settings.enabledFileExplorerSettings);
+        })
+    );
 
     if (!settings.enabledInFileExplorer) {
-      fileExplorerConfigContainerEl.hide();
+      fileExplorerConfigManager.hide();
     }
 
     new Setting(containerEl).setName(i18n.t("setting.blocklist")).setHeading();
@@ -534,32 +530,32 @@ export class HeadingSettingTab extends PluginSettingTab {
 
             switch (settings[settingsType].decoratorMode) {
               case "orderd":
-                orderedContainerEl.show();
-                logicContainerEl.show();
-                independentContainerEl.hide();
-                spliceContainerEl.hide();
-                unorderedContainerEl.hide();
+                orderedManager.show();
+                logicManager.show();
+                independentManager.hide();
+                spliceManager.hide();
+                unorderedManager.hide();
                 break;
               case "independent":
-                independentContainerEl.show();
-                logicContainerEl.show();
-                orderedContainerEl.hide();
-                spliceContainerEl.hide();
-                unorderedContainerEl.hide();
+                independentManager.show();
+                logicManager.show();
+                orderedManager.hide();
+                spliceManager.hide();
+                unorderedManager.hide();
                 break;
               case "splice":
-                spliceContainerEl.show();
-                logicContainerEl.show();
-                orderedContainerEl.hide();
-                independentContainerEl.hide();
-                unorderedContainerEl.hide();
+                spliceManager.show();
+                logicManager.show();
+                orderedManager.hide();
+                independentManager.hide();
+                unorderedManager.hide();
                 break;
               case "unordered":
-                unorderedContainerEl.show();
-                orderedContainerEl.hide();
-                independentContainerEl.hide();
-                spliceContainerEl.hide();
-                logicContainerEl.hide();
+                unorderedManager.show();
+                orderedManager.hide();
+                independentManager.hide();
+                spliceManager.hide();
+                logicManager.hide();
                 break;
             }
 
@@ -630,55 +626,55 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setDynamicTooltip();
       });
 
-    const orderedContainerEl = containerEl.createDiv(
-      className.settingContainer
-    );
-    this.orderedSettings(orderedContainerEl, settings[settingsType]);
+    const orderedManager = new SettingDisplayManager();
+    this.orderedSettings(orderedManager, containerEl, settings[settingsType]);
     if (
       settings[settingsType].decoratorMode &&
       settings[settingsType].decoratorMode !== "orderd"
     ) {
-      orderedContainerEl.hide();
+      orderedManager.hide();
     }
 
-    const independentContainerEl = containerEl.createDiv(
-      className.settingContainer
-    );
+    const independentManager = new SettingDisplayManager();
     if (!settings[settingsType].independentSettings) {
       settings[settingsType].independentSettings = defaultIndependentSettings();
     }
     this.independentSettings(
-      independentContainerEl,
+      independentManager,
+      containerEl,
       settings[settingsType].independentSettings
     );
     if (settings[settingsType].decoratorMode !== "independent") {
-      independentContainerEl.hide();
+      independentManager.hide();
     }
 
-    const spliceContainerEl = containerEl.createDiv(className.settingContainer);
+    const spliceManager = new SettingDisplayManager();
     if (!settings[settingsType].spliceSettings) {
       settings[settingsType].spliceSettings = defaultSpliceSettings();
     }
     this.spliceSettings(
-      spliceContainerEl,
+      spliceManager,
+      containerEl,
       settings[settingsType].spliceSettings
     );
     if (settings[settingsType].decoratorMode !== "splice") {
-      spliceContainerEl.hide();
+      spliceManager.hide();
     }
 
-    const unorderedContainerEl = containerEl.createDiv(
-      className.settingContainer
+    const unorderedManager = new SettingDisplayManager();
+    this.unorderedSettings(
+      unorderedManager,
+      containerEl,
+      settings[settingsType]
     );
-    this.unorderedSettings(unorderedContainerEl, settings[settingsType]);
     if (settings[settingsType].decoratorMode !== "unordered") {
-      unorderedContainerEl.hide();
+      unorderedManager.hide();
     }
 
-    const logicContainerEl = containerEl.createDiv(className.settingContainer);
-    this.logicSettings(logicContainerEl, settings[settingsType]);
+    const logicManager = new SettingDisplayManager();
+    this.logicSettings(logicManager, containerEl, settings[settingsType]);
     if (settings[settingsType].decoratorMode === "unordered") {
-      logicContainerEl.hide();
+      logicManager.hide();
     }
 
     //* Scroll back to the top
@@ -686,6 +682,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   }
 
   private orderedSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: HeadingDecoratorSettings
   ) {
@@ -693,159 +690,176 @@ export class HeadingSettingTab extends PluginSettingTab {
       plugin: { i18n },
     } = this;
 
-    new Setting(containerEl).setName(i18n.t("setting.ordered")).setHeading();
-
-    //* orderedStyleType
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedStyleType"))
-      .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
-      .addDropdown((dropdown) =>
-        dropdown
-          .addOptions(this.styleTypeOptions)
-          .setValue(settings.orderedStyleType)
-          .onChange((value: OrderedCounterStyleType) => {
-            settings.orderedStyleType = value;
-            switch (value) {
-              case "customIdent":
-                orderedCustomIdentsContainerEl.show();
-                orderedSpecifiedStringContainerEl.hide();
-                break;
-              case "string":
-                orderedSpecifiedStringContainerEl.show();
-                orderedCustomIdentsContainerEl.hide();
-                break;
-              default:
-                orderedCustomIdentsContainerEl.hide();
-                orderedSpecifiedStringContainerEl.hide();
-                break;
-            }
-            this.plugin.saveSettings();
-          })
-      );
-
-    //* orderedDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedDelimiter"))
-      .setDesc(i18n.t("setting.orderedDelimiterDesc"))
-      .addText((text) =>
-        text.setValue(settings.orderedDelimiter).onChange((value) => {
-          settings.orderedDelimiter = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    //* orderedTrailingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle.setValue(settings.orderedTrailingDelimiter).onChange((value) => {
-          settings.orderedTrailingDelimiter = value;
-          value
-            ? orderedCustomTrailingDelimiterContainerEl.show()
-            : orderedCustomTrailingDelimiterContainerEl.hide();
-          this.plugin.saveSettings();
-        })
-      );
-
-    const orderedCustomTrailingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.ordered")).setHeading()
     );
 
-    //* orderedCustomTrailingDelimiter
-    new Setting(orderedCustomTrailingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.orderedCustomTrailingDelimiter || "")
-          .onChange((value) => {
-            settings.orderedCustomTrailingDelimiter = value;
+    //* orderedStyleType
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedStyleType"))
+        .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
+        .addDropdown((dropdown) =>
+          dropdown
+            .addOptions(this.styleTypeOptions)
+            .setValue(settings.orderedStyleType)
+            .onChange((value: OrderedCounterStyleType) => {
+              settings.orderedStyleType = value;
+              switch (value) {
+                case "customIdent":
+                  orderedCustomIdentsManager.show();
+                  orderedSpecifiedStringManager.hide();
+                  break;
+                case "string":
+                  orderedSpecifiedStringManager.show();
+                  orderedCustomIdentsManager.hide();
+                  break;
+                default:
+                  orderedCustomIdentsManager.hide();
+                  orderedSpecifiedStringManager.hide();
+                  break;
+              }
+              this.plugin.saveSettings();
+            })
+        )
+    );
+
+    //* orderedDelimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedDelimiter"))
+        .setDesc(i18n.t("setting.orderedDelimiterDesc"))
+        .addText((text) =>
+          text.setValue(settings.orderedDelimiter).onChange((value) => {
+            settings.orderedDelimiter = value;
             this.plugin.saveSettings();
-          });
-      });
+          })
+        )
+    );
+
+    //* orderedTrailingDelimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.orderedTrailingDelimiter)
+            .onChange((value) => {
+              settings.orderedTrailingDelimiter = value;
+              value
+                ? orderedCustomTrailingDelimiterManager.show()
+                : orderedCustomTrailingDelimiterManager.hide();
+              this.plugin.saveSettings();
+            })
+        )
+    );
+
+    const orderedCustomTrailingDelimiterManager = new SettingDisplayManager();
+    displayManager.add(orderedCustomTrailingDelimiterManager);
+
+    //* orderedCustomTrailingDelimiter
+    orderedCustomTrailingDelimiterManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.orderedCustomTrailingDelimiter || "")
+            .onChange((value) => {
+              settings.orderedCustomTrailingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.orderedTrailingDelimiter) {
-      orderedCustomTrailingDelimiterContainerEl.hide();
+      orderedCustomTrailingDelimiterManager.hide();
     }
 
     //* orderedLeadingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.orderedLeadingDelimiter || false)
-          .onChange((value) => {
-            settings.orderedLeadingDelimiter = value;
-            value
-              ? orderedCustomLeadingDelimiterContainerEl.show()
-              : orderedCustomLeadingDelimiterContainerEl.hide();
-            this.plugin.saveSettings();
-          })
-      );
-
-    const orderedCustomLeadingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.orderedLeadingDelimiter || false)
+            .onChange((value) => {
+              settings.orderedLeadingDelimiter = value;
+              value
+                ? orderedCustomLeadingDelimiterManager.show()
+                : orderedCustomLeadingDelimiterManager.hide();
+              this.plugin.saveSettings();
+            })
+        )
     );
+
+    const orderedCustomLeadingDelimiterManager = new SettingDisplayManager();
+    displayManager.add(orderedCustomLeadingDelimiterManager);
 
     //* orderedCustomLeadingDelimiter
-    new Setting(orderedCustomLeadingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.orderedCustomLeadingDelimiter || "")
-          .onChange((value) => {
-            settings.orderedCustomLeadingDelimiter = value;
-            this.plugin.saveSettings();
-          });
-      });
+    orderedCustomLeadingDelimiterManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.orderedCustomLeadingDelimiter || "")
+            .onChange((value) => {
+              settings.orderedCustomLeadingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.orderedLeadingDelimiter) {
-      orderedCustomLeadingDelimiterContainerEl.hide();
+      orderedCustomLeadingDelimiterManager.hide();
     }
 
-    const orderedCustomIdentsContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const orderedCustomIdentsManager = new SettingDisplayManager();
+    displayManager.add(orderedCustomIdentsManager);
 
     //* orderedCustomIdents
-    new Setting(orderedCustomIdentsContainerEl)
-      .setName(i18n.t("setting.orderedCustomIdents"))
-      .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
-      .addText((text) =>
-        text.setValue(settings.orderedCustomIdents).onChange((value) => {
-          settings.orderedCustomIdents = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    if (settings.orderedStyleType !== "customIdent") {
-      orderedCustomIdentsContainerEl.hide();
-    }
-
-    const orderedSpecifiedStringContainerEl = containerEl.createDiv(
-      className.settingItem
+    orderedCustomIdentsManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomIdents"))
+        .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
+        .addText((text) =>
+          text.setValue(settings.orderedCustomIdents).onChange((value) => {
+            settings.orderedCustomIdents = value;
+            this.plugin.saveSettings();
+          })
+        )
     );
 
+    if (settings.orderedStyleType !== "customIdent") {
+      orderedCustomIdentsManager.hide();
+    }
+
+    const orderedSpecifiedStringManager = new SettingDisplayManager();
+    displayManager.add(orderedSpecifiedStringManager);
+
     //* orderedSpecifiedString
-    new Setting(orderedSpecifiedStringContainerEl)
-      .setName(i18n.t("setting.orderedSpecifiedString"))
-      .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
-      .addText((text) =>
-        text.setValue(settings.orderedSpecifiedString).onChange((value) => {
-          settings.orderedSpecifiedString = value;
-          this.plugin.saveSettings();
-        })
-      );
+    orderedSpecifiedStringManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedSpecifiedString"))
+        .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
+        .addText((text) =>
+          text.setValue(settings.orderedSpecifiedString).onChange((value) => {
+            settings.orderedSpecifiedString = value;
+            this.plugin.saveSettings();
+          })
+        )
+    );
 
     if (settings.orderedStyleType !== "string") {
-      orderedSpecifiedStringContainerEl.hide();
+      orderedSpecifiedStringManager.hide();
     }
   }
 
   private independentSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: IndependentSettings
   ) {
@@ -853,51 +867,68 @@ export class HeadingSettingTab extends PluginSettingTab {
       plugin: { i18n },
     } = this;
 
-    new Setting(containerEl)
-      .setName(i18n.t("setting.independent"))
-      .setHeading();
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.independent"))
+        .setHeading()
+    );
 
     //* orderedRecLevel
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedRecLevel"))
-      .setDesc(i18n.t("setting.orderedRecLevelDesc"))
-      .addSlider((slider) => {
-        slider
-          .setLimits(2, 6, 1)
-          .setValue(settings.orderedRecLevel)
-          .onChange((value) => {
-            settings.orderedRecLevel = value;
-            this.plugin.saveSettings();
-          })
-          .setDynamicTooltip();
-      });
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedRecLevel"))
+        .setDesc(i18n.t("setting.orderedRecLevelDesc"))
+        .addSlider((slider) => {
+          slider
+            .setLimits(2, 6, 1)
+            .setValue(settings.orderedRecLevel)
+            .onChange((value) => {
+              settings.orderedRecLevel = value;
+              this.plugin.saveSettings();
+            })
+            .setDynamicTooltip();
+        })
+    );
 
     //* h1
-    new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h1);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h1);
 
     //* h2
-    new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h2);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h2);
 
     //* h3
-    new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h3);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h3);
 
     //* h4
-    new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h4);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h4);
 
     //* h5
-    new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h5);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h5);
 
     //* h6
-    new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading();
-    this.independentDecoratorSettings(containerEl, settings.h6);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading()
+    );
+    this.independentDecoratorSettings(displayManager, containerEl, settings.h6);
   }
 
   private unorderedSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: HeadingDecoratorSettings
   ) {
@@ -905,21 +936,26 @@ export class HeadingSettingTab extends PluginSettingTab {
       plugin: { i18n },
     } = this;
 
-    new Setting(containerEl).setName(i18n.t("setting.unordered")).setHeading();
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.unordered")).setHeading()
+    );
 
     //* unorderedLevelHeadings
-    new Setting(containerEl)
-      .setName(i18n.t("setting.unorderedLevelHeadings"))
-      .setDesc(i18n.t("setting.unorderedLevelHeadingsDesc"))
-      .addText((text) =>
-        text.setValue(settings.unorderedLevelHeadings).onChange((value) => {
-          settings.unorderedLevelHeadings = value;
-          this.plugin.saveSettings();
-        })
-      );
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.unorderedLevelHeadings"))
+        .setDesc(i18n.t("setting.unorderedLevelHeadingsDesc"))
+        .addText((text) =>
+          text.setValue(settings.unorderedLevelHeadings).onChange((value) => {
+            settings.unorderedLevelHeadings = value;
+            this.plugin.saveSettings();
+          })
+        )
+    );
   }
 
   private logicSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: HeadingDecoratorSettings
   ) {
@@ -927,187 +963,225 @@ export class HeadingSettingTab extends PluginSettingTab {
       plugin: { i18n },
     } = this;
 
-    new Setting(containerEl).setName(i18n.t("setting.logic")).setHeading();
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.logic")).setHeading()
+    );
 
     //* orderedAllowZeroLevel
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedAllowZeroLevel"))
-      .setDesc(i18n.t("setting.orderedAllowZeroLevelDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.orderedAllowZeroLevel ?? false)
-          .onChange((value) => {
-            settings.orderedAllowZeroLevel = value;
-            this.plugin.saveSettings();
-          })
-      );
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedAllowZeroLevel"))
+        .setDesc(i18n.t("setting.orderedAllowZeroLevelDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.orderedAllowZeroLevel ?? false)
+            .onChange((value) => {
+              settings.orderedAllowZeroLevel = value;
+              this.plugin.saveSettings();
+            })
+        )
+    );
 
     //* orderedBasedOnExisting
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedBasedOnExisting"))
-      .setDesc(i18n.t("setting.orderedBasedOnExistingDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.orderedBasedOnExisting ?? false)
-          .onChange((value) => {
-            settings.orderedBasedOnExisting = value;
-            this.plugin.saveSettings();
-          })
-      );
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedBasedOnExisting"))
+        .setDesc(i18n.t("setting.orderedBasedOnExistingDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.orderedBasedOnExisting ?? false)
+            .onChange((value) => {
+              settings.orderedBasedOnExisting = value;
+              this.plugin.saveSettings();
+            })
+        )
+    );
 
     //* orderedAlwaysIgnore
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedAlwaysIgnore"))
-      .setDesc(i18n.t("setting.orderedAlwaysIgnoreDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.orderedAlwaysIgnore ?? false)
-          .onChange((value) => {
-            settings.orderedAlwaysIgnore = value;
-            this.plugin.saveSettings();
-          })
-      );
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedAlwaysIgnore"))
+        .setDesc(i18n.t("setting.orderedAlwaysIgnoreDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.orderedAlwaysIgnore ?? false)
+            .onChange((value) => {
+              settings.orderedAlwaysIgnore = value;
+              this.plugin.saveSettings();
+            })
+        )
+    );
 
     //* orderedIgnoreSingle
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedIgnoreSingle"))
-      .setDesc(i18n.t("setting.orderedIgnoreSingleDesc"))
-      .addToggle((toggle) =>
-        toggle.setValue(settings.orderedIgnoreSingle).onChange((value) => {
-          settings.orderedIgnoreSingle = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    //* orderedIgnoreMaximum
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedIgnoreMaximum"))
-      .setDesc(i18n.t("setting.orderedIgnoreMaximumDesc"))
-      .addSlider((slider) =>
-        slider
-          .setLimits(1, 6, 1)
-          .setValue(settings.orderedIgnoreMaximum ?? 6)
-          .onChange((value) => {
-            settings.orderedIgnoreMaximum = value;
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedIgnoreSingle"))
+        .setDesc(i18n.t("setting.orderedIgnoreSingleDesc"))
+        .addToggle((toggle) =>
+          toggle.setValue(settings.orderedIgnoreSingle).onChange((value) => {
+            settings.orderedIgnoreSingle = value;
             this.plugin.saveSettings();
           })
-          .setDynamicTooltip()
-      );
+        )
+    );
+
+    //* orderedIgnoreMaximum
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedIgnoreMaximum"))
+        .setDesc(i18n.t("setting.orderedIgnoreMaximumDesc"))
+        .addSlider((slider) =>
+          slider
+            .setLimits(1, 6, 1)
+            .setValue(settings.orderedIgnoreMaximum ?? 6)
+            .onChange((value) => {
+              settings.orderedIgnoreMaximum = value;
+              this.plugin.saveSettings();
+            })
+            .setDynamicTooltip()
+        )
+    );
   }
 
-  private spliceSettings(containerEl: HTMLElement, settings: SpliceSettings) {
+  private spliceSettings(
+    displayManager: SettingDisplayManager,
+    containerEl: HTMLElement,
+    settings: SpliceSettings
+  ) {
     const {
       plugin: { i18n },
     } = this;
 
-    new Setting(containerEl).setName(i18n.t("setting.splice")).setHeading();
-
-    //* delimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedDelimiter"))
-      .setDesc(i18n.t("setting.orderedDelimiterDesc"))
-      .addText((text) =>
-        text.setValue(settings.delimiter).onChange((value) => {
-          settings.delimiter = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    //* trailingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle.setValue(settings.trailingDelimiter).onChange((value) => {
-          settings.trailingDelimiter = value;
-          value
-            ? customTrailingDelimiterContainerEl.show()
-            : customTrailingDelimiterContainerEl.hide();
-          this.plugin.saveSettings();
-        })
-      );
-
-    const customTrailingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.splice")).setHeading()
     );
 
-    //* customTrailingDelimiter
-    new Setting(customTrailingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.customTrailingDelimiter || "")
-          .onChange((value) => {
-            settings.customTrailingDelimiter = value;
+    //* delimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedDelimiter"))
+        .setDesc(i18n.t("setting.orderedDelimiterDesc"))
+        .addText((text) =>
+          text.setValue(settings.delimiter).onChange((value) => {
+            settings.delimiter = value;
             this.plugin.saveSettings();
-          });
-      });
+          })
+        )
+    );
+
+    //* trailingDelimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle.setValue(settings.trailingDelimiter).onChange((value) => {
+            settings.trailingDelimiter = value;
+            value
+              ? customTrailingDelimiterManager.show()
+              : customTrailingDelimiterManager.hide();
+            this.plugin.saveSettings();
+          })
+        )
+    );
+
+    const customTrailingDelimiterManager = new SettingDisplayManager();
+    displayManager.add(customTrailingDelimiterManager);
+
+    //* customTrailingDelimiter
+    customTrailingDelimiterManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.customTrailingDelimiter || "")
+            .onChange((value) => {
+              settings.customTrailingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.trailingDelimiter) {
-      customTrailingDelimiterContainerEl.hide();
+      customTrailingDelimiterManager.hide();
     }
 
     //* leadingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.leadingDelimiter || false)
-          .onChange((value) => {
-            settings.leadingDelimiter = value;
-            value
-              ? customLeadingDelimiterContainerEl.show()
-              : customLeadingDelimiterContainerEl.hide();
-            this.plugin.saveSettings();
-          })
-      );
-
-    const customLeadingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.leadingDelimiter || false)
+            .onChange((value) => {
+              settings.leadingDelimiter = value;
+              value
+                ? customLeadingDelimiterManater.show()
+                : customLeadingDelimiterManater.hide();
+              this.plugin.saveSettings();
+            })
+        )
     );
 
+    const customLeadingDelimiterManater = new SettingDisplayManager();
+    displayManager.add(customLeadingDelimiterManater);
+
     //* customLeadingDelimiter
-    new Setting(customLeadingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.customLeadingDelimiter || "")
-          .onChange((value) => {
-            settings.customLeadingDelimiter = value;
-            this.plugin.saveSettings();
-          });
-      });
+    customLeadingDelimiterManater.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.customLeadingDelimiter || "")
+            .onChange((value) => {
+              settings.customLeadingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.leadingDelimiter) {
-      customLeadingDelimiterContainerEl.hide();
+      customLeadingDelimiterManater.hide();
     }
 
     //* h1
-    new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h1);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h1);
 
     //* h2
-    new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h2);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h2);
 
     //* h3
-    new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h3);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h3);
 
     //* h4
-    new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h4);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h4);
 
     //* h5
-    new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h5);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h5);
 
     //* h6
-    new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading();
-    this.spliceDecoratorSettings(containerEl, settings.h6);
+    displayManager.add(
+      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading()
+    );
+    this.spliceDecoratorSettings(displayManager, containerEl, settings.h6);
   }
 
   private manageFolderBlacklist(scrollToTop = false) {
@@ -1242,6 +1316,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   }
 
   private independentDecoratorSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: IndependentDecoratorSettings
   ) {
@@ -1250,156 +1325,169 @@ export class HeadingSettingTab extends PluginSettingTab {
     } = this;
 
     //* styleType
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedStyleType"))
-      .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
-      .addDropdown((dropdown) =>
-        dropdown
-          .addOptions(this.styleTypeOptions)
-          .setValue(settings.styleType)
-          .onChange((value: OrderedCounterStyleType) => {
-            settings.styleType = value;
-            switch (value) {
-              case "customIdent":
-                customIdentsContainerEl.show();
-                specifiedStringContainerEl.hide();
-                break;
-              case "string":
-                specifiedStringContainerEl.show();
-                customIdentsContainerEl.hide();
-                break;
-              default:
-                customIdentsContainerEl.hide();
-                specifiedStringContainerEl.hide();
-                break;
-            }
-            this.plugin.saveSettings();
-          })
-      );
-
-    //* delimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedDelimiter"))
-      .setDesc(i18n.t("setting.orderedDelimiterDesc"))
-      .addText((text) =>
-        text.setValue(settings.delimiter).onChange((value) => {
-          settings.delimiter = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    //* trailingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle.setValue(settings.trailingDelimiter).onChange((value) => {
-          settings.trailingDelimiter = value;
-          value
-            ? customTrailingDelimiterContainerEl.show()
-            : customTrailingDelimiterContainerEl.hide();
-          this.plugin.saveSettings();
-        })
-      );
-
-    const customTrailingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedStyleType"))
+        .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
+        .addDropdown((dropdown) =>
+          dropdown
+            .addOptions(this.styleTypeOptions)
+            .setValue(settings.styleType)
+            .onChange((value: OrderedCounterStyleType) => {
+              settings.styleType = value;
+              switch (value) {
+                case "customIdent":
+                  customIdentsManager.show();
+                  specifiedStringManager.hide();
+                  break;
+                case "string":
+                  specifiedStringManager.show();
+                  customIdentsManager.hide();
+                  break;
+                default:
+                  customIdentsManager.hide();
+                  specifiedStringManager.hide();
+                  break;
+              }
+              this.plugin.saveSettings();
+            })
+        )
     );
 
-    //* customTrailingDelimiter
-    new Setting(customTrailingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.customTrailingDelimiter || "")
-          .onChange((value) => {
-            settings.customTrailingDelimiter = value;
+    //* delimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedDelimiter"))
+        .setDesc(i18n.t("setting.orderedDelimiterDesc"))
+        .addText((text) =>
+          text.setValue(settings.delimiter).onChange((value) => {
+            settings.delimiter = value;
             this.plugin.saveSettings();
-          });
-      });
+          })
+        )
+    );
+
+    //* trailingDelimiter
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle.setValue(settings.trailingDelimiter).onChange((value) => {
+            settings.trailingDelimiter = value;
+            value
+              ? customTrailingDelimiterManager.show()
+              : customTrailingDelimiterManager.hide();
+            this.plugin.saveSettings();
+          })
+        )
+    );
+
+    const customTrailingDelimiterManager = new SettingDisplayManager();
+    displayManager.add(customTrailingDelimiterManager);
+
+    //* customTrailingDelimiter
+    customTrailingDelimiterManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomTrailingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomTrailingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.customTrailingDelimiter || "")
+            .onChange((value) => {
+              settings.customTrailingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.trailingDelimiter) {
-      customTrailingDelimiterContainerEl.hide();
+      customTrailingDelimiterManager.hide();
     }
 
     //* leadingDelimiter
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
-      .addToggle((toggle) =>
-        toggle
-          .setValue(settings.leadingDelimiter || false)
-          .onChange((value) => {
-            settings.leadingDelimiter = value;
-            value
-              ? customLeadingDelimiterContainerEl.show()
-              : customLeadingDelimiterContainerEl.hide();
-            this.plugin.saveSettings();
-          })
-      );
-
-    const customLeadingDelimiterContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedLeadingDelimiterDesc"))
+        .addToggle((toggle) =>
+          toggle
+            .setValue(settings.leadingDelimiter || false)
+            .onChange((value) => {
+              settings.leadingDelimiter = value;
+              value
+                ? customLeadingDelimiterManager.show()
+                : customLeadingDelimiterManager.hide();
+              this.plugin.saveSettings();
+            })
+        )
     );
+
+    const customLeadingDelimiterManager = new SettingDisplayManager();
+    displayManager.add(customLeadingDelimiterManager);
 
     //* customLeadingDelimiter
-    new Setting(customLeadingDelimiterContainerEl)
-      .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
-      .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
-      .addText((text) => {
-        text
-          .setValue(settings.customLeadingDelimiter || "")
-          .onChange((value) => {
-            settings.customLeadingDelimiter = value;
-            this.plugin.saveSettings();
-          });
-      });
+    customLeadingDelimiterManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomLeadingDelimiter"))
+        .setDesc(i18n.t("setting.orderedCustomLeadingDelimiterDesc"))
+        .addText((text) => {
+          text
+            .setValue(settings.customLeadingDelimiter || "")
+            .onChange((value) => {
+              settings.customLeadingDelimiter = value;
+              this.plugin.saveSettings();
+            });
+        })
+    );
 
     if (!settings.leadingDelimiter) {
-      customLeadingDelimiterContainerEl.hide();
+      customLeadingDelimiterManager.hide();
     }
 
-    const customIdentsContainerEl = containerEl.createDiv(
-      className.settingItem
-    );
+    const customIdentsManager = new SettingDisplayManager();
+    displayManager.add(customIdentsManager);
 
     //* customIdents
-    new Setting(customIdentsContainerEl)
-      .setName(i18n.t("setting.orderedCustomIdents"))
-      .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
-      .addText((text) =>
-        text.setValue(settings.customIdents).onChange((value) => {
-          settings.customIdents = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    if (settings.styleType !== "customIdent") {
-      customIdentsContainerEl.hide();
-    }
-
-    const specifiedStringContainerEl = containerEl.createDiv(
-      className.settingItem
+    customIdentsManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomIdents"))
+        .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
+        .addText((text) =>
+          text.setValue(settings.customIdents).onChange((value) => {
+            settings.customIdents = value;
+            this.plugin.saveSettings();
+          })
+        )
     );
 
+    if (settings.styleType !== "customIdent") {
+      customIdentsManager.hide();
+    }
+
+    const specifiedStringManager = new SettingDisplayManager();
+    displayManager.add(specifiedStringManager);
+
     //* specifiedString
-    new Setting(specifiedStringContainerEl)
-      .setName(i18n.t("setting.orderedSpecifiedString"))
-      .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
-      .addText((text) =>
-        text.setValue(settings.specifiedString).onChange((value) => {
-          settings.specifiedString = value;
-          this.plugin.saveSettings();
-        })
-      );
+    specifiedStringManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedSpecifiedString"))
+        .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
+        .addText((text) =>
+          text.setValue(settings.specifiedString).onChange((value) => {
+            settings.specifiedString = value;
+            this.plugin.saveSettings();
+          })
+        )
+    );
 
     if (settings.styleType !== "string") {
-      specifiedStringContainerEl.hide();
+      specifiedStringManager.hide();
     }
   }
 
   private spliceDecoratorSettings(
+    displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
     settings: SpliceDecoratorSettings
   ) {
@@ -1408,69 +1496,73 @@ export class HeadingSettingTab extends PluginSettingTab {
     } = this;
 
     //* styleType
-    new Setting(containerEl)
-      .setName(i18n.t("setting.orderedStyleType"))
-      .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
-      .addDropdown((dropdown) =>
-        dropdown
-          .addOptions(this.styleTypeOptions)
-          .setValue(settings.styleType)
-          .onChange((value: OrderedCounterStyleType) => {
-            settings.styleType = value;
-            switch (value) {
-              case "customIdent":
-                customIdentsContainerEl.show();
-                specifiedStringContainerEl.hide();
-                break;
-              case "string":
-                specifiedStringContainerEl.show();
-                customIdentsContainerEl.hide();
-                break;
-              default:
-                customIdentsContainerEl.hide();
-                specifiedStringContainerEl.hide();
-                break;
-            }
-            this.plugin.saveSettings();
-          })
-      );
-
-    const customIdentsContainerEl = containerEl.createDiv(
-      className.settingItem
+    displayManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedStyleType"))
+        .setDesc(i18n.t("setting.orderedStyleTypeDesc"))
+        .addDropdown((dropdown) =>
+          dropdown
+            .addOptions(this.styleTypeOptions)
+            .setValue(settings.styleType)
+            .onChange((value: OrderedCounterStyleType) => {
+              settings.styleType = value;
+              switch (value) {
+                case "customIdent":
+                  customIdentsManager.show();
+                  specifiedStringManager.hide();
+                  break;
+                case "string":
+                  specifiedStringManager.show();
+                  customIdentsManager.hide();
+                  break;
+                default:
+                  customIdentsManager.hide();
+                  specifiedStringManager.hide();
+                  break;
+              }
+              this.plugin.saveSettings();
+            })
+        )
     );
+
+    const customIdentsManager = new SettingDisplayManager();
+    displayManager.add(customIdentsManager);
 
     //* customIdents
-    new Setting(customIdentsContainerEl)
-      .setName(i18n.t("setting.orderedCustomIdents"))
-      .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
-      .addText((text) =>
-        text.setValue(settings.customIdents).onChange((value) => {
-          settings.customIdents = value;
-          this.plugin.saveSettings();
-        })
-      );
-
-    if (settings.styleType !== "customIdent") {
-      customIdentsContainerEl.hide();
-    }
-
-    const specifiedStringContainerEl = containerEl.createDiv(
-      className.settingItem
+    customIdentsManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedCustomIdents"))
+        .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
+        .addText((text) =>
+          text.setValue(settings.customIdents).onChange((value) => {
+            settings.customIdents = value;
+            this.plugin.saveSettings();
+          })
+        )
     );
 
+    if (settings.styleType !== "customIdent") {
+      customIdentsManager.hide();
+    }
+
+    const specifiedStringManager = new SettingDisplayManager();
+    displayManager.add(specifiedStringManager);
+
     //* specifiedString
-    new Setting(specifiedStringContainerEl)
-      .setName(i18n.t("setting.orderedSpecifiedString"))
-      .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
-      .addText((text) =>
-        text.setValue(settings.specifiedString).onChange((value) => {
-          settings.specifiedString = value;
-          this.plugin.saveSettings();
-        })
-      );
+    specifiedStringManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.orderedSpecifiedString"))
+        .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
+        .addText((text) =>
+          text.setValue(settings.specifiedString).onChange((value) => {
+            settings.specifiedString = value;
+            this.plugin.saveSettings();
+          })
+        )
+    );
 
     if (settings.styleType !== "string") {
-      specifiedStringContainerEl.hide();
+      specifiedStringManager.hide();
     }
   }
 }
