@@ -118,22 +118,16 @@ export class HeadingSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName(i18n.t("setting.gutterFontSize"))
         .setDesc(i18n.t("setting.gutterFontSizeDesc"))
-        .addDropdown((dropdown) => {
-          dropdown
-            .addOptions({
-              "ui-smaller": i18n.t("setting.gutterFontSizeSmaller"),
-              "ui-small": i18n.t("setting.gutterFontSizeSmall"),
-              "ui-medium": i18n.t("setting.gutterFontSizeMedium"),
-              "ui-large": i18n.t("setting.gutterFontSizeLarge"),
-            })
+        .addSlider((slider) =>
+          slider
+            .setLimits(12, 24, 1)
             .setValue(settings.gutterFontSize)
             .onChange((value) => {
-              settings.gutterFontSize = this.isGutterFontSize(value)
-                ? value
-                : "ui-small";
+              settings.gutterFontSize = value;
               this.plugin.saveSettings();
-            });
-        })
+            })
+            .setDynamicTooltip()
+        )
     );
 
     //* enabledGutterSettings
@@ -540,10 +534,6 @@ export class HeadingSettingTab extends PluginSettingTab {
 
   private isGutterPosition(value: string): value is GutterPosition {
     return ["before-line-numbers", "after-line-numbers"].includes(value);
-  }
-
-  private isGutterFontSize(value: string): value is GutterFontSize {
-    return ["ui-smaller", "ui-small", "ui-medium", "ui-large"].includes(value);
   }
 
   private manageHeadingDecoratorSettings(

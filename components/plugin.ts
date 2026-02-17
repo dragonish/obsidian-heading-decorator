@@ -472,15 +472,9 @@ export class HeadingPlugin extends Plugin {
   }
 
   private applyGutterFontSize(): void {
-    const cssVarMap: Record<GutterFontSize, string> = {
-      "ui-smaller": "var(--font-ui-smaller)",
-      "ui-small": "var(--font-ui-small)",
-      "ui-medium": "var(--font-ui-medium)",
-      "ui-large": "var(--font-ui-large)",
-    };
     document.body.style.setProperty(
       "--heading-decorator-gutter-font-size",
-      cssVarMap[this.settings.gutterFontSize] ?? "var(--font-ui-small)"
+      `${this.settings.gutterFontSize}px`
     );
   }
 
