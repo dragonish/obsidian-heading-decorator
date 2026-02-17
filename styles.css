@@ -446,10 +446,10 @@ body {
 
 /* gutter start */
 .heading-decorator-gutter {
-  font-size: var(--font-smallest);
+  font-size: var(--font-small);
   letter-spacing: 0.015em;
   text-align: end;
-  min-width: 3ch;
+  min-width: 4ch;
 }
 
 .heading-decorator-gutter-marker {
@@ -460,34 +460,34 @@ body {
 }
 
 .heading-decorator-gutter-marker[data-decorator-opacity="10%"] {
-  opacity: 10%;
+  color: color-mix(in srgb, var(--text-faint) 10%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="20%"] {
-  opacity: 20%;
+  color: color-mix(in srgb, var(--text-faint) 20%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="30%"] {
-  opacity: 30%;
+  color: color-mix(in srgb, var(--text-faint) 30%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="40%"] {
-  opacity: 40%;
+  color: color-mix(in srgb, var(--text-faint) 40%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="50%"] {
-  opacity: 50%;
+  color: color-mix(in srgb, var(--text-faint) 50%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="60%"] {
-  opacity: 60%;
+  color: color-mix(in srgb, var(--text-faint) 60%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="70%"] {
-  opacity: 70%;
+  color: color-mix(in srgb, var(--text-faint) 70%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="80%"] {
-  opacity: 80%;
+  color: color-mix(in srgb, var(--text-faint) 80%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="90%"] {
-  opacity: 90%;
+  color: color-mix(in srgb, var(--text-faint) 90%, transparent);
 }
 .heading-decorator-gutter-marker[data-decorator-opacity="100%"] {
-  opacity: 100%;
+  color: var(--text-normal);
 }
 
 .table-cell-wrapper .heading-decorator-gutter {
