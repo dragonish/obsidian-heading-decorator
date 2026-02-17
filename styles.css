@@ -446,7 +446,7 @@ body {
 
 /* gutter start */
 .heading-decorator-gutter {
-  font-size: var(--font-small);
+  font-size: var(--heading-decorator-gutter-font-size, var(--font-small));
   letter-spacing: 0.015em;
   text-align: end;
   min-width: 4ch;

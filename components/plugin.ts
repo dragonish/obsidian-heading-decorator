@@ -170,6 +170,7 @@ export class HeadingPlugin extends Plugin {
     // Register editor extension
     this.editorExtensions = this.buildEditorExtensions();
     this.registerEditorExtension(this.editorExtensions);
+    this.applyGutterFontSize();
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor((element, context) => {
@@ -317,6 +318,7 @@ export class HeadingPlugin extends Plugin {
 
     this.revokes.forEach((revoke) => revoke());
     this.revokes = [];
+    document.body.style.removeProperty("--heading-decorator-gutter-font-size");
   }
 
   async saveSettings() {
@@ -348,7 +350,14 @@ export class HeadingPlugin extends Plugin {
       } else {
         this.unloadFileExplorerComponents();
       }
-    } else if (path === "useGutter" || path === "gutterPosition") {
+    } else if (path === "gutterFontSize") {
+      this.applyGutterFontSize();
+    } else if (
+      path === "useGutter" ||
+      path === "gutterPosition" ||
+      path === "enabledGutterSettings" ||
+      path.startsWith("gutterSettings")
+    ) {
       this.swapEditorExtensions();
     } else if (
       path === "enabledOutlineSettings" ||
@@ -391,6 +400,9 @@ export class HeadingPlugin extends Plugin {
       }
       if (!this.settings.enabledFileExplorerSettings) {
         this.debouncedRerenderFileExplorerDecorator();
+      }
+      if (this.settings.useGutter && !this.settings.enabledGutterSettings) {
+        this.swapEditorExtensions();
       }
     }
   }
@@ -457,6 +469,19 @@ export class HeadingPlugin extends Plugin {
     this.editorExtensions.length = 0;
     this.editorExtensions.push(...newExts);
     this.app.workspace.updateOptions();
+  }
+
+  private applyGutterFontSize(): void {
+    const cssVarMap: Record<GutterFontSize, string> = {
+      "ui-smaller": "var(--font-ui-smaller)",
+      "ui-small": "var(--font-ui-small)",
+      "ui-medium": "var(--font-ui-medium)",
+      "ui-large": "var(--font-ui-large)",
+    };
+    document.body.style.setProperty(
+      "--heading-decorator-gutter-font-size",
+      cssVarMap[this.settings.gutterFontSize] ?? "var(--font-ui-small)"
+    );
   }
 
   private createInlineViewPlugin(
@@ -871,6 +896,8 @@ export class HeadingPlugin extends Plugin {
       sourceHideNumberSigns,
       previewSettings: _previewSettings,
       sourceSettings: _sourceSettings,
+      enabledGutterSettings,
+      gutterSettings: _gutterSettings,
     } = this.settings;
 
     let enabledInPreview = _enabledInPreview;
@@ -880,6 +907,9 @@ export class HeadingPlugin extends Plugin {
       : commonSettings;
     const sourceSettings = enabledSourceSettings
       ? _sourceSettings
+      : commonSettings;
+    const gutterSettings = enabledGutterSettings
+      ? _gutterSettings
       : commonSettings;
 
     const file = this.getActiveFile();
@@ -911,6 +941,7 @@ export class HeadingPlugin extends Plugin {
       sourceHideNumberSigns,
       previewSettings,
       sourceSettings,
+      gutterSettings,
     };
   }
 

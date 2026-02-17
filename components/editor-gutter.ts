@@ -89,12 +89,9 @@ export function createHeadingGutterExtension(
         }
 
         const doc = view.state.doc;
-        const settings = isLivePreviewMode
-          ? pluginData.previewSettings
-          : pluginData.sourceSettings;
-
-        const { opacity } = settings;
-        const counter = createCounterFromSettings(settings, doc);
+        const { gutterSettings } = pluginData;
+        const { opacity } = gutterSettings;
+        const counter = createCounterFromSettings(gutterSettings, doc);
 
         const builder = new RangeSetBuilder<HeadingGutterMarker>();
         const heading = new Heading();

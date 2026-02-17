@@ -142,6 +142,8 @@ export type HeadingPluginSettings = {
   sourceHideNumberSigns: boolean;
   useGutter: boolean;
   gutterPosition: GutterPosition;
+  gutterFontSize: GutterFontSize;
+  enabledGutterSettings: boolean;
   enabledInOutline: boolean;
   enabledOutlineSettings: boolean;
   enabledInQuietOutline: boolean;
@@ -164,6 +166,8 @@ export type HeadingPluginData = Omit<
   | "enabledSourceSettings"
   | "useGutter"
   | "gutterPosition"
+  | "gutterFontSize"
+  | "enabledGutterSettings"
   | "enabledInOutline"
   | "outlineSettings"
   | "enabledInQuietOutline"
@@ -321,6 +325,9 @@ export function defaultSettings(): HeadingPluginSettings {
     sourceHideNumberSigns: false,
     useGutter: false,
     gutterPosition: "before-line-numbers",
+    gutterFontSize: "ui-small",
+    enabledGutterSettings: false,
+    gutterSettings: { ...defaultHeadingDecoratorSettings(), opacity: 100 },
     enabledInOutline: false,
     enabledOutlineSettings: false,
     outlineSettings: defaultHeadingDecoratorSettings(),

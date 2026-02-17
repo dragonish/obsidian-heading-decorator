@@ -113,6 +113,53 @@ export class HeadingSettingTab extends PluginSettingTab {
         })
     );
 
+    //* gutterFontSize
+    gutterPositionManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.gutterFontSize"))
+        .setDesc(i18n.t("setting.gutterFontSizeDesc"))
+        .addDropdown((dropdown) => {
+          dropdown
+            .addOptions({
+              "ui-smaller": i18n.t("setting.gutterFontSizeSmaller"),
+              "ui-small": i18n.t("setting.gutterFontSizeSmall"),
+              "ui-medium": i18n.t("setting.gutterFontSizeMedium"),
+              "ui-large": i18n.t("setting.gutterFontSizeLarge"),
+            })
+            .setValue(settings.gutterFontSize)
+            .onChange((value) => {
+              settings.gutterFontSize = this.isGutterFontSize(value)
+                ? value
+                : "ui-small";
+              this.plugin.saveSettings();
+            });
+        })
+    );
+
+    //* enabledGutterSettings
+    let gutterConfigBtn: ButtonOrUndefined;
+    gutterPositionManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInGutterConfig"))
+        .setDesc(i18n.t("setting.enabledInGutterConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledGutterSettings).onChange((value) => {
+            settings.enabledGutterSettings = value;
+            gutterConfigBtn?.setDisabled(!value);
+            this.plugin.saveSettings();
+          });
+        })
+        .addButton((button) => {
+          gutterConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("gutterSettings");
+            })
+            .setDisabled(!settings.enabledGutterSettings);
+        })
+    );
+
     if (!settings.useGutter) {
       gutterPositionManager.hide();
     }
@@ -495,6 +542,10 @@ export class HeadingSettingTab extends PluginSettingTab {
     return ["before-line-numbers", "after-line-numbers"].includes(value);
   }
 
+  private isGutterFontSize(value: string): value is GutterFontSize {
+    return ["ui-smaller", "ui-small", "ui-medium", "ui-large"].includes(value);
+  }
+
   private manageHeadingDecoratorSettings(
     settingsType: PluginDecoratorSettingsType
   ) {
@@ -527,6 +578,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         break;
       case "fileExplorerSettings":
         tabName = i18n.t("setting.enabledInFileExplorerConfig");
+        break;
+      case "gutterSettings":
+        tabName = i18n.t("setting.enabledInGutterConfig");
         break;
     }
 
