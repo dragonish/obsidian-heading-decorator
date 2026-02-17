@@ -140,6 +140,8 @@ export type HeadingPluginSettings = {
   enabledInSource: boolean;
   enabledSourceSettings: boolean;
   sourceHideNumberSigns: boolean;
+  useGutter: boolean;
+  gutterPosition: GutterPosition;
   enabledInOutline: boolean;
   enabledOutlineSettings: boolean;
   enabledInQuietOutline: boolean;
@@ -160,6 +162,8 @@ export type HeadingPluginData = Omit<
   | "readingSettings"
   | "enabledPreviewSettings"
   | "enabledSourceSettings"
+  | "useGutter"
+  | "gutterPosition"
   | "enabledInOutline"
   | "outlineSettings"
   | "enabledInQuietOutline"
@@ -182,6 +186,8 @@ export const className = {
   quietOutlineContainer: "quiet-outline-custom-heading-container",
   fileExplorer: "file-explorer-custom-heading-decorator",
   fileExplorerContainer: "file-explorer-custom-heading-container",
+  gutter: "heading-decorator-gutter",
+  gutterMarker: "heading-decorator-gutter-marker",
   before: "before-heading-decorator",
   beforeInside: "before-inside-heading-decorator",
   after: "after-heading-decorator",
@@ -313,6 +319,8 @@ export function defaultSettings(): HeadingPluginSettings {
     enabledSourceSettings: false,
     sourceSettings: defaultHeadingDecoratorSettings(),
     sourceHideNumberSigns: false,
+    useGutter: false,
+    gutterPosition: "before-line-numbers",
     enabledInOutline: false,
     enabledOutlineSettings: false,
     outlineSettings: defaultHeadingDecoratorSettings(),

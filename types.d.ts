@@ -13,6 +13,7 @@ type HeadingTuple = TupleOf<string, 6>;
 type DecoratorMode = "orderd" | "independent" | "splice" | "unordered";
 type OpacityOptions = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 type PostionOptions = "before" | "before-inside" | "after" | "after-inside";
+type GutterPosition = "before-line-numbers" | "after-line-numbers";
 type RenderPolicy = "partial" | "full";
 
 type PluginDecoratorSettingsType =

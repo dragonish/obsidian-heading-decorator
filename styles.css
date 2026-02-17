@@ -442,4 +442,55 @@ body {
 .file-explorer-custom-heading-decorator.after-heading-decorator[data-decorator-opacity="100%"]::after {
   opacity: 100%;
 }
-/* file-explorer start */
+/* file-explorer end */
+
+/* gutter start */
+.heading-decorator-gutter {
+  font-size: var(--font-smallest);
+  letter-spacing: 0.015em;
+  text-align: end;
+  min-width: 3ch;
+}
+
+.heading-decorator-gutter-marker {
+  color: var(--text-faint);
+  display: inline-block;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.heading-decorator-gutter-marker[data-decorator-opacity="10%"] {
+  opacity: 10%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="20%"] {
+  opacity: 20%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="30%"] {
+  opacity: 30%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="40%"] {
+  opacity: 40%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="50%"] {
+  opacity: 50%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="60%"] {
+  opacity: 60%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="70%"] {
+  opacity: 70%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="80%"] {
+  opacity: 80%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="90%"] {
+  opacity: 90%;
+}
+.heading-decorator-gutter-marker[data-decorator-opacity="100%"] {
+  opacity: 100%;
+}
+
+.table-cell-wrapper .heading-decorator-gutter {
+  display: none;
+}
+/* gutter end */
