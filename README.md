@@ -129,6 +129,12 @@ For the *Ignore the single heading at the top-level* setting, if the top-level h
 | :-----: | :-----------------------------------: | :------------------------------------: |
 | ![Default](images/no-ignore.jpg) | ![Ignore the single heading at the top-level](images/ignore-with-number-1.jpg) | ![The maximum number of ignored is 1](images/ignore-with-number-6.jpg) |
 
+### Editor display
+
+Render heading decorations in a gutter column instead of inline with the text. Applies to both live preview and source mode. For details, see [#24](https://github.com/dragonish/obsidian-heading-decorator/issues/24). Preview effect:
+
+![gutter](images/gutter.png)
+
 ### Other settings for reading view
 
 #### Render policy for reading view

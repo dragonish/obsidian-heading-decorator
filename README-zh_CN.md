@@ -127,6 +127,12 @@
 | :--: | :-----------------------: | :------------------------: |
 | ![默认](images/no-ignore.jpg) | ![忽略顶层的独立标题 1](images/ignore-with-number-1.jpg) | ![忽略顶层的独立标题 6](images/ignore-with-number-6.jpg) |
 
+### 编辑器显示
+
+在边栏列中显示标题装饰，而不是内联在文本中。适用于实时阅览和源码模式。详细可参考 [#24](https://github.com/dragonish/obsidian-heading-decorator/issues/24)。预览效果：
+
+![gutter](images/gutter.png)
+
 ### 阅读视图的其他设置
 
 #### 阅读视图的渲染策略

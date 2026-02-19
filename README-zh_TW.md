@@ -127,6 +127,12 @@
 | :--: | :-----------------------: | :-------------------------: |
 | ![預設](images/no-ignore.jpg) | ![忽略頂層的獨立標題 1](images/ignore-with-number-1.jpg) | ![忽略頂層的獨立標題 6](images/ignore-with-number-6.jpg) |
 
+### 编辑器显示
+
+在邊欄列中顯示標題裝飾，而不是內嵌在文字中。適用於實際預覽和原始碼模式。詳細可參考 [#24](https://github.com/dragonish/obsidian-heading-decorator/issues/24)。預覽效果：
+
+![gutter](images/gutter.png)
+
 ### 閱讀的其他設定
 
 #### 閱讀的渲染策略
