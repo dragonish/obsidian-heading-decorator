@@ -20,9 +20,9 @@
 
 ## 設定
 
-### 元資料關鍵詞
+### 後設資料關鍵詞
 
-從[屬性（元資料）](https://help.obsidian.md/Editing+and+formatting/Properties)讀取啟用狀態的鍵名。預設值為：`heading`。使用參考：[筆記的啟用狀態](#筆記的啟用狀態)。
+從[屬性（後設資料）](https://help.obsidian.md/Editing+and+formatting/Properties)讀取啟用狀態的鍵名。預設值為：`heading`。使用參考：[筆記的啟用狀態](#筆記的啟用狀態)。
 
 ### 啟用
 
@@ -156,7 +156,7 @@
 
 此外掛允許根據筆記[屬性](https://help.obsidian.md/Editing+and+formatting/Properties)中的特定欄位配置啟用狀態。您可以單獨控制筆記的啟用狀態。
 
-您可以在配置的屬性[關鍵詞](#元資料關鍵詞)後指定狀態，例如：
+您可以在配置的屬性[關鍵詞](#後設資料關鍵詞)後指定狀態，例如：
 
 ```yaml
 ---

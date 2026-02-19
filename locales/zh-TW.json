@@ -55,7 +55,7 @@
     "string": "指定字串"
   },
   "setting": {
-    "metadataKeyword": "元資料關鍵詞",
+    "metadataKeyword": "後設資料關鍵詞",
     "metadataKeywordPlaceholder": "輸入關鍵詞",
     "metadataKeywordDesc": "從{placeholder}中讀取啟用狀態的鍵名。",
     "properties": "屬性",
