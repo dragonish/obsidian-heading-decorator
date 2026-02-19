@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Build package
         run: |
           pnpm install
@@ -42,11 +42,21 @@ jobs:
         id: contributors
         run: |
           previous_tag=$(git describe --abbrev=0 --tags HEAD^ 2>/dev/null || echo "")
+
           if [ -z "$previous_tag" ]; then
-            contributors=$(git log --format='%an' HEAD | sort | uniq -c | sort -rn | head -10 | awk '{print "- @" $2}')
+            commits=$(git log --format='%H' HEAD)
           else
-            contributors=$(git log ${previous_tag}..HEAD --format='%an' | sort | uniq -c | sort -rn | head -10 | awk '{print "- @" $2}')
+            commits=$(git log ${previous_tag}..HEAD --format='%H')
           fi
+
+          for sha in $commits; do
+            author=$(gh api repos/${{ github.repository }}/commits/$sha --jq '.author.login' 2>/dev/null)
+            if [ -n "$author" ]; then
+              echo "$author"
+            fi
+          done | sort | uniq -c | sort -rn | head -10 | awk '{print "- @" $2}' > contributors.txt
+
+          contributors=$(cat contributors.txt)
           echo "contributors<<EOF" >> $GITHUB_OUTPUT
           echo "$contributors" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
