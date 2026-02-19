@@ -8,6 +8,7 @@ import {
   debounce,
 } from "obsidian";
 import { EditorView, ViewPlugin } from "@codemirror/view";
+import type { Extension } from "@codemirror/state";
 import { i18n } from "../locales";
 import type { HeadingPluginSettings, HeadingPluginData } from "../common/data";
 import {
@@ -23,6 +24,7 @@ import {
   editorModeField,
   updateEditorMode,
 } from "./editor";
+import { createHeadingGutterExtension } from "./editor-gutter";
 import { ViewChildComponent } from "./child";
 import { ReadingChild } from "./reading-child";
 import {
@@ -61,6 +63,7 @@ export class HeadingPlugin extends Plugin {
   i18n = i18n;
 
   private revokes: (() => void)[] = [];
+  private editorExtensions: Extension[] = [];
 
   private readingComponents: ReadingChild[] = [];
 
@@ -165,11 +168,9 @@ export class HeadingPlugin extends Plugin {
     await this.loadSettings();
 
     // Register editor extension
-    this.registerEditorExtension([
-      headingDecorationsField,
-      editorModeField,
-      this.craeteHeadingViewPlugin(this.getPluginData.bind(this)),
-    ]);
+    this.editorExtensions = this.buildEditorExtensions();
+    this.registerEditorExtension(this.editorExtensions);
+    this.applyGutterFontSize();
 
     // Register markdown post processor
     this.registerMarkdownPostProcessor((element, context) => {
@@ -317,6 +318,7 @@ export class HeadingPlugin extends Plugin {
 
     this.revokes.forEach((revoke) => revoke());
     this.revokes = [];
+    document.body.style.removeProperty("--heading-decorator-gutter-font-size");
   }
 
   async saveSettings() {
@@ -348,6 +350,15 @@ export class HeadingPlugin extends Plugin {
       } else {
         this.unloadFileExplorerComponents();
       }
+    } else if (path === "gutterFontSize") {
+      this.applyGutterFontSize();
+    } else if (
+      path === "useGutter" ||
+      path === "gutterPosition" ||
+      path === "enabledGutterSettings" ||
+      path.startsWith("gutterSettings")
+    ) {
+      this.swapEditorExtensions();
     } else if (
       path === "enabledOutlineSettings" ||
       path.startsWith("outlineSettings")
@@ -389,6 +400,9 @@ export class HeadingPlugin extends Plugin {
       }
       if (!this.settings.enabledFileExplorerSettings) {
         this.debouncedRerenderFileExplorerDecorator();
+      }
+      if (this.settings.useGutter && !this.settings.enabledGutterSettings) {
+        this.swapEditorExtensions();
       }
     }
   }
@@ -434,7 +448,37 @@ export class HeadingPlugin extends Plugin {
     this.fileExplorerIdSet.clear();
   }
 
-  private craeteHeadingViewPlugin(
+  private buildEditorExtensions(): Extension[] {
+    const getPluginData = this.getPluginData.bind(this);
+    if (this.settings.useGutter) {
+      const showBefore = this.settings.gutterPosition === "before-line-numbers";
+      return [
+        editorModeField,
+        ...createHeadingGutterExtension(getPluginData, showBefore),
+      ];
+    }
+    return [
+      headingDecorationsField,
+      editorModeField,
+      this.createInlineViewPlugin(getPluginData),
+    ];
+  }
+
+  private swapEditorExtensions(): void {
+    const newExts = this.buildEditorExtensions();
+    this.editorExtensions.length = 0;
+    this.editorExtensions.push(...newExts);
+    this.app.workspace.updateOptions();
+  }
+
+  private applyGutterFontSize(): void {
+    document.body.style.setProperty(
+      "--heading-decorator-gutter-font-size",
+      `${this.settings.gutterFontSize}px`
+    );
+  }
+
+  private createInlineViewPlugin(
     getPluginData: () => Promise<HeadingPluginData>
   ) {
     return ViewPlugin.fromClass(
@@ -846,6 +890,8 @@ export class HeadingPlugin extends Plugin {
       sourceHideNumberSigns,
       previewSettings: _previewSettings,
       sourceSettings: _sourceSettings,
+      enabledGutterSettings,
+      gutterSettings: _gutterSettings,
     } = this.settings;
 
     let enabledInPreview = _enabledInPreview;
@@ -855,6 +901,9 @@ export class HeadingPlugin extends Plugin {
       : commonSettings;
     const sourceSettings = enabledSourceSettings
       ? _sourceSettings
+      : commonSettings;
+    const gutterSettings = enabledGutterSettings
+      ? _gutterSettings
       : commonSettings;
 
     const file = this.getActiveFile();
@@ -886,6 +935,7 @@ export class HeadingPlugin extends Plugin {
       sourceHideNumberSigns,
       previewSettings,
       sourceSettings,
+      gutterSettings,
     };
   }
 

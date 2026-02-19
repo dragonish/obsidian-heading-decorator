@@ -74,6 +74,90 @@ export class HeadingSettingTab extends PluginSettingTab {
         });
       });
 
+    new Setting(containerEl)
+      .setName(i18n.t("setting.editorDisplay"))
+      .setHeading();
+
+    //* useGutter
+    const gutterPositionManager = new SettingDisplayManager();
+
+    new Setting(containerEl)
+      .setName(i18n.t("setting.useGutter"))
+      .setDesc(i18n.t("setting.useGutterDesc"))
+      .addToggle((toggle) =>
+        toggle.setValue(settings.useGutter).onChange((value) => {
+          settings.useGutter = value;
+          value ? gutterPositionManager.show() : gutterPositionManager.hide();
+          this.plugin.saveSettings();
+        })
+      );
+
+    //* gutterPosition
+    gutterPositionManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.gutterPosition"))
+        .setDesc(i18n.t("setting.gutterPositionDesc"))
+        .addDropdown((dropdown) => {
+          dropdown
+            .addOptions({
+              "before-line-numbers": i18n.t("setting.beforeLineNumbers"),
+              "after-line-numbers": i18n.t("setting.afterLineNumbers"),
+            })
+            .setValue(settings.gutterPosition)
+            .onChange((value) => {
+              settings.gutterPosition = this.isGutterPosition(value)
+                ? value
+                : "before-line-numbers";
+              this.plugin.saveSettings();
+            });
+        })
+    );
+
+    //* gutterFontSize
+    gutterPositionManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.gutterFontSize"))
+        .setDesc(i18n.t("setting.gutterFontSizeDesc"))
+        .addSlider((slider) =>
+          slider
+            .setLimits(12, 24, 1)
+            .setValue(settings.gutterFontSize)
+            .onChange((value) => {
+              settings.gutterFontSize = value;
+              this.plugin.saveSettings();
+            })
+            .setDynamicTooltip()
+        )
+    );
+
+    //* enabledGutterSettings
+    let gutterConfigBtn: ButtonOrUndefined;
+    gutterPositionManager.add(
+      new Setting(containerEl)
+        .setName(i18n.t("setting.enabledInGutterConfig"))
+        .setDesc(i18n.t("setting.enabledInGutterConfigDesc"))
+        .addToggle((toggle) => {
+          toggle.setValue(settings.enabledGutterSettings).onChange((value) => {
+            settings.enabledGutterSettings = value;
+            gutterConfigBtn?.setDisabled(!value);
+            this.plugin.saveSettings();
+          });
+        })
+        .addButton((button) => {
+          gutterConfigBtn = button;
+          button
+            .setButtonText(i18n.t("button.config"))
+            .onClick(() => {
+              this.manageHeadingDecoratorSettings("gutterSettings");
+            })
+            .setDisabled(!settings.enabledGutterSettings);
+        })
+    );
+
+    if (!settings.useGutter) {
+      gutterPositionManager.hide();
+    }
+
     new Setting(containerEl).setName(i18n.t("setting.reading")).setHeading();
 
     //* enabledInReading
@@ -448,6 +532,10 @@ export class HeadingSettingTab extends PluginSettingTab {
     return ["partial", "full"].includes(value);
   }
 
+  private isGutterPosition(value: string): value is GutterPosition {
+    return ["before-line-numbers", "after-line-numbers"].includes(value);
+  }
+
   private manageHeadingDecoratorSettings(
     settingsType: PluginDecoratorSettingsType
   ) {
@@ -480,6 +568,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         break;
       case "fileExplorerSettings":
         tabName = i18n.t("setting.enabledInFileExplorerConfig");
+        break;
+      case "gutterSettings":
+        tabName = i18n.t("setting.enabledInGutterConfig");
         break;
     }
 
