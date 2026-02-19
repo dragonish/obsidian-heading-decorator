@@ -90,7 +90,7 @@ export class OrderedCounter extends Querier implements Counter {
       return result;
     }
 
-    let results: string[] = [];
+    let results: string[];
     const {
       styleType = "decimal",
       delimiter = ".",
@@ -107,7 +107,7 @@ export class OrderedCounter extends Querier implements Counter {
     switch (styleType) {
       case "customIdent":
         results = levels.map((l) =>
-          l > customIdents.length ? l.toString() : customIdents[l - 1]
+          l > customIdents.length ? l.toString() : customIdents[l - 1],
         );
         break;
       case "string":
@@ -140,7 +140,7 @@ export class IndependentCounter extends Querier implements Counter {
       return result;
     }
 
-    let results: string[] = [];
+    let results: string[];
     let used: Partial<IndependentDecoratorSettings>;
     const {
       h1 = {},
@@ -251,7 +251,7 @@ export class SpliceCounter extends Querier implements Counter {
     const levels = this.handler(level).slice(ignoreTopLevel);
 
     const results = levels.map((l, i) => {
-      let r = "";
+      let r;
       let used: Partial<SpliceDecoratorSettings>;
       switch (i + ignoreTopLevel + 1) {
         case 6:
@@ -308,7 +308,10 @@ export class SpliceCounter extends Querier implements Counter {
 }
 
 export class UnorderedCounter implements Counter {
-  constructor(private levelHeadings: HeadingTuple, private maxRecLevel = 6) {}
+  constructor(
+    private levelHeadings: HeadingTuple,
+    private maxRecLevel = 6,
+  ) {}
 
   decorator(level: number): string {
     let result = "";
