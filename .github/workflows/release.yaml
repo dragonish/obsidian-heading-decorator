@@ -38,6 +38,18 @@ jobs:
         run: |
           current=$(git describe --abbrev=0 --tags)
           echo "current=${current}" >> ${GITHUB_OUTPUT}
+      - name: Get contributors
+        id: contributors
+        run: |
+          previous_tag=$(git describe --abbrev=0 --tags HEAD^ 2>/dev/null || echo "")
+          if [ -z "$previous_tag" ]; then
+            contributors=$(git log --format='%an' HEAD | sort | uniq -c | sort -rn | head -10 | awk '{print "- @" $2}')
+          else
+            contributors=$(git log ${previous_tag}..HEAD --format='%an' | sort | uniq -c | sort -rn | head -10 | awk '{print "- @" $2}')
+          fi
+          echo "contributors<<EOF" >> $GITHUB_OUTPUT
+          echo "$contributors" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
@@ -46,4 +58,9 @@ jobs:
           prerelease: false
           draft: false
           artifacts: "main.js,styles.css,manifest.json"
-          body: ${{ steps.changelog_text.outputs.changes }}
+          body: |
+            ${{ steps.changelog_text.outputs.changes }}
+
+            ## Contributors
+
+            ${{ steps.contributors.outputs.contributors }}
