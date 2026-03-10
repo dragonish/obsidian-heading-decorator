@@ -131,7 +131,7 @@
 
 在邊欄列中顯示標題裝飾，而不是內嵌在文字中。適用於實際預覽和原始碼模式。詳細可參考 [#24](https://github.com/dragonish/obsidian-heading-decorator/issues/24)。預覽效果：
 
-![gutter](images/gutter.png)
+![gutter](images/gutter.jpg)
 
 ### 閱讀的其他設定
 

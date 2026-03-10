@@ -131,7 +131,7 @@
 
 在边栏列中显示标题装饰，而不是内联在文本中。适用于实时阅览和源码模式。详细可参考 [#24](https://github.com/dragonish/obsidian-heading-decorator/issues/24)。预览效果：
 
-![gutter](images/gutter.png)
+![gutter](images/gutter.jpg)
 
 ### 阅读视图的其他设置
 
