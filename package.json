@@ -39,11 +39,6 @@
     "@jsamr/counter-style": "^2.0.2",
     "obsidian-plugin-i18n": "^0.2.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "commit-and-tag-version": {
     "skip": {
       "changelog": true
