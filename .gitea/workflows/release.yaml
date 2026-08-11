@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 jobs:
   build:
@@ -14,19 +14,19 @@ jobs:
       HTTPS_PROXY: ${{ vars.PROXY }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 11
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: 'pnpm'
+          node-version: 24
+          cache: "pnpm"
       - name: Build package
         run: |
           pnpm install
@@ -53,7 +53,7 @@ jobs:
       - name: Create release
         uses: akkuman/gitea-release-action@v1
         env:
-          NODE_OPTIONS: '--experimental-fetch' # if nodejs < 18
+          NODE_OPTIONS: "--experimental-fetch" # if nodejs < 18
         with:
           server_url: ${{ vars.SERVER }}
           files: |-
@@ -68,12 +68,3 @@ jobs:
             ## Details
 
             See: [${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }}](/compare/${{ steps.git_tags.outputs.prev }}...${{ steps.git_tags.outputs.current }})
-      - name: Send notification
-        if: ${{ !cancelled() && secrets.GOTIFY_URL != '' && secrets.GOTIFY_TOKEN != '' }}
-        uses: dragonish/send-to-gotify@v1
-        with:
-          url: ${{ secrets.GOTIFY_URL }}
-          token: ${{ secrets.GOTIFY_TOKEN }}
-          title: ${{ gitea.repository }}
-          message: "Release ${{ steps.git_tags.outputs.current }}\n\n*status: ${{ job.status }}*"
-          content-type: "text/markdown"
