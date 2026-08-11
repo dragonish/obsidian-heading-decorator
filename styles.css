@@ -103,11 +103,6 @@ body {
   .cm-active
   .custom-heading-decorator.preview-custom-heading-decorator,
 .cm-line:has(.cm-header.cm-formatting-header)
-  .custom-heading-decorator.preview-custom-heading-decorator,
-.cm-focused
-  .cm-active
-  .custom-heading-decorator.preview-custom-heading-decorator,
-.cm-line:has(.cm-header.cm-formatting-header)
   .custom-heading-decorator.preview-custom-heading-decorator {
   display: none;
 }
@@ -194,9 +189,6 @@ body {
 
 .cm-focused
   .cm-active
-  .custom-heading-decorator.source-custom-heading-decorator,
-.cm-focused
-  .cm-active
   .custom-heading-decorator.source-custom-heading-decorator {
   display: none;
 }
@@ -267,7 +259,6 @@ body {
 .hide-source-number-signs {
   display: none;
 }
-.cm-focused .cm-active .hide-source-number-signs,
 .cm-focused .cm-active .hide-source-number-signs {
   display: unset;
 }
