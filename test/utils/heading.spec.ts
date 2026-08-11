@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { Heading } from "../../common/heading";
+import { Heading } from "../../src/utils/heading";
 
 describe("common/heading", function () {
   it("Heading.handler", function () {

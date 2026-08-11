@@ -7,12 +7,12 @@ import type {
   SpliceDecoratorSettings,
   IndependentSettings,
   SpliceSettings,
-} from "../common/data";
+} from "../../src/utils/data";
 import {
   defaultIndependentSettings,
   defaultSpliceSettings,
-} from "../common/data";
-import { getStyleTypeOptions } from "../common/options";
+} from "../../src/utils/data";
+import { getStyleTypeOptions } from "../../src/utils/options";
 import { FolderSuggest } from "./suggest";
 import { SettingDisplayManager } from "./setting";
 
@@ -45,12 +45,12 @@ export class HeadingSettingTab extends PluginSettingTab {
           .onChange((value) => {
             settings.metadataKeyword = value.trim();
             this.plugin.saveSettings();
-          })
+          }),
       );
 
     const metadataKeywordDesc = createFragment();
     const metadataKeywordDescTuple = i18n.getPlaceholderTuple(
-      "setting.metadataKeywordDesc"
+      "setting.metadataKeywordDesc",
     );
     metadataKeywordDesc.append(
       metadataKeywordDescTuple[0],
@@ -58,7 +58,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         href: "https://help.obsidian.md/Editing+and+formatting/Properties",
         text: i18n.t("setting.properties"),
       }),
-      metadataKeywordDescTuple[1]
+      metadataKeywordDescTuple[1],
     );
     metadataKeywordSetting.descEl.appendChild(metadataKeywordDesc);
 
@@ -89,7 +89,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           settings.useGutter = value;
           value ? gutterPositionManager.show() : gutterPositionManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     //* gutterPosition
@@ -110,7 +110,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                 : "before-line-numbers";
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     //* gutterFontSize
@@ -126,8 +126,8 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.gutterFontSize = value;
               this.plugin.saveSettings();
             })
-            .setDynamicTooltip()
-        )
+            .setDynamicTooltip(),
+        ),
     );
 
     //* enabledGutterSettings
@@ -151,7 +151,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("gutterSettings");
             })
             .setDisabled(!settings.enabledGutterSettings);
-        })
+        }),
     );
 
     if (!settings.useGutter) {
@@ -169,7 +169,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           settings.enabledInReading = value;
           value ? readingConfigManager.show() : readingConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const readingConfigManager = new SettingDisplayManager();
@@ -194,7 +194,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("readingSettings");
             })
             .setDisabled(!settings.enabledReadingSettings);
-        })
+        }),
     );
 
     //* readingRenderPolicy
@@ -215,7 +215,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                 : "partial";
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.enabledInReading) {
@@ -235,7 +235,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           settings.enabledInPreview = value;
           value ? previewConfigManager.show() : previewConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const previewConfigManager = new SettingDisplayManager();
@@ -260,7 +260,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("previewSettings");
             })
             .setDisabled(!settings.enabledPreviewSettings);
-        })
+        }),
     );
 
     if (!settings.enabledInPreview) {
@@ -278,7 +278,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           settings.enabledInSource = value;
           value ? sourceConfigManager.show() : sourceConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const sourceConfigManager = new SettingDisplayManager();
@@ -303,7 +303,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("sourceSettings");
             })
             .setDisabled(!settings.enabledSourceSettings);
-        })
+        }),
     );
 
     //* sourceHideNumberSigns
@@ -318,7 +318,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.sourceHideNumberSigns = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.enabledInSource) {
@@ -336,7 +336,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           settings.enabledInOutline = value;
           value ? outlineConfigManager.show() : outlineConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const outlineConfigManager = new SettingDisplayManager();
@@ -361,7 +361,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("outlineSettings");
             })
             .setDisabled(!settings.enabledOutlineSettings);
-        })
+        }),
     );
 
     if (!settings.enabledInOutline) {
@@ -382,12 +382,12 @@ export class HeadingSettingTab extends PluginSettingTab {
             ? quietOutlineConfigManager.show()
             : quietOutlineConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const enabledInQuietOutlineDesc = createFragment();
     const enabledInQuietOutLineDescTuple = i18n.getPlaceholderTuple(
-      "setting.enabledInQuietOutlineDesc"
+      "setting.enabledInQuietOutlineDesc",
     );
     enabledInQuietOutlineDesc.append(
       enabledInQuietOutLineDescTuple[0],
@@ -395,7 +395,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         href: "https://github.com/guopenghui/obsidian-quiet-outline",
         text: "Quiet Outline",
       }),
-      enabledInQuietOutLineDescTuple[1]
+      enabledInQuietOutLineDescTuple[1],
     );
     enabledInQuietOutlineSetting.descEl.appendChild(enabledInQuietOutlineDesc);
 
@@ -423,7 +423,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("quietOutlineSettings");
             })
             .setDisabled(!settings.enabledQuietOutlineSettings);
-        })
+        }),
     );
 
     if (!settings.enabledInQuietOutline) {
@@ -444,12 +444,12 @@ export class HeadingSettingTab extends PluginSettingTab {
             ? fileExplorerConfigManager.show()
             : fileExplorerConfigManager.hide();
           this.plugin.saveSettings();
-        })
+        }),
       );
 
     const enabledInFileExplorerDesc = createFragment();
     const enabledInFileExplorerDescTuple = i18n.getPlaceholderTuple(
-      "setting.enabledInFileExplorerDesc"
+      "setting.enabledInFileExplorerDesc",
     );
     enabledInFileExplorerDesc.append(
       enabledInFileExplorerDescTuple[0],
@@ -457,7 +457,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         href: "https://github.com/patrickchiang/obsidian-headings-in-explorer",
         text: "Headings in Explorer",
       }),
-      enabledInFileExplorerDescTuple[1]
+      enabledInFileExplorerDescTuple[1],
     );
     enabledInFileExplorerSetting.descEl.appendChild(enabledInFileExplorerDesc);
 
@@ -485,7 +485,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.manageHeadingDecoratorSettings("fileExplorerSettings");
             })
             .setDisabled(!settings.enabledFileExplorerSettings);
-        })
+        }),
     );
 
     if (!settings.enabledInFileExplorer) {
@@ -537,7 +537,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   }
 
   private manageHeadingDecoratorSettings(
-    settingsType: PluginDecoratorSettingsType
+    settingsType: PluginDecoratorSettingsType,
   ) {
     const {
       containerEl,
@@ -593,7 +593,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           .onChange((value) => {
             settings[settingsType].enabledInEachNote = value;
             this.plugin.saveSettings();
-          })
+          }),
       );
 
     new Setting(containerEl).setName(i18n.t("setting.effect")).setHeading();
@@ -614,7 +614,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           .setValue(settings[settingsType].decoratorMode || "orderd")
           .onChange((value) => {
             settings[settingsType].decoratorMode = this.isDecoratorModeValue(
-              value
+              value,
             )
               ? value
               : "orderd";
@@ -668,7 +668,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               : 20;
             this.plugin.saveSettings();
           })
-          .setDynamicTooltip()
+          .setDynamicTooltip(),
       );
 
     //* position
@@ -733,7 +733,7 @@ export class HeadingSettingTab extends PluginSettingTab {
     this.independentSettings(
       independentManager,
       containerEl,
-      settings[settingsType].independentSettings
+      settings[settingsType].independentSettings,
     );
     if (settings[settingsType].decoratorMode !== "independent") {
       independentManager.hide();
@@ -746,7 +746,7 @@ export class HeadingSettingTab extends PluginSettingTab {
     this.spliceSettings(
       spliceManager,
       containerEl,
-      settings[settingsType].spliceSettings
+      settings[settingsType].spliceSettings,
     );
     if (settings[settingsType].decoratorMode !== "splice") {
       spliceManager.hide();
@@ -756,7 +756,7 @@ export class HeadingSettingTab extends PluginSettingTab {
     this.unorderedSettings(
       unorderedManager,
       containerEl,
-      settings[settingsType]
+      settings[settingsType],
     );
     if (settings[settingsType].decoratorMode !== "unordered") {
       unorderedManager.hide();
@@ -775,14 +775,14 @@ export class HeadingSettingTab extends PluginSettingTab {
   private orderedSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: HeadingDecoratorSettings
+    settings: HeadingDecoratorSettings,
   ) {
     const {
       plugin: { i18n },
     } = this;
 
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.ordered")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.ordered")).setHeading(),
     );
 
     //* orderedStyleType
@@ -811,8 +811,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                   break;
               }
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     //* orderedDelimiter
@@ -824,8 +824,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.orderedDelimiter).onChange((value) => {
             settings.orderedDelimiter = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     //* orderedTrailingDelimiter
@@ -842,8 +842,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                 ? orderedCustomTrailingDelimiterManager.show()
                 : orderedCustomTrailingDelimiterManager.hide();
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     const orderedCustomTrailingDelimiterManager = new SettingDisplayManager();
@@ -861,7 +861,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.orderedCustomTrailingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.orderedTrailingDelimiter) {
@@ -882,8 +882,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                 ? orderedCustomLeadingDelimiterManager.show()
                 : orderedCustomLeadingDelimiterManager.hide();
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     const orderedCustomLeadingDelimiterManager = new SettingDisplayManager();
@@ -901,7 +901,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.orderedCustomLeadingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.orderedLeadingDelimiter) {
@@ -920,8 +920,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.orderedCustomIdents).onChange((value) => {
             settings.orderedCustomIdents = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.orderedStyleType !== "customIdent") {
@@ -940,8 +940,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.orderedSpecifiedString).onChange((value) => {
             settings.orderedSpecifiedString = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.orderedStyleType !== "string") {
@@ -952,7 +952,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   private independentSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: IndependentSettings
+    settings: IndependentSettings,
   ) {
     const {
       plugin: { i18n },
@@ -961,7 +961,7 @@ export class HeadingSettingTab extends PluginSettingTab {
     displayManager.add(
       new Setting(containerEl)
         .setName(i18n.t("setting.independent"))
-        .setHeading()
+        .setHeading(),
     );
 
     //* orderedRecLevel
@@ -978,42 +978,42 @@ export class HeadingSettingTab extends PluginSettingTab {
               this.plugin.saveSettings();
             })
             .setDynamicTooltip();
-        })
+        }),
     );
 
     //* h1
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h1);
 
     //* h2
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h2);
 
     //* h3
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h3);
 
     //* h4
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h4);
 
     //* h5
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h5);
 
     //* h6
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading(),
     );
     this.independentDecoratorSettings(displayManager, containerEl, settings.h6);
   }
@@ -1021,14 +1021,16 @@ export class HeadingSettingTab extends PluginSettingTab {
   private unorderedSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: HeadingDecoratorSettings
+    settings: HeadingDecoratorSettings,
   ) {
     const {
       plugin: { i18n },
     } = this;
 
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.unordered")).setHeading()
+      new Setting(containerEl)
+        .setName(i18n.t("setting.unordered"))
+        .setHeading(),
     );
 
     //* unorderedLevelHeadings
@@ -1040,22 +1042,22 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.unorderedLevelHeadings).onChange((value) => {
             settings.unorderedLevelHeadings = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
   }
 
   private logicSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: HeadingDecoratorSettings
+    settings: HeadingDecoratorSettings,
   ) {
     const {
       plugin: { i18n },
     } = this;
 
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.logic")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.logic")).setHeading(),
     );
 
     //* orderedAllowZeroLevel
@@ -1069,8 +1071,8 @@ export class HeadingSettingTab extends PluginSettingTab {
             .onChange((value) => {
               settings.orderedAllowZeroLevel = value;
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     //* orderedBasedOnExisting
@@ -1084,8 +1086,8 @@ export class HeadingSettingTab extends PluginSettingTab {
             .onChange((value) => {
               settings.orderedBasedOnExisting = value;
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     //* orderedAlwaysIgnore
@@ -1099,8 +1101,8 @@ export class HeadingSettingTab extends PluginSettingTab {
             .onChange((value) => {
               settings.orderedAlwaysIgnore = value;
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     //* orderedIgnoreSingle
@@ -1112,8 +1114,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           toggle.setValue(settings.orderedIgnoreSingle).onChange((value) => {
             settings.orderedIgnoreSingle = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     //* orderedIgnoreMaximum
@@ -1129,22 +1131,22 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.orderedIgnoreMaximum = value;
               this.plugin.saveSettings();
             })
-            .setDynamicTooltip()
-        )
+            .setDynamicTooltip(),
+        ),
     );
   }
 
   private spliceSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: SpliceSettings
+    settings: SpliceSettings,
   ) {
     const {
       plugin: { i18n },
     } = this;
 
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.splice")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.splice")).setHeading(),
     );
 
     //* delimiter
@@ -1156,8 +1158,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.delimiter).onChange((value) => {
             settings.delimiter = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     //* trailingDelimiter
@@ -1172,8 +1174,8 @@ export class HeadingSettingTab extends PluginSettingTab {
               ? customTrailingDelimiterManager.show()
               : customTrailingDelimiterManager.hide();
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     const customTrailingDelimiterManager = new SettingDisplayManager();
@@ -1191,7 +1193,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.customTrailingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.trailingDelimiter) {
@@ -1212,8 +1214,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                 ? customLeadingDelimiterManater.show()
                 : customLeadingDelimiterManater.hide();
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     const customLeadingDelimiterManater = new SettingDisplayManager();
@@ -1231,7 +1233,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.customLeadingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.leadingDelimiter) {
@@ -1240,37 +1242,37 @@ export class HeadingSettingTab extends PluginSettingTab {
 
     //* h1
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h1")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h1);
 
     //* h2
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h2")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h2);
 
     //* h3
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h3")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h3);
 
     //* h4
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h4")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h4);
 
     //* h5
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h5")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h5);
 
     //* h6
     displayManager.add(
-      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading()
+      new Setting(containerEl).setName(i18n.t("setting.h6")).setHeading(),
     );
     this.spliceDecoratorSettings(displayManager, containerEl, settings.h6);
   }
@@ -1297,7 +1299,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(
           i18n.t("setting.folderBlocklistIndex", {
             index: index + 1,
-          })
+          }),
         )
         .addText((text) => {
           text.setValue(folder).onChange((value) => {
@@ -1365,7 +1367,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(
           i18n.t("setting.fileRegexBlocklistIndex", {
             index: index + 1,
-          })
+          }),
         )
         .addText((text) =>
           text
@@ -1374,7 +1376,7 @@ export class HeadingSettingTab extends PluginSettingTab {
             .onChange((value) => {
               settings.fileRegexBlacklist[index] = value.trim();
               this.plugin.saveSettings();
-            })
+            }),
         )
         .addButton((button) => {
           button
@@ -1409,7 +1411,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   private independentDecoratorSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: IndependentDecoratorSettings
+    settings: IndependentDecoratorSettings,
   ) {
     const {
       plugin: { i18n },
@@ -1441,8 +1443,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                   break;
               }
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     //* delimiter
@@ -1454,8 +1456,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.delimiter).onChange((value) => {
             settings.delimiter = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     //* trailingDelimiter
@@ -1470,8 +1472,8 @@ export class HeadingSettingTab extends PluginSettingTab {
               ? customTrailingDelimiterManager.show()
               : customTrailingDelimiterManager.hide();
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     const customTrailingDelimiterManager = new SettingDisplayManager();
@@ -1489,7 +1491,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.customTrailingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.trailingDelimiter) {
@@ -1510,8 +1512,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                 ? customLeadingDelimiterManager.show()
                 : customLeadingDelimiterManager.hide();
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     const customLeadingDelimiterManager = new SettingDisplayManager();
@@ -1529,7 +1531,7 @@ export class HeadingSettingTab extends PluginSettingTab {
               settings.customLeadingDelimiter = value;
               this.plugin.saveSettings();
             });
-        })
+        }),
     );
 
     if (!settings.leadingDelimiter) {
@@ -1548,8 +1550,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.customIdents).onChange((value) => {
             settings.customIdents = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.styleType !== "customIdent") {
@@ -1568,8 +1570,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.specifiedString).onChange((value) => {
             settings.specifiedString = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.styleType !== "string") {
@@ -1580,7 +1582,7 @@ export class HeadingSettingTab extends PluginSettingTab {
   private spliceDecoratorSettings(
     displayManager: SettingDisplayManager,
     containerEl: HTMLElement,
-    settings: SpliceDecoratorSettings
+    settings: SpliceDecoratorSettings,
   ) {
     const {
       plugin: { i18n },
@@ -1612,8 +1614,8 @@ export class HeadingSettingTab extends PluginSettingTab {
                   break;
               }
               this.plugin.saveSettings();
-            })
-        )
+            }),
+        ),
     );
 
     const customIdentsManager = new SettingDisplayManager();
@@ -1628,8 +1630,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.customIdents).onChange((value) => {
             settings.customIdents = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.styleType !== "customIdent") {
@@ -1648,8 +1650,8 @@ export class HeadingSettingTab extends PluginSettingTab {
           text.setValue(settings.specifiedString).onChange((value) => {
             settings.specifiedString = value;
             this.plugin.saveSettings();
-          })
-        )
+          }),
+        ),
     );
 
     if (settings.styleType !== "string") {

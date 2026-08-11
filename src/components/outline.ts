@@ -1,31 +1,33 @@
-import { HeadingCache } from "obsidian";
-import type { HeadingDecoratorSettings } from "../common/data";
+import { HeadingCache, htmlToMarkdown } from "obsidian";
+import type { HeadingDecoratorSettings } from "../../src/utils/data";
 import {
   className,
   getOrderedCustomIdents,
   getUnorderedLevelHeadings,
-} from "../common/data";
+  diffLevel,
+  compareMarkdownText,
+} from "../../src/utils/data";
 import {
   Querier,
   UnorderedCounter,
   OrderedCounter,
   IndependentCounter,
   SpliceCounter,
-} from "../common/counter";
+} from "../../src/utils/counter";
 
 /**
- * File Explorer Heading Decorator.
+ * Handle the outline rendering based on the given settings and heading elements.
  *
  * @param settings The heading decorator settings.
- * @param container The container element.
- * @param headingElements The heading elements.
- * @param cacheHeadings The cache headings.
+ * @param container The container element to render the outline.
+ * @param headingElements The heading elements to render the outline.
+ * @param cacheHeadings The cache headings to render the outline.
  */
-export function fileExplorerHandler(
+export function outlineHandler(
   settings: HeadingDecoratorSettings,
   container: HTMLElement,
   headingElements: NodeListOf<HTMLElement>,
-  cacheHeadings: HeadingCache[]
+  cacheHeadings: HeadingCache[],
 ): void {
   const {
     decoratorMode = "orderd",
@@ -50,13 +52,13 @@ export function fileExplorerHandler(
     spliceSettings,
   } = settings;
 
-  container.classList.add(className.fileExplorerContainer);
+  container.classList.add(className.outlineContainer);
 
   let counter: Counter;
   if (decoratorMode === "unordered") {
     counter = new UnorderedCounter(
       getUnorderedLevelHeadings(unorderedLevelHeadings),
-      maxRecLevel
+      maxRecLevel,
     );
   } else {
     let ignoreTopLevel = 0;
@@ -123,124 +125,152 @@ export function fileExplorerHandler(
     }
   }
 
-  const marginMultiplier =
-    parseInt(
-      getComputedStyle(document.body).getPropertyValue(
-        "--clickable-heading-margin-multiplier"
-      )
-    ) || 10;
-
+  let lastCacheLevel = 0;
+  let lastReadLevel = 0;
   for (
     let i = 0, j = 0;
     i < headingElements.length && j < cacheHeadings.length;
     i++, j++
   ) {
-    const readLevel = getFileHeadingItemLevel(
-      headingElements[i],
-      marginMultiplier
-    );
-    const readText = headingElements[i].innerText;
+    const readLevel = getTreeItemLevel(headingElements[i]);
+    const readText = getTreeItemText(headingElements[i]);
     let cacheLevel = cacheHeadings[j].level;
-
-    while (
-      j < cacheHeadings.length - 1 &&
-      (cacheLevel !== readLevel || cacheHeadings[j].heading !== readText)
-    ) {
-      counter.handler(cacheLevel);
-      j++;
-      cacheLevel = cacheHeadings[j].level;
+    if (i > 0) {
+      const diff = diffLevel(readLevel, lastReadLevel);
+      while (
+        j < cacheHeadings.length - 1 &&
+        (diffLevel(cacheLevel, lastCacheLevel) !== diff ||
+          !compareHeadingText(cacheHeadings[j].heading, readText))
+      ) {
+        counter.handler(cacheLevel);
+        j++;
+        cacheLevel = cacheHeadings[j].level;
+      }
     }
 
     const decoratorContent = counter.decorator(cacheLevel);
-    decorateFileHeadingElement(
+    decorateOutlineElement(
       headingElements[i],
       decoratorContent,
       opacity,
       position,
-      cacheLevel
+      cacheLevel,
     );
+
+    lastCacheLevel = cacheLevel;
+    lastReadLevel = readLevel;
   }
 }
 
 /**
- * Cancel the decoration of file headings in a container.
+ * Cancel the outline decoration for a given container.
  *
- * @param container The container element containing the file headings.
+ * @param container The container element that holds the outline elements.
  */
-export function cancelFileExplorerDecoration(container: HTMLElement): void {
-  if (container.classList.contains(className.fileExplorerContainer)) {
-    container.classList.remove(className.fileExplorerContainer);
+export function cancelOutlineDecoration(container: HTMLElement): void {
+  if (container.classList.contains(className.outlineContainer)) {
+    container.classList.remove(className.outlineContainer);
 
-    const headingElements = container.querySelectorAll<HTMLElement>(
-      ".file-heading-container .clickable-heading"
-    );
+    const headingElements =
+      container.querySelectorAll<HTMLElement>(".tree-item");
 
     headingElements.forEach((ele) => {
-      cancelFileHeadingDecorator(ele);
+      cancelOutlineDecorator(ele);
     });
   }
 }
 
 /**
- * Decorate a file heading element with a custom content and style.
+ * Decorate an outline HTML element with a given content, opacity and position.
  *
- * @param element The file heading element to decorate.
+ * @param element The HTML element to decorate.
  * @param content The content to decorate with.
  * @param opacity The opacity of the decorator.
  * @param position The position of the decorator.
  * @param level The level of the heading.
  */
-function decorateFileHeadingElement(
+function decorateOutlineElement(
   element: HTMLElement,
   content: string,
   opacity: OpacityOptions,
   position: PostionOptions,
-  level: number
+  level: number,
 ): void {
-  element.dataset.headingDecorator = content;
-  element.dataset.decoratorOpacity = `${opacity}%`;
-  element.dataset.decoratorLevel = level.toString();
-
-  const isAfter = position.includes("after");
-  //? Remove potential residual class names
-  element.classList.remove(isAfter ? className.before : className.after);
-  element.classList.add(
-    className.fileExplorer,
-    isAfter ? className.after : className.before
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner",
   );
-}
+  if (inner) {
+    inner.dataset.headingDecorator = content;
+    inner.dataset.decoratorOpacity = `${opacity}%`;
+    inner.dataset.decoratorLevel = level.toString();
 
-/**
- * Cancel a file heading decorator from an element.
- *
- * @param element The file heading element to cancel decorator.
- */
-function cancelFileHeadingDecorator(element: HTMLElement): void {
-  delete element.dataset.headingDecorator;
-  delete element.dataset.decoratorOpacity;
-  delete element.dataset.decoratorLevel;
-  element.classList.remove(
-    className.fileExplorer,
-    className.before,
-    className.after
-  );
-}
-
-/**
- * Get the level of a file heading item based on its margin-left value.
- *
- * @param element The file heading item element.
- * @param marginMultiplier The multiplier used to calculate the level.
- * @returns The level of the file heading item.
- */
-function getFileHeadingItemLevel(
-  element: HTMLElement,
-  marginMultiplier: number
-): number {
-  const marginLeft = element.style.marginLeft;
-  if (marginLeft) {
-    const value = parseInt(marginLeft.replace("px", ""));
-    return Math.floor(value / marginMultiplier) + 1;
+    const isAfter = position.includes("after");
+    //? Remove potential residual class names
+    inner.classList.remove(isAfter ? className.before : className.after);
+    inner.classList.add(
+      className.outline,
+      isAfter ? className.after : className.before,
+    );
   }
-  return 0;
+}
+
+/**
+ * Cancel an outline decorator from an HTML element.
+ *
+ * @param element The HTML element to cancel the decorator.
+ */
+function cancelOutlineDecorator(element: HTMLElement): void {
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner",
+  );
+  if (inner) {
+    delete inner.dataset.headingDecorator;
+    delete inner.dataset.decoratorOpacity;
+    delete inner.dataset.decoratorLevel;
+    inner.classList.remove(
+      className.outline,
+      className.before,
+      className.after,
+    );
+  }
+}
+
+/**
+ * Get the tree item level of a given element.
+ *
+ * @param element The element to get the tree item level for.
+ * @returns The tree item level.
+ */
+function getTreeItemLevel(element: Element): number {
+  let level = 0;
+  let current = element.closest(".tree-item");
+  while (current) {
+    level++;
+    current = current.parentElement?.closest(".tree-item") || null;
+  }
+  return level;
+}
+
+/**
+ * Get the text of a given tree item.
+ *
+ * @param element The HTML element to get the text for.
+ * @returns The text of the tree item.
+ */
+function getTreeItemText(element: HTMLElement): string {
+  const inner = element.querySelector<HTMLElement>(
+    ".tree-item-self .tree-item-inner",
+  );
+  return inner ? inner.innerText : "";
+}
+
+/**
+ * Compare heading text.
+ *
+ * @param source The source heading text.
+ * @param outline The outline heading text.
+ * @returns true if the two headings are equal, false otherwise.
+ */
+function compareHeadingText(source: string, outline: string): boolean {
+  return compareMarkdownText(htmlToMarkdown(source), htmlToMarkdown(outline));
 }

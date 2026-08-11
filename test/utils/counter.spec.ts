@@ -3,14 +3,14 @@ import { expect } from "chai";
 import type {
   IndependentDecoratorSettings,
   SpliceDecoratorSettings,
-} from "../../common/data";
+} from "../../src/utils/data";
 import {
   Querier,
   UnorderedCounter,
   OrderedCounter,
   IndependentCounter,
   SpliceCounter,
-} from "../../common/counter";
+} from "../../src/utils/counter";
 
 describe("common/counter", function () {
   describe("Querier", function () {

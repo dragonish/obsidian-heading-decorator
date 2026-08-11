@@ -7,7 +7,7 @@ import {
   checkEnabledCSS,
   stringToRegex,
   findFirstCharacterIndex,
-} from "../../common/data";
+} from "../../src/utils/data";
 
 describe("common/data", function () {
   it("diffLevel", function () {
@@ -94,37 +94,37 @@ describe("common/data", function () {
       all: null,
     });
     expect(checkEnabledCSS("disable-reading-heading", "reading")).to.deep.equal(
-      { mode: false, all: null }
+      { mode: false, all: null },
     );
     expect(
-      checkEnabledCSS("enable-heading disable-heading", "reading")
+      checkEnabledCSS("enable-heading disable-heading", "reading"),
     ).to.deep.equal({ mode: null, all: false });
     expect(
-      checkEnabledCSS("disable-heading enable-heading", "reading")
+      checkEnabledCSS("disable-heading enable-heading", "reading"),
     ).to.deep.equal({ mode: null, all: true });
     expect(
       checkEnabledCSS(
         "enable-reading-heading disable-reading-heading",
-        "reading"
-      )
+        "reading",
+      ),
     ).to.deep.equal({ mode: false, all: null });
     expect(
       checkEnabledCSS(
         "disable-reading-heading enable-reading-heading",
-        "reading"
-      )
+        "reading",
+      ),
     ).to.deep.equal({ mode: true, all: null });
     expect(
-      checkEnabledCSS("enable-heading disable-reading-heading", "reading")
+      checkEnabledCSS("enable-heading disable-reading-heading", "reading"),
     ).to.deep.equal({ mode: false, all: true });
     expect(
-      checkEnabledCSS("disable-heading enable-reading-heading", "reading")
+      checkEnabledCSS("disable-heading enable-reading-heading", "reading"),
     ).to.deep.equal({ mode: true, all: false });
     expect(
-      checkEnabledCSS("enable-reading-heading disable-heading", "reading")
+      checkEnabledCSS("enable-reading-heading disable-heading", "reading"),
     ).to.deep.equal({ mode: true, all: false });
     expect(
-      checkEnabledCSS("disable-reading-heading enable-heading", "reading")
+      checkEnabledCSS("disable-reading-heading enable-heading", "reading"),
     ).to.deep.equal({ mode: false, all: true });
   });
 

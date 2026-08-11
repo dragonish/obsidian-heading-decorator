@@ -1,5 +1,5 @@
 import { EditorView, WidgetType } from "@codemirror/view";
-import { className, getPositionClassName } from "../common/data";
+import { className, getPositionClassName } from "../../src/utils/data";
 
 export class HeadingWidget extends WidgetType {
   readonly isLivePreviwMode: boolean;
@@ -13,7 +13,7 @@ export class HeadingWidget extends WidgetType {
     content: string,
     opacity: OpacityOptions,
     position: PostionOptions,
-    level: number
+    level: number,
   ) {
     super();
     this.isLivePreviwMode = isLivePreviwMode;

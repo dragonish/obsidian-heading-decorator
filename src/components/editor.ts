@@ -8,10 +8,10 @@ import {
 } from "@codemirror/view";
 import { RangeSetBuilder, StateEffect, StateField } from "@codemirror/state";
 import { HeadingWidget } from "./weight";
-import type { HeadingPluginData } from "../common/data";
-import { className, findFirstCharacterIndex } from "../common/data";
-import { createCounterFromSettings } from "../common/counter-factory";
-import { Heading } from "../common/heading";
+import type { HeadingPluginData } from "../../src/utils/data";
+import { className, findFirstCharacterIndex } from "../../src/utils/data";
+import { createCounterFromSettings } from "../../src/utils/counter-factory";
+import { Heading } from "../../src/utils/heading";
 
 /** A StateEffect for updating decorations */
 const updateHeadingDecorations = StateEffect.define<DecorationSet>();
@@ -55,7 +55,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
 
   constructor(
     view: EditorView,
-    getPluginData: () => Promise<HeadingPluginData>
+    getPluginData: () => Promise<HeadingPluginData>,
   ) {
     this.getPluginData = getPluginData;
     this.updateDecorations(view, view.state.field(editorLivePreviewField));
@@ -66,12 +66,12 @@ export class HeadingEditorViewPlugin implements PluginValue {
       update.docChanged ||
       update.viewportChanged ||
       update.transactions.some((tr) =>
-        tr.effects.some((e) => e.is(updateEditorMode))
+        tr.effects.some((e) => e.is(updateEditorMode)),
       )
     ) {
       this.updateDecorations(
         update.view,
-        update.state.field(editorLivePreviewField)
+        update.state.field(editorLivePreviewField),
       );
     }
   }
@@ -120,7 +120,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
             content,
             opacity,
             position,
-            level
+            level,
           );
           const deco = Decoration.widget({
             widget,

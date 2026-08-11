@@ -10,14 +10,17 @@ import {
 import { EditorView, ViewPlugin } from "@codemirror/view";
 import type { Extension } from "@codemirror/state";
 import { i18n } from "../locales";
-import type { HeadingPluginSettings, HeadingPluginData } from "../common/data";
+import type {
+  HeadingPluginSettings,
+  HeadingPluginData,
+} from "../../src/utils/data";
 import {
   headingsSelector,
   getBoolean,
   checkEnabledCSS,
   stringToRegex,
   defaultSettings,
-} from "../common/data";
+} from "../../src/utils/data";
 import {
   HeadingEditorViewPlugin,
   headingDecorationsField,
@@ -79,25 +82,25 @@ export class HeadingPlugin extends Plugin {
   private debouncedRerenderPreviewMarkdown = debounce(
     this.rerenderPreviewMarkdown.bind(this),
     1000,
-    true
+    true,
   );
 
   private debouncedRerenderOutlineDecorator = debounce(
     this.rerenderOutlineDecorator.bind(this),
     1000,
-    true
+    true,
   );
 
   private debouncedRerenderQuietOutlineDecorator = debounce(
     this.rerenderQuietOutlineDecorator.bind(this),
     1000,
-    true
+    true,
   );
 
   private debouncedRerenderFileExplorerDecorator = debounce(
     this.rerenderFileExplorerDecorator.bind(this),
     1000,
-    true
+    true,
   );
 
   private createDeepRevocableProxy<T extends HeadingPluginSettings>(
@@ -105,7 +108,7 @@ export class HeadingPlugin extends Plugin {
     onChange: OnChangeCallback,
     revokes: (() => void)[],
     cache = new WeakMap<object, RevocableProxy>(),
-    path = ""
+    path = "",
   ): RevocableProxy {
     if (typeof obj !== "object" || obj === null) {
       return { proxy: obj, revoke: () => {} };
@@ -126,7 +129,7 @@ export class HeadingPlugin extends Plugin {
             onChange,
             revokes,
             cache,
-            newPath
+            newPath,
           ).proxy;
         }
         return value;
@@ -149,7 +152,7 @@ export class HeadingPlugin extends Plugin {
   private async loadSettings() {
     const rawSettings = Object.assign<HeadingPluginSettings, unknown>(
       defaultSettings(),
-      await this.loadData()
+      await this.loadData(),
     );
 
     this.revokes.forEach((revoke) => revoke());
@@ -158,7 +161,7 @@ export class HeadingPlugin extends Plugin {
     const { proxy } = this.createDeepRevocableProxy(
       rawSettings,
       this.settingsChanged.bind(this),
-      this.revokes
+      this.revokes,
     );
 
     this.settings = proxy;
@@ -186,7 +189,7 @@ export class HeadingPlugin extends Plugin {
           async (container, cxt, fileData) => {
             const metadataEnabled = this.getEnabledFromFrontmatter(
               "reading",
-              cxt.frontmatter
+              cxt.frontmatter,
             );
 
             const readingSettings = this.settings.enabledReadingSettings
@@ -239,7 +242,7 @@ export class HeadingPlugin extends Plugin {
                   readingSettings,
                   cxt,
                   headingElements,
-                  sourceArr
+                  sourceArr,
                 );
               }
             } else {
@@ -248,13 +251,13 @@ export class HeadingPlugin extends Plugin {
           },
           (container) => {
             cancelHTMLDecorator(container);
-          }
+          },
         );
         this.readingComponents.push(child);
         context.addChild(child);
         child.register(() => {
           this.readingComponents = this.readingComponents.filter(
-            (item) => !item.equal(child)
+            (item) => !item.equal(child),
           );
         });
       }
@@ -280,9 +283,9 @@ export class HeadingPlugin extends Plugin {
             }
           },
           250,
-          true
-        )
-      )
+          true,
+        ),
+      ),
     );
 
     // Listen for editor mode changes
@@ -292,7 +295,7 @@ export class HeadingPlugin extends Plugin {
         this.loadOutlineComponents();
         this.loadQuietOutlineComponents();
         this.loadFileExplorerComponents();
-      })
+      }),
     );
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
@@ -300,7 +303,7 @@ export class HeadingPlugin extends Plugin {
         this.loadOutlineComponents();
         this.loadQuietOutlineComponents();
         this.loadFileExplorerComponents();
-      })
+      }),
     );
 
     this.loadOutlineComponents();
@@ -474,19 +477,19 @@ export class HeadingPlugin extends Plugin {
   private applyGutterFontSize(): void {
     document.body.style.setProperty(
       "--heading-decorator-gutter-font-size",
-      `${this.settings.gutterFontSize}px`
+      `${this.settings.gutterFontSize}px`,
     );
   }
 
   private createInlineViewPlugin(
-    getPluginData: () => Promise<HeadingPluginData>
+    getPluginData: () => Promise<HeadingPluginData>,
   ) {
     return ViewPlugin.fromClass(
       class extends HeadingEditorViewPlugin {
         constructor(view: EditorView) {
           super(view, getPluginData);
         }
-      }
+      },
     );
   }
 
@@ -517,7 +520,7 @@ export class HeadingPlugin extends Plugin {
 
       const view = leaf.view;
       const viewContent = view.containerEl.querySelector<HTMLElement>(
-        '[data-type="outline"] .view-content'
+        '[data-type="outline"] .view-content',
       );
       if (!viewContent) {
         return;
@@ -559,7 +562,7 @@ export class HeadingPlugin extends Plugin {
           const frontmatter = fileCache.frontmatter;
           const metadataEnabled = this.getEnabledFromFrontmatter(
             "outline",
-            frontmatter
+            frontmatter,
           );
 
           const outlineSettings = this.settings.enabledOutlineSettings
@@ -586,7 +589,7 @@ export class HeadingPlugin extends Plugin {
               outlineSettings,
               viewContent,
               headingElements,
-              cacheHeadings
+              cacheHeadings,
             );
           } else {
             cancelOutlineDecoration(viewContent);
@@ -596,14 +599,14 @@ export class HeadingPlugin extends Plugin {
           if (viewContent) {
             cancelOutlineDecoration(viewContent);
           }
-        }
+        },
       );
 
       this.outlineComponents.push(vc);
       view.addChild(vc);
       view.register(() => {
         this.outlineComponents = this.outlineComponents.filter(
-          (item) => !item.equal(leafId)
+          (item) => !item.equal(leafId),
         );
       });
     });
@@ -619,7 +622,7 @@ export class HeadingPlugin extends Plugin {
 
       const view = leaf.view;
       const viewContent = view.containerEl.querySelector<HTMLElement>(
-        '[data-type="quiet-outline"] .view-content'
+        '[data-type="quiet-outline"] .view-content',
       );
       if (!viewContent) {
         return;
@@ -657,7 +660,7 @@ export class HeadingPlugin extends Plugin {
           const frontmatter = fileCache.frontmatter;
           const metadataEnabled = this.getEnabledFromFrontmatter(
             "quiet-outline",
-            frontmatter
+            frontmatter,
           );
 
           const quietOutlineSettings = this.settings.enabledQuietOutlineSettings
@@ -683,7 +686,7 @@ export class HeadingPlugin extends Plugin {
             quietOutlineHandler(
               quietOutlineSettings,
               containerElement,
-              headingELements
+              headingELements,
             );
           } else {
             cancelQuietOutlineDecoration(containerElement);
@@ -695,14 +698,14 @@ export class HeadingPlugin extends Plugin {
           if (containerElement) {
             cancelQuietOutlineDecoration(containerElement);
           }
-        }
+        },
       );
 
       this.quietOutlineComponents.push(vc);
       view.addChild(vc);
       view.register(() => {
         this.quietOutlineComponents = this.quietOutlineComponents.filter(
-          (item) => !item.equal(leafId)
+          (item) => !item.equal(leafId),
         );
       });
     });
@@ -718,7 +721,7 @@ export class HeadingPlugin extends Plugin {
 
       const view = leaf.view;
       const navFilesContainer = view.containerEl.querySelector<HTMLElement>(
-        '[data-type="file-explorer"] .nav-files-container'
+        '[data-type="file-explorer"] .nav-files-container',
       );
       if (!navFilesContainer) {
         return;
@@ -736,7 +739,7 @@ export class HeadingPlugin extends Plugin {
 
           navFileTitles.forEach((navFile) => {
             const headingElements = navFile.querySelectorAll<HTMLElement>(
-              ".file-heading-container .clickable-heading"
+              ".file-heading-container .clickable-heading",
             );
             if (headingElements.length === 0) {
               return;
@@ -765,7 +768,7 @@ export class HeadingPlugin extends Plugin {
             const frontmatter = fileCache.frontmatter;
             const metadataEnabled = this.getEnabledFromFrontmatter(
               "file-explorer",
-              frontmatter
+              frontmatter,
             );
 
             const fileExplorerSettings = this.settings
@@ -793,7 +796,7 @@ export class HeadingPlugin extends Plugin {
                 fileExplorerSettings,
                 navFile,
                 headingElements,
-                cacheHeadings
+                cacheHeadings,
               );
             } else {
               cancelFileExplorerDecoration(navFile);
@@ -806,14 +809,14 @@ export class HeadingPlugin extends Plugin {
           containerElements.forEach((ele) => {
             cancelFileExplorerDecoration(ele);
           });
-        }
+        },
       );
 
       this.fileExplorerComponents.push(vc);
       view.addChild(vc);
       view.register(() => {
         this.fileExplorerComponents = this.fileExplorerComponents.filter(
-          (item) => !item.equal(leafId)
+          (item) => !item.equal(leafId),
         );
       });
     });
@@ -949,7 +952,7 @@ export class HeadingPlugin extends Plugin {
 
   private getEnabledFromFrontmatter(
     mode: HeadingMetadataSettingsType,
-    frontmatter?: FrontMatterCache
+    frontmatter?: FrontMatterCache,
   ): null | boolean {
     const keyword = this.settings.metadataKeyword;
     if (keyword && typeof frontmatter === "object" && frontmatter) {
@@ -1001,7 +1004,7 @@ export class HeadingPlugin extends Plugin {
 
     const filename = filepath.substring(
       filepath.lastIndexOf("/") + 1,
-      filepath.lastIndexOf(".")
+      filepath.lastIndexOf("."),
     );
     for (const regexStr of this.settings.fileRegexBlacklist) {
       const regex = stringToRegex(regexStr);

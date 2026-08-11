@@ -1,8 +1,8 @@
 module.exports = {
   ui: "bdd",
   spec: [
-    "test/common/data.spec.ts",
-    "test/common/heading.spec.ts",
+    "test/utils/data.spec.ts",
+    "test/utils/heading.spec.ts",
     "test/**/**.spec.ts",
   ],
   import: "tsx",

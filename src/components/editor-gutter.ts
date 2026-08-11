@@ -7,10 +7,10 @@ import {
   GutterMarker,
 } from "@codemirror/view";
 import { Prec, RangeSet, RangeSetBuilder } from "@codemirror/state";
-import type { HeadingPluginData } from "../common/data";
-import { className } from "../common/data";
-import { createCounterFromSettings } from "../common/counter-factory";
-import { Heading } from "../common/heading";
+import type { HeadingPluginData } from "../../src/utils/data";
+import { className } from "../../src/utils/data";
+import { createCounterFromSettings } from "../../src/utils/counter-factory";
+import { Heading } from "../../src/utils/heading";
 import { updateEditorMode } from "./editor";
 
 class HeadingGutterMarker extends GutterMarker {
@@ -45,7 +45,7 @@ class HeadingGutterMarker extends GutterMarker {
 
 export function createHeadingGutterExtension(
   getPluginData: () => Promise<HeadingPluginData>,
-  showBeforeLineNumbers: boolean
+  showBeforeLineNumbers: boolean,
 ): Array<ViewPlugin<HeadingGutterViewPlugin> | ReturnType<typeof Prec.high>> {
   const markers = ViewPlugin.fromClass(
     class HeadingGutterViewPlugin {
@@ -62,20 +62,17 @@ export function createHeadingGutterExtension(
           update.docChanged ||
           update.viewportChanged ||
           update.transactions.some((tr) =>
-            tr.effects.some((e) => e.is(updateEditorMode))
+            tr.effects.some((e) => e.is(updateEditorMode)),
           )
         ) {
           this.buildMarkers(
             update.view,
-            update.state.field(editorLivePreviewField)
+            update.state.field(editorLivePreviewField),
           );
         }
       }
 
-      private async buildMarkers(
-        view: EditorView,
-        isLivePreviewMode: boolean
-      ) {
+      private async buildMarkers(view: EditorView, isLivePreviewMode: boolean) {
         const pluginData = await this.getPluginData();
 
         const enabled =
@@ -117,7 +114,7 @@ export function createHeadingGutterExtension(
         this.markers = builder.finish();
         view.requestMeasure();
       }
-    }
+    },
   );
 
   const gutterPrec = showBeforeLineNumbers ? Prec.high : Prec.low;
@@ -129,7 +126,7 @@ export function createHeadingGutterExtension(
         markers(view) {
           return view.plugin(markers)?.markers ?? RangeSet.empty;
         },
-      })
+      }),
     ),
   ];
 }

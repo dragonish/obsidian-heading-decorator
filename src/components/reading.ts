@@ -1,19 +1,19 @@
 import { MarkdownPostProcessorContext } from "obsidian";
-import type { HeadingDecoratorSettings } from "../common/data";
+import type { HeadingDecoratorSettings } from "../../src/utils/data";
 import {
   className,
   getOrderedCustomIdents,
   getPositionClassName,
   getUnorderedLevelHeadings,
-} from "../common/data";
-import { Heading } from "../common/heading";
+} from "../../src/utils/data";
+import { Heading } from "../../src/utils/heading";
 import {
   Querier,
   UnorderedCounter,
   OrderedCounter,
   IndependentCounter,
   SpliceCounter,
-} from "../common/counter";
+} from "../../src/utils/counter";
 
 /**
  * Handles ordered headings of reading view.
@@ -27,7 +27,7 @@ export function readingOrderedHandler(
   settings: HeadingDecoratorSettings,
   context: MarkdownPostProcessorContext,
   headingElements: HTMLElement[],
-  sourceArr: string[]
+  sourceArr: string[],
 ): void {
   const {
     decoratorMode = "orderd",
@@ -159,7 +159,7 @@ export function readingOrderedHandler(
             decoratorContent,
             opacity,
             position,
-            level
+            level,
           );
         }
 
@@ -179,13 +179,13 @@ export function readingOrderedHandler(
  */
 export function readingUnorderedHandler(
   settings: HeadingDecoratorSettings,
-  headingElements: HTMLElement[]
+  headingElements: HTMLElement[],
 ): void {
   const { opacity, position, maxRecLevel, unorderedLevelHeadings } = settings;
 
   const counter = new UnorderedCounter(
     getUnorderedLevelHeadings(unorderedLevelHeadings),
-    maxRecLevel
+    maxRecLevel,
   );
 
   headingElements.forEach((headingElement) => {
@@ -196,7 +196,7 @@ export function readingUnorderedHandler(
       decoratorContent,
       opacity,
       position,
-      level
+      level,
     );
   });
 }
@@ -240,7 +240,7 @@ function decorateHTMLElement(
   content: string,
   opacity: OpacityOptions,
   position: PostionOptions,
-  level: number
+  level: number,
 ): void {
   const decoratorEle = element.find(`.${className.reading}`);
 
@@ -273,7 +273,7 @@ function decorateHTMLElement(
 
     if (position === "before-inside") {
       const headingCollapseIndicator = element.find(
-        ".heading-collapse-indicator"
+        ".heading-collapse-indicator",
       );
       if (headingCollapseIndicator) {
         headingCollapseIndicator.after(span);
