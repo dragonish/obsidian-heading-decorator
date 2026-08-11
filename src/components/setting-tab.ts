@@ -42,9 +42,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         text
           .setPlaceholder(i18n.t("setting.metadataKeywordPlaceholder"))
           .setValue(settings.metadataKeyword)
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings.metadataKeyword = value.trim();
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
       );
 
@@ -85,10 +85,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(i18n.t("setting.useGutter"))
       .setDesc(i18n.t("setting.useGutterDesc"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.useGutter).onChange((value) => {
+        toggle.setValue(settings.useGutter).onChange(async (value) => {
           settings.useGutter = value;
-          value ? gutterPositionManager.show() : gutterPositionManager.hide();
-          this.plugin.saveSettings();
+          if (value) {
+            gutterPositionManager.show();
+          } else {
+            gutterPositionManager.hide();
+          }
+          await this.plugin.saveSettings();
         }),
       );
 
@@ -104,11 +108,11 @@ export class HeadingSettingTab extends PluginSettingTab {
               "after-line-numbers": i18n.t("setting.afterLineNumbers"),
             })
             .setValue(settings.gutterPosition)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.gutterPosition = this.isGutterPosition(value)
                 ? value
                 : "before-line-numbers";
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -122,11 +126,10 @@ export class HeadingSettingTab extends PluginSettingTab {
           slider
             .setLimits(12, 24, 1)
             .setValue(settings.gutterFontSize)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.gutterFontSize = value;
-              this.plugin.saveSettings();
-            })
-            .setDynamicTooltip(),
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -137,11 +140,13 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.enabledInGutterConfig"))
         .setDesc(i18n.t("setting.enabledInGutterConfigDesc"))
         .addToggle((toggle) => {
-          toggle.setValue(settings.enabledGutterSettings).onChange((value) => {
-            settings.enabledGutterSettings = value;
-            gutterConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
+          toggle
+            .setValue(settings.enabledGutterSettings)
+            .onChange(async (value) => {
+              settings.enabledGutterSettings = value;
+              gutterConfigBtn?.setDisabled(!value);
+              await this.plugin.saveSettings();
+            });
         })
         .addButton((button) => {
           gutterConfigBtn = button;
@@ -165,10 +170,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(i18n.t("setting.enabledInReading"))
       .setDesc(i18n.t("setting.enabledInReadingDesc"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInReading).onChange((value) => {
+        toggle.setValue(settings.enabledInReading).onChange(async (value) => {
           settings.enabledInReading = value;
-          value ? readingConfigManager.show() : readingConfigManager.hide();
-          this.plugin.saveSettings();
+          if (value) {
+            readingConfigManager.show();
+          } else {
+            readingConfigManager.hide();
+          }
+          await this.plugin.saveSettings();
         }),
       );
 
@@ -180,11 +189,13 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.enabledInReadingConfig"))
         .setDesc(i18n.t("setting.enabledInReadingConfigDesc"))
         .addToggle((toggle) => {
-          toggle.setValue(settings.enabledReadingSettings).onChange((value) => {
-            settings.enabledReadingSettings = value;
-            readingConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
+          toggle
+            .setValue(settings.enabledReadingSettings)
+            .onChange(async (value) => {
+              settings.enabledReadingSettings = value;
+              readingConfigBtn?.setDisabled(!value);
+              await this.plugin.saveSettings();
+            });
         })
         .addButton((button) => {
           readingConfigBtn = button;
@@ -209,11 +220,11 @@ export class HeadingSettingTab extends PluginSettingTab {
               full: i18n.t("setting.full"),
             })
             .setValue(settings.readingRenderPolicy)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.readingRenderPolicy = this.isRenderPolicy(value)
                 ? value
                 : "partial";
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -231,10 +242,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(i18n.t("setting.enabledInPreview"))
       .setDesc(i18n.t("setting.enabledInPreviewDesc"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInPreview).onChange((value) => {
+        toggle.setValue(settings.enabledInPreview).onChange(async (value) => {
           settings.enabledInPreview = value;
-          value ? previewConfigManager.show() : previewConfigManager.hide();
-          this.plugin.saveSettings();
+          if (value) {
+            previewConfigManager.show();
+          } else {
+            previewConfigManager.hide();
+          }
+          await this.plugin.saveSettings();
         }),
       );
 
@@ -246,11 +261,13 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.enabledInPreviewConfig"))
         .setDesc(i18n.t("setting.enabledInPreviewConfigDesc"))
         .addToggle((toggle) => {
-          toggle.setValue(settings.enabledPreviewSettings).onChange((value) => {
-            settings.enabledPreviewSettings = value;
-            previewConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
+          toggle
+            .setValue(settings.enabledPreviewSettings)
+            .onChange(async (value) => {
+              settings.enabledPreviewSettings = value;
+              previewConfigBtn?.setDisabled(!value);
+              await this.plugin.saveSettings();
+            });
         })
         .addButton((button) => {
           previewConfigBtn = button;
@@ -274,10 +291,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(i18n.t("setting.enabledInSource"))
       .setDesc(i18n.t("setting.enabledInSourceDesc"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInSource).onChange((value) => {
+        toggle.setValue(settings.enabledInSource).onChange(async (value) => {
           settings.enabledInSource = value;
-          value ? sourceConfigManager.show() : sourceConfigManager.hide();
-          this.plugin.saveSettings();
+          if (value) {
+            sourceConfigManager.show();
+          } else {
+            sourceConfigManager.hide();
+          }
+          await this.plugin.saveSettings();
         }),
       );
 
@@ -289,11 +310,13 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.enabledInSourceConfig"))
         .setDesc(i18n.t("setting.enabledInSourceConfigDesc"))
         .addToggle((toggle) => {
-          toggle.setValue(settings.enabledSourceSettings).onChange((value) => {
-            settings.enabledSourceSettings = value;
-            sourceConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
+          toggle
+            .setValue(settings.enabledSourceSettings)
+            .onChange(async (value) => {
+              settings.enabledSourceSettings = value;
+              sourceConfigBtn?.setDisabled(!value);
+              await this.plugin.saveSettings();
+            });
         })
         .addButton((button) => {
           sourceConfigBtn = button;
@@ -314,9 +337,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) => {
           toggle
             .setValue(settings.sourceHideNumberSigns ?? false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.sourceHideNumberSigns = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -332,10 +355,14 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setName(i18n.t("setting.enabledInOutline"))
       .setDesc(i18n.t("setting.enabledInOutlineDesc"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInOutline).onChange((value) => {
+        toggle.setValue(settings.enabledInOutline).onChange(async (value) => {
           settings.enabledInOutline = value;
-          value ? outlineConfigManager.show() : outlineConfigManager.hide();
-          this.plugin.saveSettings();
+          if (value) {
+            outlineConfigManager.show();
+          } else {
+            outlineConfigManager.hide();
+          }
+          await this.plugin.saveSettings();
         }),
       );
 
@@ -347,11 +374,13 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.enabledInOutlineConfig"))
         .setDesc(i18n.t("setting.enabledInOutlineConfigDesc"))
         .addToggle((toggle) => {
-          toggle.setValue(settings.enabledOutlineSettings).onChange((value) => {
-            settings.enabledOutlineSettings = value;
-            outlineConfigBtn?.setDisabled(!value);
-            this.plugin.saveSettings();
-          });
+          toggle
+            .setValue(settings.enabledOutlineSettings)
+            .onChange(async (value) => {
+              settings.enabledOutlineSettings = value;
+              outlineConfigBtn?.setDisabled(!value);
+              await this.plugin.saveSettings();
+            });
         })
         .addButton((button) => {
           outlineConfigBtn = button;
@@ -376,13 +405,17 @@ export class HeadingSettingTab extends PluginSettingTab {
     const enabledInQuietOutlineSetting = new Setting(containerEl)
       .setName(i18n.t("setting.enabledInQuietOutline"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInQuietOutline).onChange((value) => {
-          settings.enabledInQuietOutline = value;
-          value
-            ? quietOutlineConfigManager.show()
-            : quietOutlineConfigManager.hide();
-          this.plugin.saveSettings();
-        }),
+        toggle
+          .setValue(settings.enabledInQuietOutline)
+          .onChange(async (value) => {
+            settings.enabledInQuietOutline = value;
+            if (value) {
+              quietOutlineConfigManager.show();
+            } else {
+              quietOutlineConfigManager.hide();
+            }
+            await this.plugin.saveSettings();
+          }),
       );
 
     const enabledInQuietOutlineDesc = createFragment();
@@ -409,10 +442,10 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) => {
           toggle
             .setValue(settings.enabledQuietOutlineSettings)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.enabledQuietOutlineSettings = value;
               quietOutlineConfigBtn?.setDisabled(!value);
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         })
         .addButton((button) => {
@@ -438,13 +471,17 @@ export class HeadingSettingTab extends PluginSettingTab {
     const enabledInFileExplorerSetting = new Setting(containerEl)
       .setName(i18n.t("setting.enabledInFileExplorer"))
       .addToggle((toggle) =>
-        toggle.setValue(settings.enabledInFileExplorer).onChange((value) => {
-          settings.enabledInFileExplorer = value;
-          value
-            ? fileExplorerConfigManager.show()
-            : fileExplorerConfigManager.hide();
-          this.plugin.saveSettings();
-        }),
+        toggle
+          .setValue(settings.enabledInFileExplorer)
+          .onChange(async (value) => {
+            settings.enabledInFileExplorer = value;
+            if (value) {
+              fileExplorerConfigManager.show();
+            } else {
+              fileExplorerConfigManager.hide();
+            }
+            await this.plugin.saveSettings();
+          }),
       );
 
     const enabledInFileExplorerDesc = createFragment();
@@ -471,10 +508,10 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) => {
           toggle
             .setValue(settings.enabledFileExplorerSettings)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.enabledFileExplorerSettings = value;
               fileExplorerConfigBtn?.setDisabled(!value);
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         })
         .addButton((button) => {
@@ -579,7 +616,7 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setHeading()
       .addButton((button) => {
         button.setButtonText(i18n.t("button.back")).onClick(() => {
-          this.display();
+          this.update();
         });
       });
 
@@ -590,9 +627,9 @@ export class HeadingSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle
           .setValue(settings[settingsType].enabledInEachNote ?? true)
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings[settingsType].enabledInEachNote = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
       );
 
@@ -612,7 +649,7 @@ export class HeadingSettingTab extends PluginSettingTab {
         dropdown
           .addOptions(options)
           .setValue(settings[settingsType].decoratorMode || "orderd")
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings[settingsType].decoratorMode = this.isDecoratorModeValue(
               value,
             )
@@ -650,7 +687,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                 break;
             }
 
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           });
       });
 
@@ -662,13 +699,12 @@ export class HeadingSettingTab extends PluginSettingTab {
         slider
           .setLimits(10, 100, 10)
           .setValue(settings[settingsType].opacity)
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings[settingsType].opacity = this.isOpacityValue(value)
               ? value
               : 20;
-            this.plugin.saveSettings();
-          })
-          .setDynamicTooltip(),
+            await this.plugin.saveSettings();
+          }),
       );
 
     //* position
@@ -694,11 +730,11 @@ export class HeadingSettingTab extends PluginSettingTab {
         dropdown
           .addOptions(options)
           .setValue(settings[settingsType].position)
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings[settingsType].position = this.isPositionValue(value)
               ? value
               : "before";
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           });
       });
 
@@ -710,11 +746,10 @@ export class HeadingSettingTab extends PluginSettingTab {
         slider
           .setLimits(1, 6, 1)
           .setValue(settings[settingsType].maxRecLevel ?? 6)
-          .onChange((value) => {
+          .onChange(async (value) => {
             settings[settingsType].maxRecLevel = value;
-            this.plugin.saveSettings();
-          })
-          .setDynamicTooltip();
+            await this.plugin.saveSettings();
+          });
       });
 
     const orderedManager = new SettingDisplayManager();
@@ -794,7 +829,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           dropdown
             .addOptions(this.styleTypeOptions)
             .setValue(settings.orderedStyleType)
-            .onChange((value: OrderedCounterStyleType) => {
+            .onChange(async (value: OrderedCounterStyleType) => {
               settings.orderedStyleType = value;
               switch (value) {
                 case "customIdent":
@@ -810,7 +845,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                   orderedSpecifiedStringManager.hide();
                   break;
               }
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -821,9 +856,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedDelimiter"))
         .setDesc(i18n.t("setting.orderedDelimiterDesc"))
         .addText((text) =>
-          text.setValue(settings.orderedDelimiter).onChange((value) => {
+          text.setValue(settings.orderedDelimiter).onChange(async (value) => {
             settings.orderedDelimiter = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -836,12 +871,14 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.orderedTrailingDelimiter)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedTrailingDelimiter = value;
-              value
-                ? orderedCustomTrailingDelimiterManager.show()
-                : orderedCustomTrailingDelimiterManager.hide();
-              this.plugin.saveSettings();
+              if (value) {
+                orderedCustomTrailingDelimiterManager.show();
+              } else {
+                orderedCustomTrailingDelimiterManager.hide();
+              }
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -857,9 +894,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.orderedCustomTrailingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedCustomTrailingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -876,12 +913,14 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.orderedLeadingDelimiter || false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedLeadingDelimiter = value;
-              value
-                ? orderedCustomLeadingDelimiterManager.show()
-                : orderedCustomLeadingDelimiterManager.hide();
-              this.plugin.saveSettings();
+              if (value) {
+                orderedCustomLeadingDelimiterManager.show();
+              } else {
+                orderedCustomLeadingDelimiterManager.hide();
+              }
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -897,9 +936,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.orderedCustomLeadingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedCustomLeadingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -917,10 +956,12 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedCustomIdents"))
         .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
         .addText((text) =>
-          text.setValue(settings.orderedCustomIdents).onChange((value) => {
-            settings.orderedCustomIdents = value;
-            this.plugin.saveSettings();
-          }),
+          text
+            .setValue(settings.orderedCustomIdents)
+            .onChange(async (value) => {
+              settings.orderedCustomIdents = value;
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -937,10 +978,12 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedSpecifiedString"))
         .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
         .addText((text) =>
-          text.setValue(settings.orderedSpecifiedString).onChange((value) => {
-            settings.orderedSpecifiedString = value;
-            this.plugin.saveSettings();
-          }),
+          text
+            .setValue(settings.orderedSpecifiedString)
+            .onChange(async (value) => {
+              settings.orderedSpecifiedString = value;
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -973,11 +1016,10 @@ export class HeadingSettingTab extends PluginSettingTab {
           slider
             .setLimits(2, 6, 1)
             .setValue(settings.orderedRecLevel)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedRecLevel = value;
-              this.plugin.saveSettings();
-            })
-            .setDynamicTooltip();
+              await this.plugin.saveSettings();
+            });
         }),
     );
 
@@ -1039,10 +1081,12 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.unorderedLevelHeadings"))
         .setDesc(i18n.t("setting.unorderedLevelHeadingsDesc"))
         .addText((text) =>
-          text.setValue(settings.unorderedLevelHeadings).onChange((value) => {
-            settings.unorderedLevelHeadings = value;
-            this.plugin.saveSettings();
-          }),
+          text
+            .setValue(settings.unorderedLevelHeadings)
+            .onChange(async (value) => {
+              settings.unorderedLevelHeadings = value;
+              await this.plugin.saveSettings();
+            }),
         ),
     );
   }
@@ -1068,9 +1112,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.orderedAllowZeroLevel ?? false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedAllowZeroLevel = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1083,9 +1127,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.orderedBasedOnExisting ?? false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedBasedOnExisting = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1098,9 +1142,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.orderedAlwaysIgnore ?? false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedAlwaysIgnore = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1111,10 +1155,12 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedIgnoreSingle"))
         .setDesc(i18n.t("setting.orderedIgnoreSingleDesc"))
         .addToggle((toggle) =>
-          toggle.setValue(settings.orderedIgnoreSingle).onChange((value) => {
-            settings.orderedIgnoreSingle = value;
-            this.plugin.saveSettings();
-          }),
+          toggle
+            .setValue(settings.orderedIgnoreSingle)
+            .onChange(async (value) => {
+              settings.orderedIgnoreSingle = value;
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -1127,11 +1173,10 @@ export class HeadingSettingTab extends PluginSettingTab {
           slider
             .setLimits(1, 6, 1)
             .setValue(settings.orderedIgnoreMaximum ?? 6)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.orderedIgnoreMaximum = value;
-              this.plugin.saveSettings();
-            })
-            .setDynamicTooltip(),
+              await this.plugin.saveSettings();
+            }),
         ),
     );
   }
@@ -1155,9 +1200,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedDelimiter"))
         .setDesc(i18n.t("setting.orderedDelimiterDesc"))
         .addText((text) =>
-          text.setValue(settings.delimiter).onChange((value) => {
+          text.setValue(settings.delimiter).onChange(async (value) => {
             settings.delimiter = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -1168,13 +1213,17 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedTrailingDelimiter"))
         .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
         .addToggle((toggle) =>
-          toggle.setValue(settings.trailingDelimiter).onChange((value) => {
-            settings.trailingDelimiter = value;
-            value
-              ? customTrailingDelimiterManager.show()
-              : customTrailingDelimiterManager.hide();
-            this.plugin.saveSettings();
-          }),
+          toggle
+            .setValue(settings.trailingDelimiter)
+            .onChange(async (value) => {
+              settings.trailingDelimiter = value;
+              if (value) {
+                customTrailingDelimiterManager.show();
+              } else {
+                customTrailingDelimiterManager.hide();
+              }
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -1189,9 +1238,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.customTrailingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.customTrailingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -1208,12 +1257,14 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.leadingDelimiter || false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.leadingDelimiter = value;
-              value
-                ? customLeadingDelimiterManater.show()
-                : customLeadingDelimiterManater.hide();
-              this.plugin.saveSettings();
+              if (value) {
+                customLeadingDelimiterManater.show();
+              } else {
+                customLeadingDelimiterManater.hide();
+              }
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1229,9 +1280,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.customLeadingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.customLeadingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -1290,7 +1341,7 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setHeading()
       .addButton((button) => {
         button.setButtonText(i18n.t("button.back")).onClick(() => {
-          this.display();
+          this.update();
         });
       });
 
@@ -1302,23 +1353,23 @@ export class HeadingSettingTab extends PluginSettingTab {
           }),
         )
         .addText((text) => {
-          text.setValue(folder).onChange((value) => {
+          text.setValue(folder).onChange(async (value) => {
             settings.folderBlacklist[index] = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           });
 
           const suggest = new FolderSuggest(this.app, text.inputEl);
-          suggest.onSelect((value) => {
+          suggest.onSelect(async (value) => {
             text.setValue(value);
             settings.folderBlacklist[index] = value;
             suggest.close();
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           });
         })
         .addButton((button) => {
           button
             .setButtonText(i18n.t("button.delete"))
-            .setWarning()
+            .setDestructive()
             .onClick(async () => {
               settings.folderBlacklist.splice(index, 1);
               await this.plugin.saveSettings();
@@ -1358,7 +1409,7 @@ export class HeadingSettingTab extends PluginSettingTab {
       .setHeading()
       .addButton((button) => {
         button.setButtonText(i18n.t("button.back")).onClick(() => {
-          this.display();
+          this.update();
         });
       });
 
@@ -1373,15 +1424,15 @@ export class HeadingSettingTab extends PluginSettingTab {
           text
             .setPlaceholder(i18n.t("setting.fileRegexBlocklistPlaceholder"))
             .setValue(regex)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.fileRegexBlacklist[index] = value.trim();
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         )
         .addButton((button) => {
           button
             .setButtonText(i18n.t("button.delete"))
-            .setWarning()
+            .setDestructive()
             .onClick(async () => {
               settings.fileRegexBlacklist.splice(index, 1);
               await this.plugin.saveSettings();
@@ -1426,7 +1477,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           dropdown
             .addOptions(this.styleTypeOptions)
             .setValue(settings.styleType)
-            .onChange((value: OrderedCounterStyleType) => {
+            .onChange(async (value: OrderedCounterStyleType) => {
               settings.styleType = value;
               switch (value) {
                 case "customIdent":
@@ -1442,7 +1493,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                   specifiedStringManager.hide();
                   break;
               }
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1453,9 +1504,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedDelimiter"))
         .setDesc(i18n.t("setting.orderedDelimiterDesc"))
         .addText((text) =>
-          text.setValue(settings.delimiter).onChange((value) => {
+          text.setValue(settings.delimiter).onChange(async (value) => {
             settings.delimiter = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -1466,13 +1517,17 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedTrailingDelimiter"))
         .setDesc(i18n.t("setting.orderedTrailingDelimiterDesc"))
         .addToggle((toggle) =>
-          toggle.setValue(settings.trailingDelimiter).onChange((value) => {
-            settings.trailingDelimiter = value;
-            value
-              ? customTrailingDelimiterManager.show()
-              : customTrailingDelimiterManager.hide();
-            this.plugin.saveSettings();
-          }),
+          toggle
+            .setValue(settings.trailingDelimiter)
+            .onChange(async (value) => {
+              settings.trailingDelimiter = value;
+              if (value) {
+                customTrailingDelimiterManager.show();
+              } else {
+                customTrailingDelimiterManager.hide();
+              }
+              await this.plugin.saveSettings();
+            }),
         ),
     );
 
@@ -1487,9 +1542,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.customTrailingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.customTrailingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -1506,12 +1561,14 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addToggle((toggle) =>
           toggle
             .setValue(settings.leadingDelimiter || false)
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.leadingDelimiter = value;
-              value
-                ? customLeadingDelimiterManager.show()
-                : customLeadingDelimiterManager.hide();
-              this.plugin.saveSettings();
+              if (value) {
+                customLeadingDelimiterManager.show();
+              } else {
+                customLeadingDelimiterManager.hide();
+              }
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1527,9 +1584,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .addText((text) => {
           text
             .setValue(settings.customLeadingDelimiter || "")
-            .onChange((value) => {
+            .onChange(async (value) => {
               settings.customLeadingDelimiter = value;
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             });
         }),
     );
@@ -1547,9 +1604,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedCustomIdents"))
         .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
         .addText((text) =>
-          text.setValue(settings.customIdents).onChange((value) => {
+          text.setValue(settings.customIdents).onChange(async (value) => {
             settings.customIdents = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -1567,9 +1624,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedSpecifiedString"))
         .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
         .addText((text) =>
-          text.setValue(settings.specifiedString).onChange((value) => {
+          text.setValue(settings.specifiedString).onChange(async (value) => {
             settings.specifiedString = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -1597,7 +1654,7 @@ export class HeadingSettingTab extends PluginSettingTab {
           dropdown
             .addOptions(this.styleTypeOptions)
             .setValue(settings.styleType)
-            .onChange((value: OrderedCounterStyleType) => {
+            .onChange(async (value: OrderedCounterStyleType) => {
               settings.styleType = value;
               switch (value) {
                 case "customIdent":
@@ -1613,7 +1670,7 @@ export class HeadingSettingTab extends PluginSettingTab {
                   specifiedStringManager.hide();
                   break;
               }
-              this.plugin.saveSettings();
+              await this.plugin.saveSettings();
             }),
         ),
     );
@@ -1627,9 +1684,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedCustomIdents"))
         .setDesc(i18n.t("setting.orderedCustomIdentsDesc"))
         .addText((text) =>
-          text.setValue(settings.customIdents).onChange((value) => {
+          text.setValue(settings.customIdents).onChange(async (value) => {
             settings.customIdents = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );
@@ -1647,9 +1704,9 @@ export class HeadingSettingTab extends PluginSettingTab {
         .setName(i18n.t("setting.orderedSpecifiedString"))
         .setDesc(i18n.t("setting.orderedSpecifiedStringDesc"))
         .addText((text) =>
-          text.setValue(settings.specifiedString).onChange((value) => {
+          text.setValue(settings.specifiedString).onChange(async (value) => {
             settings.specifiedString = value;
-            this.plugin.saveSettings();
+            await this.plugin.saveSettings();
           }),
         ),
     );

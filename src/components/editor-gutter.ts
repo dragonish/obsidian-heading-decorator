@@ -26,7 +26,7 @@ class HeadingGutterMarker extends GutterMarker {
   }
 
   toDOM(): HTMLElement {
-    const div = document.createElement("div");
+    const div = createDiv();
     div.className = className.gutterMarker;
     div.dataset.decoratorOpacity = `${this.opacity}%`;
     div.dataset.decoratorLevel = this.level.toString();
@@ -54,10 +54,12 @@ export function createHeadingGutterExtension(
 
       constructor(view: EditorView) {
         this.getPluginData = getPluginData;
-        this.buildMarkers(view, view.state.field(editorLivePreviewField));
+        this.buildMarkers(view, view.state.field(editorLivePreviewField)).catch(
+          () => {},
+        );
       }
 
-      update(update: ViewUpdate) {
+      async update(update: ViewUpdate) {
         if (
           update.docChanged ||
           update.viewportChanged ||
@@ -65,7 +67,7 @@ export function createHeadingGutterExtension(
             tr.effects.some((e) => e.is(updateEditorMode)),
           )
         ) {
-          this.buildMarkers(
+          await this.buildMarkers(
             update.view,
             update.state.field(editorLivePreviewField),
           );

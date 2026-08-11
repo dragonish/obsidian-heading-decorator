@@ -176,7 +176,7 @@ export class HeadingPlugin extends Plugin {
     this.applyGutterFontSize();
 
     // Register markdown post processor
-    this.registerMarkdownPostProcessor((element, context) => {
+    this.registerMarkdownPostProcessor(async (element, context) => {
       if (!this.settings.enabledInReading) {
         return;
       }
@@ -261,12 +261,12 @@ export class HeadingPlugin extends Plugin {
           );
         });
       }
-      child.render();
+      await child.render();
 
       const currentPath = context.sourcePath;
       this.readingComponents.forEach((rc) => {
         if (rc.isSamePath(currentPath)) {
-          rc.updateContext(context);
+          rc.updateContext(context).catch(() => {});
         }
       });
     });
@@ -854,7 +854,7 @@ export class HeadingPlugin extends Plugin {
       if (isReadingView) {
         this.readingComponents.forEach((rc) => {
           if (rc.isSamePath(file.path)) {
-            rc.render(fileData);
+            rc.render(fileData).catch(() => {});
           }
         });
       } else if (file === view.file) {
@@ -863,7 +863,7 @@ export class HeadingPlugin extends Plugin {
         } else {
           this.readingComponents.forEach((rc) => {
             if (rc.isSamePath(file.path)) {
-              rc.render(fileData);
+              rc.render(fileData).catch(() => {});
             }
           });
         }

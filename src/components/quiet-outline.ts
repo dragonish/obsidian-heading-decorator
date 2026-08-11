@@ -61,7 +61,7 @@ export function quietOutlineHandler(
     const ignoreLimit = orderedAlwaysIgnore ? orderedIgnoreMaximum : 0;
     if (ignoreSingle || orderedBasedOnExisting) {
       const queier = new Querier(orderedAllowZeroLevel, maxRecLevel);
-      for (const eleIndex in headingElements) {
+      for (let eleIndex = 0; eleIndex < headingElements.length; eleIndex++) {
         const level = queryHeadingLevelByQuietOutlineElement(
           headingElements[eleIndex],
         );

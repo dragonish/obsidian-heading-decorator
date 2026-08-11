@@ -295,8 +295,8 @@ function decorateHTMLElement(
     } else {
       element.appendChild(span);
     }
-  } else {
-    decoratorEle && decoratorEle.remove();
+  } else if (decoratorEle) {
+    decoratorEle.remove();
   }
 }
 
@@ -307,5 +307,7 @@ function decorateHTMLElement(
  */
 export function cancelHTMLDecorator(element: HTMLElement): void {
   const decoratorEle = element.find(`.${className.reading}`);
-  decoratorEle && decoratorEle.remove();
+  if (decoratorEle) {
+    decoratorEle.remove();
+  }
 }

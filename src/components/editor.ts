@@ -58,7 +58,10 @@ export class HeadingEditorViewPlugin implements PluginValue {
     getPluginData: () => Promise<HeadingPluginData>,
   ) {
     this.getPluginData = getPluginData;
-    this.updateDecorations(view, view.state.field(editorLivePreviewField));
+    this.updateDecorations(
+      view,
+      view.state.field(editorLivePreviewField),
+    ).catch(() => {});
   }
 
   update(update: ViewUpdate) {
@@ -72,7 +75,7 @@ export class HeadingEditorViewPlugin implements PluginValue {
       this.updateDecorations(
         update.view,
         update.state.field(editorLivePreviewField),
-      );
+      ).catch(() => {});
     }
   }
 
