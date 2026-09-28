@@ -1,4 +1,10 @@
-import { App, ButtonComponent, PluginSettingTab, Setting } from "obsidian";
+import {
+  App,
+  ButtonComponent,
+  PluginSettingTab,
+  Setting,
+  TextComponent,
+} from "obsidian";
 import type { HeadingPlugin } from "./plugin";
 import type {
   OrderedCounterStyleType,
@@ -1346,36 +1352,44 @@ export class HeadingSettingTab extends PluginSettingTab {
       });
 
     settings.folderBlacklist.forEach((folder, index) => {
-      new Setting(containerEl)
-        .setName(
-          i18n.t("setting.folderBlocklistIndex", {
-            index: index + 1,
-          }),
-        )
-        .addText((text) => {
-          text.setValue(folder).onChange(async (value) => {
-            settings.folderBlacklist[index] = value;
-            await this.plugin.saveSettings();
-          });
+      const card = containerEl.createDiv({ cls: "heading-decorator-card" });
 
-          const suggest = new FolderSuggest(this.app, text.inputEl);
-          suggest.onSelect(async (value) => {
-            text.setValue(value);
-            settings.folderBlacklist[index] = value;
-            suggest.close();
-            await this.plugin.saveSettings();
-          });
-        })
-        .addButton((button) => {
-          button
-            .setButtonText(i18n.t("button.delete"))
-            .setDestructive()
-            .onClick(async () => {
-              settings.folderBlacklist.splice(index, 1);
-              await this.plugin.saveSettings();
-              this.manageFolderBlacklist();
-            });
+      const header = card.createDiv({
+        cls: "heading-decorator-card-header",
+      });
+      header.createSpan({
+        text: i18n.t("setting.folderBlocklistIndex", {
+          index: index + 1,
+        }),
+      });
+
+      new ButtonComponent(header)
+        .setButtonText(i18n.t("button.delete"))
+        .setDestructive()
+        .onClick(async () => {
+          settings.folderBlacklist.splice(index, 1);
+          await this.plugin.saveSettings();
+          this.manageFolderBlacklist();
         });
+
+      const fields = card.createDiv({
+        cls: "heading-decorator-card-fields",
+      });
+
+      const text = new TextComponent(fields)
+        .setValue(folder)
+        .onChange(async (value) => {
+          settings.folderBlacklist[index] = value;
+          await this.plugin.saveSettings();
+        });
+
+      const suggest = new FolderSuggest(this.app, text.inputEl);
+      suggest.onSelect(async (value) => {
+        text.setValue(value);
+        settings.folderBlacklist[index] = value;
+        suggest.close();
+        await this.plugin.saveSettings();
+      });
     });
 
     new Setting(containerEl).addButton((button) => {
@@ -1414,30 +1428,36 @@ export class HeadingSettingTab extends PluginSettingTab {
       });
 
     settings.fileRegexBlacklist.forEach((regex, index) => {
-      new Setting(containerEl)
-        .setName(
-          i18n.t("setting.fileRegexBlocklistIndex", {
-            index: index + 1,
-          }),
-        )
-        .addText((text) =>
-          text
-            .setPlaceholder(i18n.t("setting.fileRegexBlocklistPlaceholder"))
-            .setValue(regex)
-            .onChange(async (value) => {
-              settings.fileRegexBlacklist[index] = value.trim();
-              await this.plugin.saveSettings();
-            }),
-        )
-        .addButton((button) => {
-          button
-            .setButtonText(i18n.t("button.delete"))
-            .setDestructive()
-            .onClick(async () => {
-              settings.fileRegexBlacklist.splice(index, 1);
-              await this.plugin.saveSettings();
-              this.manageFileRegexBlacklist();
-            });
+      const card = containerEl.createDiv({ cls: "heading-decorator-card" });
+
+      const header = card.createDiv({
+        cls: "heading-decorator-card-header",
+      });
+      header.createSpan({
+        text: i18n.t("setting.fileRegexBlocklistIndex", {
+          index: index + 1,
+        }),
+      });
+
+      new ButtonComponent(header)
+        .setButtonText(i18n.t("button.delete"))
+        .setDestructive()
+        .onClick(async () => {
+          settings.fileRegexBlacklist.splice(index, 1);
+          await this.plugin.saveSettings();
+          this.manageFileRegexBlacklist();
+        });
+
+      const fields = card.createDiv({
+        cls: "heading-decorator-card-fields",
+      });
+
+      new TextComponent(fields)
+        .setPlaceholder(i18n.t("setting.fileRegexBlocklistPlaceholder"))
+        .setValue(regex)
+        .onChange(async (value) => {
+          settings.fileRegexBlacklist[index] = value.trim();
+          await this.plugin.saveSettings();
         });
     });
 
